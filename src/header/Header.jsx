@@ -183,7 +183,7 @@ const Header = () => {
       <div
         className={`fixed top-0 right-0 h-full w-[85vw] max-w-[320px] bg-white shadow-xl z-50 
   transition-transform duration-300 overflow-y-auto overflow-x-hidden
-  ${drawerOpen ? "translate-x-0" : "translate-x-[100%]"}`}
+  ${drawerOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="flex items-center justify-between px-4 py-4 border-b">
           <h2 className="text-xl font-bold text-green-600">Menu</h2>

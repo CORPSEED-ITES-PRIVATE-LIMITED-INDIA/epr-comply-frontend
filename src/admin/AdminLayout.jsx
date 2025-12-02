@@ -5,7 +5,7 @@ const AdminLayout = ({ children }) => {
 
     const sidebarMenu = [
   { title: "Dashboard", icon: "📊", path: "/dashboard" },
-  { title: "Users", icon: "👤", path: "/users" },
+  { title: "Category", icon: "👤", path: "category" },
   { title: "Orders", icon: "🧾", path: "/orders" },
   { title: "Settings", icon: "⚙️", path: "/settings" }
 ];
@@ -44,11 +44,11 @@ const AdminLayout = ({ children }) => {
 
           <div className="flex items-center gap-4">
             <span className="font-medium">Avnish</span>
-            <img
+            {/* <img
               src="https://via.placeholder.com/35"
               alt="profile"
               className="w-9 h-9 rounded-full border"
-            />
+            /> */}
           </div>
         </header>
 

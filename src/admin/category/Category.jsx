@@ -1,0 +1,306 @@
+import React, { useEffect, useMemo, useState } from "react";
+import Table from "../../components/Table";
+import Button from "../../components/Button";
+import Modal from "../../components/Modal";
+import { Controller, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addCategories,
+  getAllCategories,
+} from "../../toolkit/slices/serviceSlice";
+import { useParams } from "react-router-dom";
+import { useToast } from "../../components/ToastProvider";
+import dayjs from "dayjs";
+import Input from "../../components/Input";
+import Select from "../../components/Select";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const categorySchema = z.object({
+  name: z.string().nonempty("Name is required"),
+  slug: z.string().nonempty("Slug is required"),
+  icon: z.string().optional(),
+  displayStatus: z.number().min(0, "Display status is required"),
+  showHomeStatus: z.number().min(0, "Show on home is required"),
+  metaTitle: z.string().optional(),
+  metaKeyword: z.string().optional(),
+  metaDescription: z.string().optional(),
+  searchKeywords: z.string().optional(),
+});
+
+const Category = () => {
+  const { userId } = useParams();
+  const { showToast } = useToast();
+  const dispatch = useDispatch();
+  const [search, setSearch] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const data = useSelector((state) => state.service.categoryList);
+
+  useEffect(() => {
+    dispatch(getAllCategories());
+  }, []);
+
+  const filteredData = useMemo(() => {
+    if (!search) return data;
+    return data?.filter((item) =>
+      Object.values(item).join(" ").toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search, data]);
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(categorySchema),
+    defaultValues: {
+      name: "",
+      slug: "",
+      icon: "",
+      displayStatus: 0,
+      showHomeStatus: 0,
+      metaTitle: "",
+      metaKeyword: "",
+      metaDescription: "",
+      searchKeywords: "",
+    },
+  });
+
+  const onSubmit = (data) => {
+    dispatch(addCategories({ userId, data }))
+      .then((resp) => {
+        if (resp.meta.requestStatus === "fulfilled") {
+          showToast({
+            title: "Success!",
+            description: "Category has been added successfully.",
+            status: "success",
+          });
+          setOpenModal(false);
+          dispatch(getAllCategories());
+        } else {
+          showToast({
+            title: resp?.payload?.status,
+            description: resp?.payload?.message,
+            status: "error",
+          });
+        }
+      })
+      .catch(() => {
+        showToast({
+          title: "Something went wrong !.",
+          description: "Failed to add category.",
+          status: "error",
+        });
+      });
+  };
+
+  const dummyColumns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      render: (value) => (
+        <span className="font-medium text-gray-900">{value}</span>
+      ),
+    },
+    {
+      title: "Meta title",
+      dataIndex: "metaTitle",
+      render: (value) => <p className="text-wrap">{value}</p>,
+    },
+    {
+      title: "Slug",
+      dataIndex: "slug",
+    },
+    {
+      title: "Post date",
+      dataIndex: "postDate",
+      render: (value) => <p>{dayjs(value).format("DD-MM-YYYY")}</p>,
+    },
+    {
+      title: "Meta description",
+      dataIndex: "metaDescription",
+      render: (value) => <p className="text-wrap">{value}</p>,
+    },
+    {
+      title: "Meta keywords",
+      dataIndex: "metaKeyword",
+      render: (value) => <p className="text-wrap">{value}</p>,
+    },
+    {
+      title: "Search keywords",
+      dataIndex: "searchKeywords",
+      render: (value) => <p className="text-wrap">{value}</p>,
+    },
+  ];
+
+  const topContent = useMemo(() => {
+    return (
+      <div className="flex justify-between items-center">
+        <Input
+          type="text"
+          placeholder="Search..."
+          value={search}
+          showIcon
+          onChange={(e) => setSearch(e.target.value)}
+          wrapperClassName="w-80"
+        />
+        <Button onClick={() => setOpenModal(true)}>Add category</Button>
+      </div>
+    );
+  }, [search]);
+
+  return (
+    <>
+      <Table
+        columns={dummyColumns}
+        dataSource={filteredData}
+        topContent={topContent}
+        className="w-full"
+      />
+      <Modal
+        title={"Create category"}
+        open={openModal}
+        width={"60%"}
+        onCancel={() => setOpenModal(false)}
+        onOk={handleSubmit(onSubmit)}
+      >
+        <form className="grid grid-cols-2 gap-6 max-h-[60vh] overflow-auto px-2 py-2.5">
+          {/* Name */}
+          <div className="flex flex-col">
+            <label className="mb-1">Name</label>
+            <Controller
+              name="name"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter name" />
+              )}
+            />
+            {errors.name && <p className="text-red-600 text-sm">Required</p>}
+          </div>
+
+          {/* Slug */}
+          <div className="flex flex-col">
+            <label className="mb-1">Slug</label>
+            <Controller
+              name="slug"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter slug" />
+              )}
+            />
+            {errors.slug && <p className="text-red-600 text-sm">Required</p>}
+          </div>
+
+          {/* Icon */}
+          <div className="flex flex-col">
+            <label className="mb-1">Icon</label>
+            <Controller
+              name="icon"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter icon" />
+              )}
+            />
+          </div>
+
+          {/* Display Status */}
+          <div className="flex flex-col">
+            <label className="mb-1 font-medium">Display Status</label>
+            <Controller
+              name="displayStatus"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={[
+                    { label: "Inactive", value: 0 },
+                    { label: "Active", value: 1 },
+                  ]}
+                  placeholder="Select status"
+                />
+              )}
+            />
+          </div>
+
+          {/* Show on Home */}
+          <div className="flex flex-col">
+            <label className="mb-1">Show on Home</label>
+            <Controller
+              name="showHomeStatus"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={[
+                    { label: "No", value: 0 },
+                    { label: "Yes", value: 1 },
+                  ]}
+                  placeholder="Select option"
+                />
+              )}
+            />
+          </div>
+
+          {/* Meta Title */}
+          <div className="flex flex-col col-span-2">
+            <label className="mb-1">Meta Title</label>
+            <Controller
+              name="metaTitle"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Meta Title" />
+              )}
+            />
+          </div>
+
+          {/* Meta Keywords */}
+          <div className="flex flex-col col-span-2">
+            <label className="mb-1">Meta Keywords</label>
+            <Controller
+              name="metaKeyword"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Meta Keywords" />
+              )}
+            />
+          </div>
+
+          {/* Meta Description */}
+          <div className="flex flex-col col-span-2">
+            <label className="mb-1">Meta Description</label>
+            <Controller
+              name="metaDescription"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  as="textarea"
+                  rows={3}
+                  placeholder="Meta Description"
+                />
+              )}
+            />
+          </div>
+
+          {/* Search Keywords */}
+          <div className="flex flex-col col-span-2">
+            <label className="mb-1">Search Keywords</label>
+            <Controller
+              name="searchKeywords"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Search Keywords" />
+              )}
+            />
+          </div>
+        </form>
+      </Modal>
+    </>
+  );
+};
+
+export default Category;
