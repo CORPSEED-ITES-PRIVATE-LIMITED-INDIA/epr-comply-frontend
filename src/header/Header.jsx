@@ -67,6 +67,8 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  
+
   useEffect(() => {
     if (open && inputRef.current) {
       inputRef.current.focus();
