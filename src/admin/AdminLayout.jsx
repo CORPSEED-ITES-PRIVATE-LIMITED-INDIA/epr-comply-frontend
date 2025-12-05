@@ -9,10 +9,10 @@ const AdminLayout = () => {
   const { showToast } = useToast();
   const dispatch = useDispatch();
   const sidebarMenu = [
-    { title: "Dashboard", icon: "📊", path: "/dashboard" },
+    { title: "Dashboard", icon: "📊", path: "dashboard" },
     { title: "Category", icon: "👤", path: "category" },
     { title: "Blogs", icon: "🧾", path: "blogs" },
-    { title: "Settings", icon: "⚙️", path: "/settings" },
+    { title: "Settings", icon: "⚙️", path: "setting" },
   ];
 
   const handleLogout = () => {

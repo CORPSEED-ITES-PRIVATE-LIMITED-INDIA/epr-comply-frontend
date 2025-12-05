@@ -11,6 +11,9 @@ import Services from "./admin/service/Services";
 import Blogs from "./admin/blogs/Blogs";
 import Dashboard from "./admin/dashboard/Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
+import AboutUs from "./aboutus/AboutUs";
+import ContactUs from "./contactus/ContactUs";
+import Setting from "./admin/setting/Setting";
 
 const App = () => {
   return (
@@ -19,6 +22,8 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="service" element={<Service />} />
+          <Route path="aboutus" element={<AboutUs />} />
+          <Route path="contactus" element={<ContactUs />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route
@@ -66,6 +71,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <Blogs />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="setting"
+            element={
+              <ProtectedRoute>
+                <Setting />
               </ProtectedRoute>
             }
           />

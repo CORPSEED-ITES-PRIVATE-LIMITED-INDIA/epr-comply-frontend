@@ -145,17 +145,16 @@ const HomePage = () => {
         <div className="relative z-10 max-w-7xl mx-auto text-center text-white px-5">
           {/* Main Heading */}
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Compliance Made Easy. Sustainability Made Possible.
+            EPR Solutions that are Compliant and Cost-Saving.
           </h2>
 
           {/* Sub Text */}
           <p className="text-base md:text-lg text-gray-200 max-w-6xl mx-auto mb-10">
-            This tagline positions EPR Comply as a practical, user-friendly
-            solution that removes complexity from regulatory compliance while
-            empowering businesses to operate more sustainably. It highlights
-            efficiency and environmental responsibility, presenting the brand as
-            a trusted partner that simplifies processes and supports long-term
-            ecological goals.
+            Revolutionize your approach to EPR with solutions focused on
+            compliance, circularity, and cost efficiency. Our end-to-end support
+            covers registration, returns filing, credit trading, and waste
+            recycling, ensuring regulatory adherence and substantial financial
+            savings.
           </p>
 
           {/* Search Field */}
@@ -291,17 +290,18 @@ const HomePage = () => {
             </p>
 
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-snug">
-              Sustainable, Reliable & Affordable Energy!
+              Smart Compliance for a Sustainable Future.
             </h2>
 
-            <p className="text-gray-600 leading-relaxed">
-              The increase in extreme weather events and rising sea levels are
-              unmistakable signs of climate change. Roughly 850 million people
-              still without access to electricity, which is the foundation of
-              sustainable development. How can we meet growing demand for
-              electricity while protecting our climate?
+            <p className="text-gray-600 leading-relaxed text-justify">
+              Empower your business with intelligent EPR strategies that ensure
+              seamless regulatory adherence while driving genuine environmental
+              progress. Our innovative approach combines cutting-edge tracking,
+              proactive risk management, and tailored recycling solutions to
+              minimize waste, optimize resources, and build a resilient,
+              eco-conscious brand for generations ahead.
             </p>
-
+            {/* 
             <div className="pt-6">
               <div className="h-8 opacity-40">
                 <img
@@ -315,7 +315,7 @@ const HomePage = () => {
               <p className="text-green-600 font-medium text-sm">
                 Solatec Founder
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
@@ -327,23 +327,22 @@ const HomePage = () => {
                 <p className="text-green-400 font-medium mb-3">
                   Making Tomorrow Different Today.
                 </p>
-                <h2 className="text-4xl md:text-5xl font-bold leading-tight">
-                  Energize Society With <br /> Sustainable And Reliable <br />{" "}
-                  Energy Systems!
+                <h2 className="text-3xl md:text-4xl font-bold leading-tight">
+                  Our Comprehensive EPR and Waste Management Solutions
                 </h2>
               </div>
 
-              <div className="max-w-3xl mt-6 text-gray-300">
-                New capacity across the solar value chain has become necessary
-                to support PV market growth. Capital required to establish &
-                scale wafer, solar cell, and module manufacturing facilities is
-                high.
+              <div className="max-w-3xl mt-6 text-gray-300 text-justify">
+                Dive into expert-guided EPR mastery and waste transformation
+                services that turn regulatory hurdles into powerful engines of
+                innovation, efficiency, and earth-friendly triumph for your
+                brand.
               </div>
 
-              <button className="mt-8 w-fit flex items-center gap-2 bg-green-600 px-6 py-3 rounded-md hover:bg-green-700 transition">
+              {/* <button className="mt-8 w-fit flex items-center gap-2 bg-green-600 px-6 py-3 rounded-md hover:bg-green-700 transition">
                 Explore All Features!
                 <FiArrowRight />
-              </button>
+              </button> */}
             </div>
             <div className="flex justify-end">
               <img src={businessImg} alt="business" className="rounded" />

@@ -2,6 +2,7 @@ import { BsShieldCheck, BsWhatsapp } from "react-icons/bs";
 import bgImg from "../assets/serviceimg.jpg";
 import { MapPin } from "lucide-react";
 import { useState } from "react";
+import ServiceTableOfContent from "./ServiceTableOfContent";
 
 const Service = () => {
   const [location, setLocation] = useState("");
@@ -187,22 +188,37 @@ const Service = () => {
 
           {/* BOTTOM BADGES */}
           <div className="w-full flex justify-center mt-10">
-            <div className="bg-white shadow-md rounded-full px-3 sm:px-6 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-6 overflow-x-auto scrollbar-hide">
+            <div className="bg-white shadow-md rounded-full px-3 sm:px-6 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-6 overflow-x-auto scrollbar-hide">
               {[
                 {
                   text: "What Sets Us Apart",
                   icon: (
-                    <BsShieldCheck className="w-3 h-3 sm:w-4 sm:h-4 text-green-700 flex-shrink-0" />
+                    <BsShieldCheck className="w-3 h-3 sm:w-4 sm:h-4 text-green-700 font-bold flex-shrink-0" />
                   ),
                 },
-                { text: "500+ MCA Experts" },
-                { text: "10,000+ Reviews" },
-                { text: "2500+ Monthly Clients" },
+                {
+                  text: "MCA Experts",
+                  icon: (
+                    <span className="text-green-700 font-medium">500+ </span>
+                  ),
+                },
+                {
+                  text: " Reviews",
+                  icon: (
+                    <span className="text-green-700 font-medium">10,000+</span>
+                  ),
+                },
+                {
+                  text: " Monthly Clients",
+                  icon: (
+                    <span className="text-green-700 font-medium">2500+ </span>
+                  ),
+                },
                 { text: "Serving India Nationwide" },
               ].map((item, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-1 sm:gap-2 flex-shrink-0 px-2 py-1 bg-gray-100 rounded-full text-xs sm:text-sm"
+                  className="flex items-center gap-1 sm:gap-2 flex-shrink-0 px-2 py-1 bg-gray-200 rounded-full text-xs sm:text-sm"
                 >
                   {item.icon && item.icon}
                   <span className="font-semibold text-gray-600 break-words hyphens-auto">
@@ -214,6 +230,7 @@ const Service = () => {
           </div>
         </div>
       </section>
+      <ServiceTableOfContent />
     </>
   );
 };

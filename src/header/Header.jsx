@@ -67,8 +67,6 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  
-
   useEffect(() => {
     if (open && inputRef.current) {
       inputRef.current.focus();
@@ -90,21 +88,35 @@ const Header = () => {
 
             <div className="flex items-center justify-end gap-4">
               <nav className="hidden lg:flex items-center gap-8 relative">
-                {["Services", "Blogs", "About Us", "Contact Us"].map(
-                  (item) => (
-                    <div
-                      key={item}
-                      ref={(el) => (navRefs.current[item] = el)}
-                      className="relative"
-                      onMouseEnter={() => handleNavHover(item)}
-                    >
-                      <span className="cursor-pointer font-semibold hover:text-green-600 flex items-center gap-1">
-                        {item}
-                        {megaMenu[item] && <span className="text-sm">▾</span>}
-                      </span>
-                    </div>
-                  )
-                )}
+                {["Services", "Blogs"].map((item) => (
+                  <div
+                    key={item}
+                    ref={(el) => (navRefs.current[item] = el)}
+                    className="relative"
+                    onMouseEnter={() => handleNavHover(item)}
+                  >
+                    <span className="cursor-pointer font-semibold hover:text-green-600 flex items-center gap-1">
+                      {item}
+                      {/* {megaMenu[item] && <span className="text-sm">▾</span>} */}
+                    </span>
+                  </div>
+                ))}
+                <div className="relative">
+                  <Link
+                    to="aboutus"
+                    className="cursor-pointer font-semibold hover:text-green-600 flex items-center gap-1"
+                  >
+                    About Us
+                  </Link>
+                </div>
+                <div className="relative">
+                  <Link
+                    to="contactus"
+                    className="cursor-pointer font-semibold hover:text-green-600 flex items-center gap-1"
+                  >
+                    Contact Us
+                  </Link>
+                </div>
 
                 {openMenu && (
                   <div
