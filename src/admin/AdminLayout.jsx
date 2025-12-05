@@ -67,6 +67,7 @@ const AdminLayout = () => {
             ))}
           </nav>
         </div>
+        
 
         {/* Bottom Logout Button */}
         <div className="mt-auto border-t border-gray-200">
