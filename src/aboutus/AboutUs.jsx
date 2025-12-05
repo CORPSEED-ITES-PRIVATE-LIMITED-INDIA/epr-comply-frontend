@@ -9,11 +9,6 @@ const AboutUs = () => {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800">
             About Us
           </h1>
-          <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
-            We are committed to delivering excellence in engineering,
-            construction, project management, and innovative sustainable
-            solutions.
-          </p>
         </div>
       </div>
 
@@ -73,31 +68,34 @@ const AboutUs = () => {
       {/* VALUES SECTION */}
       <div className="max-w-7xl mx-auto px-6 py-16">
         <h2 className="text-3xl font-bold text-gray-800 mb-10 text-center">
-          Our Core Values
+          Our Guiding Principles
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition">
-            <h3 className="text-xl font-semibold mb-3">Integrity</h3>
-            <p className="text-gray-600">
-              We uphold the highest standards of honesty, transparency, and
-              professionalism in everything we do.
+            <h3 className="text-xl font-semibold mb-3">Transparency </h3>
+            <p className="text-gray-600 text-justify">
+              We operate with unwavering openness, making every EPR step, from
+              registration to certified recycling, fully verifiable, fostering
+              unbreakable trust and giving you complete peace of mind.
             </p>
           </div>
 
           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition">
             <h3 className="text-xl font-semibold mb-3">Innovation</h3>
-            <p className="text-gray-600">
-              Our solutions are driven by creativity, research, and modern
-              technologies to ensure sustainable progress.
+            <p className="text-gray-600 text-justify">
+              We harness cutting-edge technology and bold ideas to transform
+              complex regulations into automated, game-changing pathways that
+              accelerate sustainability and simplify your journey.
             </p>
           </div>
 
           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition">
-            <h3 className="text-xl font-semibold mb-3">Quality</h3>
-            <p className="text-gray-600">
-              We never compromise on quality and ensure every project reflects
-              our standards of excellence.
+            <h3 className="text-xl font-semibold mb-3">Excellence</h3>
+            <p className="text-gray-600 text-justify">
+              We pursue nothing short of mastery, delivering superior results
+              that strengthen compliance, amplify efficiency, and push your
+              green impact far beyond expectations.
             </p>
           </div>
         </div>
@@ -107,55 +105,71 @@ const AboutUs = () => {
       <div className="bg-green-50 py-16">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-gray-800 mb-10 text-center">
-            Why Choose Us?
+            What Sets EPRComply Apart?
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="p-6 bg-white shadow-md rounded-xl hover:shadow-xl transition">
-              <h3 className="text-xl font-semibold mb-2">Experienced Team</h3>
-              <p className="text-gray-600">
-                Our experts bring decades of industry experience.
+              <h3 className="text-xl font-semibold mb-2">
+                Expert Trailblazers{" "}
+              </h3>
+              <p className="text-gray-600 text-justify">
+                Our seasoned navigators decode EPR complexities with decades of
+                insight, turning regulatory challenges into strategic advantages
+                that keep you confidently ahead.
               </p>
             </div>
 
             <div className="p-6 bg-white shadow-md rounded-xl hover:shadow-xl transition">
               <h3 className="text-xl font-semibold mb-2">
-                Sustainable Practices
+                Eco-Smart Strategists
               </h3>
               <p className="text-gray-600">
-                We focus on eco-friendly and energy-efficient solutions.
+                We design regenerative solutions that minimize environmental
+                footprints, maximize credits, and ignite zero-waste revolutions
+                for lasting planet-positive power.
               </p>
             </div>
 
             <div className="p-6 bg-white shadow-md rounded-xl hover:shadow-xl transition">
               <h3 className="text-xl font-semibold mb-2">
-                End-to-End Solutions
+                Full-Cycle Guardians{" "}
               </h3>
               <p className="text-gray-600">
-                From planning to construction—we handle everything.
+                From initial filing to final certificate, we orchestrate every
+                phase seamlessly, freeing you to focus on growth while we weave
+                total transformation.{" "}
               </p>
             </div>
 
             <div className="p-6 bg-white shadow-md rounded-xl hover:shadow-xl transition">
-              <h3 className="text-xl font-semibold mb-2">On-Time Delivery</h3>
+              <h3 className="text-xl font-semibold mb-2">Deadline Masters </h3>
               <p className="text-gray-600">
-                We value your time and deliver as per committed schedules.
+                Deadlines are our symphony; we deliver filings, reports, and
+                results with perfect timing, ensuring penalty-free progress and
+                zero stress.
               </p>
             </div>
 
             <div className="p-6 bg-white shadow-md rounded-xl hover:shadow-xl transition">
               <h3 className="text-xl font-semibold mb-2">
-                Client-Centric Approach
+                Your Success Champions
               </h3>
               <p className="text-gray-600">
-                Your satisfaction and goals come first—always.
+                Your goals lead the way; we craft personalized strategies with
+                responsive, adaptive support that celebrates your victories as
+                our own.
               </p>
             </div>
 
             <div className="p-6 bg-white shadow-md rounded-xl hover:shadow-xl transition">
-              <h3 className="text-xl font-semibold mb-2">Premium Quality</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                Proven Impact Illuminators{" "}
+              </h3>
               <p className="text-gray-600">
-                We ensure unmatched quality in every step of the project.
+                We provide audit-ready, traceable outcomes backed by certified
+                partners, spotlighting verifiable triumphs that shine as beacons
+                of reliability and inspiration.
               </p>
             </div>
           </div>

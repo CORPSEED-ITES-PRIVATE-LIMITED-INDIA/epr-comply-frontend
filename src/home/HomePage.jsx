@@ -17,6 +17,7 @@ import google from "../assets/googleIcon.png";
 import glassdoor from "../assets/glassdoorIcon.png";
 import mouthshut from "../assets/moutshutlogoIcon.png";
 import { BsShieldCheck } from "react-icons/bs";
+import Rating45 from "../components/Rating45";
 
 const images = [frontImage, img1, img2, img3];
 
@@ -145,7 +146,7 @@ const HomePage = () => {
         <div className="relative z-10 max-w-7xl mx-auto text-center text-white px-5">
           {/* Main Heading */}
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            EPR Solutions that are Compliant and Cost-Saving.
+            Revolutionize Sustainability Confidently with Reliable EPR Solutions{" "}
           </h2>
 
           {/* Sub Text */}
@@ -194,29 +195,38 @@ const HomePage = () => {
           <div className="flex flex-wrap justify-center gap-10 mb-12">
             {/* Google Rating */}
             <div className="flex flex-col items-center justify-center">
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-1.5">
                 <img src={google} className="h-6 mb-1" alt="Google" />
                 <p className="text-yellow-400 font-semibold">4.5 Out of 5</p>
               </div>
-              <p className="text-gray-300 text-sm">(1,284)</p>
+              <div className="flex items-center gap-1.5">
+                <Rating45 />
+                <p className="text-gray-300 text-sm">(1,284)</p>
+              </div>
             </div>
 
             {/* Glassdoor Rating */}
             <div className="flex flex-col items-center justify-center">
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-1.5">
                 <img src={glassdoor} className="h-6 mb-1" alt="Glassdoor" />
                 <p className="text-yellow-400 font-semibold">4.5 Out of 5</p>
               </div>
-              <p className="text-gray-300 text-sm">(1,284)</p>
+              <div className="flex items-center gap-1.5">
+                <Rating45 />
+                <p className="text-gray-300 text-sm">(1,204)</p>
+              </div>
             </div>
 
             {/* Trustpilot Rating */}
             <div className="flex flex-col items-center justify-center">
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-1.5">
                 <img src={mouthshut} className="h-6 mb-1" alt="Trustpilot" />
                 <p className="text-yellow-400 font-semibold">4.5 Out of 5</p>
               </div>
-              <p className="text-gray-300 text-sm">(1,284)</p>
+              <div className="flex items-center gap-1.5">
+                <Rating45 />
+                <p className="text-gray-300 text-sm">(1,084)</p>
+              </div>
             </div>
           </div>
 
