@@ -197,6 +197,64 @@ export const getAllServices = createAsyncThunk(
   }
 );
 
+export const addTableOfContent = createAsyncThunk(
+  "addTableOfContent",
+  async ({ userId, data }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        `/api/service-sections?userId=${userId}`,
+        data
+      );
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data?.message);
+    }
+  }
+);
+
+export const getServiceTableContentList = createAsyncThunk(
+  "getServiceTableContentList",
+  async ({ serviceId }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(
+        `/api/service-sections/service/${serviceId}`
+      );
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data?.message);
+    }
+  }
+);
+
+export const updateServiceTableOfContent = createAsyncThunk(
+  "updateServiceTableOfContent",
+  async ({ id, userId, data }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(
+        `/api/service-sections/${id}?userId=${userId}`,
+        data
+      );
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data?.message);
+    }
+  }
+);
+
+export const delteTableOfContent = createAsyncThunk(
+  "delteTableOfContent",
+  async ({ id, userId }) => {
+    try {
+      const response = await api.delete(
+        `/api/service-sections/${id}?userId=${userId}`
+      );
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data?.message);
+    }
+  }
+);
+
 const serviceSlice = createSlice({
   name: "service",
   initialState: {
@@ -205,6 +263,7 @@ const serviceSlice = createSlice({
     subcategoryList: [],
     serviceList: [],
     allServiceList: [],
+    serviceTableOfContentList:[]
   },
   extraReducers: (builder) => {
     builder.addCase(getAllCategories.pending, (state) => {
@@ -254,6 +313,18 @@ const serviceSlice = createSlice({
       state.allServiceList = action.payload;
     });
     builder.addCase(getAllServices.rejected, (state) => {
+      state.loading = "rejected";
+    });
+
+    
+    builder.addCase(getServiceTableContentList.pending, (state) => {
+      state.loading = "pending";
+    });
+    builder.addCase(getServiceTableContentList.fulfilled, (state, action) => {
+      state.loading = "success";
+      state.serviceTableOfContentList = action.payload;
+    });
+    builder.addCase(getServiceTableContentList.rejected, (state) => {
       state.loading = "rejected";
     });
   },

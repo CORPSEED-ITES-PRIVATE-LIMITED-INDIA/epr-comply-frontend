@@ -17,6 +17,7 @@ import Setting from "./admin/setting/Setting";
 import Rating from "./admin/rating/Rating";
 import BlogDetail from "./blog/BlogDetail";
 import Enquiry from "./admin/enquiry/Enquiry";
+import ServiceTableOfContentss from "./admin/service/ServiceTableOfContentss";
 
 const App = () => {
   return (
@@ -67,6 +68,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <Services />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="category/:categoryId/subcategory/:subcategoryId/services/:serviceId/detail"
+            element={
+              <ProtectedRoute>
+                <ServiceTableOfContentss />
               </ProtectedRoute>
             }
           />

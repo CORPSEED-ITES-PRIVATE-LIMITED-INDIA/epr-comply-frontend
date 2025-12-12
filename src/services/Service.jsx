@@ -1,43 +1,10 @@
 import { BsShieldCheck, BsWhatsapp } from "react-icons/bs";
 import bgImg from "../assets/serviceimg.jpg";
-import { MapPin } from "lucide-react";
 import { useState } from "react";
 import ServiceTableOfContent from "./ServiceTableOfContent";
 import EnquiryForm from "../components/EnquiryForm";
 
 const Service = () => {
-  const [location, setLocation] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const getLocation = () => {
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`,
-            {
-              headers: {
-                "User-Agent": "YourAppName", // required by Nominatim
-              },
-            }
-          );
-
-          const data = await res.json();
-          setLocation(data?.display_name || "Location not found");
-        } catch (error) {
-          console.error(error);
-          alert("Failed to fetch address");
-        }
-      },
-      (error) => {
-        alert("Unable to get location");
-      }
-    );
-  };
-
-  console.log("dfjgdkjgdjgd", location);
 
   return (
     <>

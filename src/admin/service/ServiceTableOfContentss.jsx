@@ -6,12 +6,13 @@ import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addService,
-  addSubCategory,
+  addTableOfContent,
   deleteSubCategory,
-  getAllSubCategoriesByCategoryId,
+  delteTableOfContent,
   getServiceListBySubCategoryId,
+  getServiceTableContentList,
   updateService,
-  updateSubCategory,
+  updateServiceTableOfContent,
 } from "../../toolkit/slices/serviceSlice";
 import { Link, useParams } from "react-router-dom";
 import { useToast } from "../../components/ToastProvider";
@@ -23,40 +24,30 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Dropdown from "../../components/Dropdown";
 import PopConfirm from "../../components/PopConfirm";
 import { EllipsisVertical } from "lucide-react";
-import FileUploader from "../../components/FileUploader";
-import ImageUploader from "../../components/ImageUploader";
 import TextEditor from "../../components/TextEditor";
 
 const serviceSchema = z.object({
+  tabName: z.string().nonempty("Tab name is required"),
   title: z.string().nonempty("Title is required"),
-  slug: z.string().nonempty("Slug is required"),
-  shortDescription: z.string().nonempty("Short description is required"),
-  fullDescription: z.string().nonempty("Full description is required"),
-  bannerImage: z.string().nonempty("Banner image is required"),
-  thumbnail: z.string().nonempty("Thumbnail is required"),
-  videoUrl: z.string().optional(),
-
-  metaTitle: z.string().optional(),
-  metaKeyword: z.string().optional(),
-  metaDescription: z.string().optional(),
-
-  displayStatus: z.number(),
-  showHomeStatus: z.number(),
+  description: z.string().optional(),
+  displayOrder: z.string().optional(),
+  displayStatus: z.string().optional(),
 });
 
-const Services = () => {
-  const { userId, categoryId, subcategoryId } = useParams();
+const ServiceTableOfContentss = () => {
+  const { userId, categoryId, subcategoryId, serviceId } = useParams();
   const { showToast } = useToast();
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.service.serviceList);
+  const data = useSelector((state) => state.service.serviceTableOfContentList);
   const [search, setSearch] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [openDropdowns, setOpenDropdowns] = useState({});
   const [rowData, setRowData] = useState(null);
+  const [descModal, setDescModal] = useState(false);
 
   useEffect(() => {
-    dispatch(getServiceListBySubCategoryId(subcategoryId));
-  }, [dispatch, subcategoryId]);
+    dispatch(getServiceTableContentList({ serviceId }));
+  }, [dispatch, serviceId]);
 
   const filteredData = useMemo(() => {
     if (!search) return data;
@@ -73,31 +64,24 @@ const Services = () => {
   } = useForm({
     resolver: zodResolver(serviceSchema),
     defaultValues: {
+      tabName: "",
       title: "",
-      slug: "",
-      shortDescription: "",
-      fullDescription: "",
-      bannerImage: "",
-      thumbnail: "",
-      videoUrl: "",
-      metaTitle: "",
-      metaKeyword: "",
-      metaDescription: "",
-      displayStatus: 0,
-      showHomeStatus: 0,
+      description: "",
+      displayOrder: "",
+      displayStatus: "",
     },
   });
 
   const handleDelete = (rowData) => {
-    dispatch(deleteSubCategory({ id: rowData?.id, userId }))
+    dispatch(delteTableOfContent({ id: rowData?.id, userId }))
       .then((resp) => {
         if (resp.meta.requestStatus === "fulfilled") {
           showToast({
             title: "Success!",
-            description: "Category has been deleted successfully !.",
+            description: "Tab content has been deleted successfully !.",
             status: "success",
           });
-          dispatch(getServiceListBySubCategoryId(subcategoryId));
+          dispatch(getServiceTableContentList({ serviceId }));
         } else {
           showToast({
             title: resp?.payload?.status,
@@ -118,37 +102,29 @@ const Services = () => {
   const handleEdit = (item) => {
     reset({
       title: item?.title,
-      slug: item?.slug,
-      shortDescription: item?.shortDescription,
-      fullDescription: item?.fullDescription,
-      bannerImage: item?.bannerImage,
-      thumbnail: item?.thumbnail,
-      videoUrl: item?.videoUrl,
-      metaTitle: item?.metaTitle,
-      metaKeyword: item?.metaKeyword,
-      metaDescription: item?.metaDescription,
+      tabName: item?.tabName,
+      description: item?.description,
+      displayOrder: item?.displayOrder,
       displayStatus: item?.displayStatus,
-      showHomeStatus: item?.showHomeStatus,
     });
     setRowData(item);
     setOpenModal(true);
   };
 
   const onSubmit = (data) => {
-    data.categoryId = categoryId;
-    data.subCategoryId = categoryId;
+    data.serviceId = serviceId;
     if (rowData) {
-      dispatch(updateService({ id: rowData?.id, userId, data }))
+      dispatch(updateServiceTableOfContent({ id: rowData?.id, userId, data }))
         .then((resp) => {
           if (resp.meta.requestStatus === "fulfilled") {
             showToast({
               title: "Success!",
-              description: "Service has been updated successfully !.",
+              description: "Tab content has been updated successfully !.",
               status: "success",
             });
             setOpenModal(false);
             setRowData(null);
-            dispatch(getServiceListBySubCategoryId(subcategoryId));
+            dispatch(getServiceTableContentList({ serviceId }));
           } else {
             showToast({
               title: resp?.payload?.status,
@@ -165,16 +141,16 @@ const Services = () => {
           });
         });
     } else {
-      dispatch(addService({ userId, data }))
+      dispatch(addTableOfContent({ userId, data }))
         .then((resp) => {
           if (resp.meta.requestStatus === "fulfilled") {
             showToast({
               title: "Success!",
-              description: "Service has been added successfully.",
+              description: "Tab content  has been added successfully.",
               status: "success",
             });
             setOpenModal(false);
-            dispatch(getServiceListBySubCategoryId(subcategoryId));
+            dispatch(getServiceTableContentList({ serviceId }));
           } else {
             showToast({
               title: resp?.payload?.status,
@@ -195,37 +171,28 @@ const Services = () => {
 
   const dummyColumns = [
     {
+      title: "Tab name",
+      dataIndex: "tabName",
+      render: (value) => <p className="text-wrap">{value}</p>,
+    },
+    {
       title: "Title",
       dataIndex: "title",
+      render: (value, record) => <p className="font-medium">{value}</p>,
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
       render: (value, record) => (
-        <Link to={`${record?.id}/detail`} className="font-medium">
-          {value}
-        </Link>
+        <Button
+          onClick={() => {
+            setDescModal(true);
+            setRowData(record);
+          }}
+        >
+          View
+        </Button>
       ),
-    },
-    {
-      title: "Meta title",
-      dataIndex: "metaTitle",
-      render: (value) => <p className="text-wrap">{value}</p>,
-    },
-    {
-      title: "Slug",
-      dataIndex: "slug",
-    },
-    {
-      title: "Post date",
-      dataIndex: "postDate",
-      render: (value) => <p>{dayjs(value).format("DD-MM-YYYY")}</p>,
-    },
-    {
-      title: "Meta description",
-      dataIndex: "metaDescription",
-      render: (value) => <p className="text-wrap">{value}</p>,
-    },
-    {
-      title: "Meta keywords",
-      dataIndex: "metaKeyword",
-      render: (value) => <p className="text-wrap">{value}</p>,
     },
     {
       title: "Actions",
@@ -275,14 +242,14 @@ const Services = () => {
           onChange={(e) => setSearch(e.target.value)}
           wrapperClassName="w-80"
         />
-        <Button onClick={() => setOpenModal(true)}>Add service</Button>
+        <Button onClick={() => setOpenModal(true)}>Add tab</Button>
       </div>
     );
   }, [search]);
 
   return (
     <>
-      <h2 className="text-lg font-semibold">Service list</h2>
+      <h2 className="text-lg font-semibold">Service table of content</h2>
       <Table
         columns={dummyColumns}
         dataSource={filteredData}
@@ -290,13 +257,28 @@ const Services = () => {
         className="w-full"
       />
       <Modal
-        title={rowData ? "Update service" : "Create service"}
+        title={rowData ? "Update service table of content" : "Create service table of content"}
         open={openModal}
         width={"60%"}
         onCancel={() => setOpenModal(false)}
         onOk={handleSubmit(onSubmit)}
       >
         <form className="grid grid-cols-2 gap-6 max-h-[60vh] overflow-auto px-2 py-2.5">
+          {/* Slug */}
+          <div className="flex flex-col">
+            <label className="mb-1">Tab name</label>
+            <Controller
+              name="tabName"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter slug" />
+              )}
+            />
+            {errors.slug && (
+              <p className="text-red-600 text-sm">{errors.slug.message}</p>
+            )}
+          </div>
+
           {/* Title */}
           <div className="flex flex-col">
             <label className="mb-1">Title</label>
@@ -312,48 +294,11 @@ const Services = () => {
             )}
           </div>
 
-          {/* Slug */}
-          <div className="flex flex-col">
-            <label className="mb-1">Slug</label>
-            <Controller
-              name="slug"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter slug" />
-              )}
-            />
-            {errors.slug && (
-              <p className="text-red-600 text-sm">{errors.slug.message}</p>
-            )}
-          </div>
-
-          {/* Short Description */}
-          <div className="flex flex-col col-span-2">
-            <label className="mb-1">Short Description</label>
-            <Controller
-              name="shortDescription"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  as="textarea"
-                  rows={3}
-                  {...field}
-                  placeholder="Short description"
-                />
-              )}
-            />
-            {errors.shortDescription && (
-              <p className="text-red-600 text-sm">
-                {errors.shortDescription.message}
-              </p>
-            )}
-          </div>
-
           {/* Full Description */}
           <div className="flex flex-col col-span-2">
-            <label className="mb-1">Full Description</label>
+            <label className="mb-1">Description</label>
             <Controller
-              name="fullDescription"
+              name="description"
               control={control}
               render={({ field, fieldState: { error } }) => (
                 <>
@@ -372,56 +317,11 @@ const Services = () => {
                 </>
               )}
             />
-            {errors.fullDescription && (
+            {errors.description && (
               <p className="text-red-600 text-sm">
-                {errors.fullDescription.message}
+                {errors.description.message}
               </p>
             )}
-          </div>
-
-          {/* Banner Image */}
-          <div className="flex flex-col">
-            <label className="mb-1">Banner Image</label>
-            <Controller
-              name="bannerImage"
-              control={control}
-              render={({ field }) => (
-                <FileUploader
-                  value={field.value}
-                  onChange={(e) => field.onChange(e)}
-                />
-              )}
-            />
-          </div>
-
-          {/* Thumbnail */}
-          <div className="flex flex-col">
-            <label className="mb-1">Thumbnail</label>
-            <Controller
-              name="thumbnail"
-              control={control}
-              render={({ field }) => (
-                <FileUploader
-                  value={field.value}
-                  onChange={(e) => field.onChange(e)}
-                />
-              )}
-            />
-          </div>
-
-          {/* Video URL */}
-          <div className="flex flex-col col-span-2">
-            <label className="mb-1">Video URL</label>
-            <Controller
-              name="videoUrl"
-              control={control}
-              render={({ field }) => (
-                <FileUploader
-                  value={field.value}
-                  onChange={(e) => field.onChange(e)}
-                />
-              )}
-            />
           </div>
 
           {/* Display Status */}
@@ -442,68 +342,39 @@ const Services = () => {
             />
           </div>
 
-          {/* Show Home Status */}
-          <div className="flex flex-col">
-            <label className="mb-1">Show on Home</label>
-            <Controller
-              name="showHomeStatus"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  options={[
-                    { label: "No", value: 0 },
-                    { label: "Yes", value: 1 },
-                  ]}
-                />
-              )}
-            />
-          </div>
-
           {/* Meta Title */}
           <div className="flex flex-col col-span-2">
-            <label className="mb-1">Meta Title</label>
+            <label className="mb-1">Display order</label>
             <Controller
-              name="metaTitle"
+              name="displayOrder"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Meta title" />
               )}
             />
           </div>
-
-          {/* Meta Keyword */}
-          <div className="flex flex-col col-span-2">
-            <label className="mb-1">Meta Keyword</label>
-            <Controller
-              name="metaKeyword"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Meta keywords" />
-              )}
-            />
-          </div>
-
-          {/* Meta Description */}
-          <div className="flex flex-col col-span-2">
-            <label className="mb-1">Meta Description</label>
-            <Controller
-              name="metaDescription"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  as="textarea"
-                  rows={3}
-                  {...field}
-                  placeholder="Meta description"
-                />
-              )}
-            />
-          </div>
         </form>
+      </Modal>
+
+      <Modal
+        title={"Description"}
+        open={descModal}
+        width={"60%"}
+        onCancel={() => {
+          setDescModal(false);
+          setRowData(null);
+        }}
+        footer={false}
+      >
+        <div className="px-8 py-10 max-w-4xl mx-auto max-h-[80vh] overflow-auto">
+          <div
+            className="prose prose-lg"
+            dangerouslySetInnerHTML={{ __html: rowData?.description }}
+          ></div>
+        </div>
       </Modal>
     </>
   );
 };
 
-export default Services;
+export default ServiceTableOfContentss;
