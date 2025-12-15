@@ -12,6 +12,7 @@ const AdminLayout = () => {
   const sidebarMenu = [
     { title: "Dashboard", icon: "📊", path: "dashboard" },
     { title: "Category", icon: "👤", path: "category" },
+    { title: "Services", icon: "👤", path: "services" },
     { title: "Blogs", icon: "🧾", path: "blogs" },
     { title: "Rating", icon: <Star/>, path: "rating" },
     { title: "Enquiry", icon: <List/>, path: "enquiry" },

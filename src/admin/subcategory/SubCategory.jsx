@@ -174,12 +174,7 @@ const Category = () => {
       title: "Name",
       dataIndex: "name",
       render: (value, record) => (
-        <Link
-          to={`${record?.id}/services`}
-          className="font-medium text-blue-600"
-        >
-          {value}
-        </Link>
+        <p className="text-wrap">{value}</p>
       ),
     },
     {

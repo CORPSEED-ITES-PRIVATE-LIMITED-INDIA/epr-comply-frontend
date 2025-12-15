@@ -160,7 +160,7 @@ export const addService = createAsyncThunk(
 
 export const updateService = createAsyncThunk(
   "updateService",
-  async ({ id, userId, data }) => {
+  async ({ id, userId, data },{rejectWithValue}) => {
     try {
       const response = await api.put(
         `/api/services/${id}?userId=${userId}`,
@@ -243,10 +243,66 @@ export const updateServiceTableOfContent = createAsyncThunk(
 
 export const delteTableOfContent = createAsyncThunk(
   "delteTableOfContent",
-  async ({ id, userId }) => {
+  async ({ id, userId }, { rejectWithValue }) => {
     try {
       const response = await api.delete(
         `/api/service-sections/${id}?userId=${userId}`
+      );
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data?.message);
+    }
+  }
+);
+
+export const addServiceFAQ = createAsyncThunk(
+  "addServiceFAQ",
+  async ({ userId, data }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        `/api/service-faqs?userId=${userId}`,
+        data
+      );
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data?.message);
+    }
+  }
+);
+
+export const getAllServiceFAQS = createAsyncThunk(
+  "getAllServiceFAQS",
+  async (serviceId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/service-faqs/service/${serviceId}`);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data?.message);
+    }
+  }
+);
+
+export const updateServiceFaqs = createAsyncThunk(
+  "updateServiceFaqs",
+  async ({ id, data, userId }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(
+        `/api/service-faqs/${id}?userId=${userId}`,
+        data
+      );
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data?.message);
+    }
+  }
+);
+
+export const deleteServiceFaqs = createAsyncThunk(
+  "deleteServiceFaqs",
+  async ({ id, userId }, { rejectWithValue }) => {
+    try {
+      const response = await api.delete(
+        `/api/service-faqs/${id}?userId=${userId}`
       );
       return response.data;
     } catch (err) {
@@ -263,7 +319,8 @@ const serviceSlice = createSlice({
     subcategoryList: [],
     serviceList: [],
     allServiceList: [],
-    serviceTableOfContentList:[]
+    serviceTableOfContentList: [],
+    serviceFaqsList: [],
   },
   extraReducers: (builder) => {
     builder.addCase(getAllCategories.pending, (state) => {
@@ -316,7 +373,6 @@ const serviceSlice = createSlice({
       state.loading = "rejected";
     });
 
-    
     builder.addCase(getServiceTableContentList.pending, (state) => {
       state.loading = "pending";
     });
@@ -325,6 +381,17 @@ const serviceSlice = createSlice({
       state.serviceTableOfContentList = action.payload;
     });
     builder.addCase(getServiceTableContentList.rejected, (state) => {
+      state.loading = "rejected";
+    });
+
+    builder.addCase(getAllServiceFAQS.pending, (state) => {
+      state.loading = "pending";
+    });
+    builder.addCase(getAllServiceFAQS.fulfilled, (state, action) => {
+      state.loading = "success";
+      state.serviceFaqsList = action.payload;
+    });
+    builder.addCase(getAllServiceFAQS.rejected, (state) => {
       state.loading = "rejected";
     });
   },

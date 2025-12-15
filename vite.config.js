@@ -14,6 +14,11 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
+      "/leadService": {
+        target: "http://localhost:9001",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });

@@ -94,10 +94,17 @@ import "ckeditor5/ckeditor5.css";
 import "ckeditor5-premium-features/ckeditor5-premium-features.css";
 
 const LICENSE_KEY =
-  "eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3NjY3OTM1OTksImp0aSI6ImI5NWE1MGI3LTEzNWUtNGUzZi05NTJhLTEyMmViNmNiOTcwNSIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiLCJzaCJdLCJ3aGl0ZUxhYmVsIjp0cnVlLCJsaWNlbnNlVHlwZSI6InRyaWFsIiwiZmVhdHVyZXMiOlsiKiJdLCJ2YyI6IjRkNDkxMWQzIn0.tDJx1UbCDr8HvP0TZY9MKwxwqmFixGjrnYPeg2u1rQ26TzDPzDukc6J1QGjzuyxKGJh2VTzsX7gh1cI_MH3X7Q";
+  "eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3NjcwNTI3OTksImp0aSI6IjRiN2FjYjlmLWU4MzEtNGM4YS05ZmJhLTY0NTYyM2M1NDVmYyIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiLCJzaCJdLCJ3aGl0ZUxhYmVsIjp0cnVlLCJsaWNlbnNlVHlwZSI6InRyaWFsIiwiZmVhdHVyZXMiOlsiKiJdLCJ2YyI6IjYxNjZlZjg3In0.th_ulx4AUd-eXj047ljq4AHsO01uBtJLb-l8h_mdd_UBsxiooDr7bniXOM1EmhNc8jCn2G0rp8Zls7PVT4I7cQ";
+
+/**
+ * Unique ID that will be used to identify this document. E.g. you may use ID taken from your database.
+ * Read more: https://ckeditor.com/docs/ckeditor5/latest/api/module_collaboration-core_config-RealTimeCollaborationConfig.html
+ */
+const DOCUMENT_ID = "<YOUR_DOCUMENT_ID>";
 
 const CLOUD_SERVICES_TOKEN_URL =
-  "https://1r3l2jdl79w4.cke-cs.com/token/dev/351c3dda139a17209f3440cbae4e690d0db155583cb09ad7b3a10ef3d73d?limit=10";
+  "https://rhs_7mhi358i.cke-cs.com/token/dev/38729757714baaf65f9022404c162df8486dc752c01511314a2c45d5af53?limit=10";
+const CLOUD_SERVICES_WEBSOCKET_URL = "wss://rhs_7mhi358i.cke-cs.com/ws";
 
 class UsersIntegration extends Plugin {
   static get requires() {

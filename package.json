@@ -15,6 +15,7 @@
     "@reduxjs/toolkit": "^2.11.0",
     "@tailwindcss/vite": "^4.1.17",
     "axios": "^1.13.2",
+    "ckeditor5": "^47.3.0",
     "ckeditor5-premium-features": "^47.3.0",
     "dayjs": "^1.11.19",
     "framer-motion": "^12.23.25",

@@ -31,7 +31,8 @@ import FileUploader from "../../components/FileUploader";
 const blogSchema = z.object({
   title: z.string().nonempty("Title is required"),
   slug: z.string().nonempty("Slug is required"),
-  image: z.string().nonempty("Image is required"),
+  image: z.string().optional(),
+  // image: z.string().nonempty("Image is required"),
   summary: z.string().nonempty("Summary is required"),
   description: z.string().nonempty("Description is required"),
   metaTitle: z.string().optional(),
@@ -305,7 +306,7 @@ const Blogs = () => {
         className="w-full"
       />
       <Modal
-        title={rowData ? "Update service" : "Create service"}
+        title={rowData ? "Update blogs" : "Create blogs"}
         open={openModal}
         width={"60%"}
         onCancel={() => setOpenModal(false)}

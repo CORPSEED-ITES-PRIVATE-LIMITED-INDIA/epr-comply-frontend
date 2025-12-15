@@ -6,12 +6,12 @@ import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addService,
-  addSubCategory,
   deleteSubCategory,
+  getAllCategories,
+  getAllServices,
   getAllSubCategoriesByCategoryId,
   getServiceListBySubCategoryId,
   updateService,
-  updateSubCategory,
 } from "../../toolkit/slices/serviceSlice";
 import { Link, useParams } from "react-router-dom";
 import { useToast } from "../../components/ToastProvider";
@@ -24,22 +24,21 @@ import Dropdown from "../../components/Dropdown";
 import PopConfirm from "../../components/PopConfirm";
 import { EllipsisVertical } from "lucide-react";
 import FileUploader from "../../components/FileUploader";
-import ImageUploader from "../../components/ImageUploader";
 import TextEditor from "../../components/TextEditor";
 
 const serviceSchema = z.object({
   title: z.string().nonempty("Title is required"),
   slug: z.string().nonempty("Slug is required"),
+  categoryId: z.number(),
+  subcategoryId: z.number(),
   shortDescription: z.string().nonempty("Short description is required"),
   fullDescription: z.string().nonempty("Full description is required"),
   bannerImage: z.string().nonempty("Banner image is required"),
   thumbnail: z.string().nonempty("Thumbnail is required"),
   videoUrl: z.string().optional(),
-
   metaTitle: z.string().optional(),
   metaKeyword: z.string().optional(),
   metaDescription: z.string().optional(),
-
   displayStatus: z.number(),
   showHomeStatus: z.number(),
 });
@@ -48,14 +47,18 @@ const Services = () => {
   const { userId, categoryId, subcategoryId } = useParams();
   const { showToast } = useToast();
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.service.serviceList);
+  const data = useSelector((state) => state.service.allServiceList);
+  const categoryList = useSelector((state) => state.service.categoryList);
+  const subcategoryList = useSelector((state) => state.service.subcategoryList);
   const [search, setSearch] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [openDropdowns, setOpenDropdowns] = useState({});
   const [rowData, setRowData] = useState(null);
+  const [descModal, setDescModal] = useState(false);
 
   useEffect(() => {
-    dispatch(getServiceListBySubCategoryId(subcategoryId));
+    dispatch(getAllServices(subcategoryId));
+    dispatch(getAllCategories());
   }, [dispatch, subcategoryId]);
 
   const filteredData = useMemo(() => {
@@ -135,8 +138,6 @@ const Services = () => {
   };
 
   const onSubmit = (data) => {
-    data.categoryId = categoryId;
-    data.subCategoryId = categoryId;
     if (rowData) {
       dispatch(updateService({ id: rowData?.id, userId, data }))
         .then((resp) => {
@@ -197,11 +198,7 @@ const Services = () => {
     {
       title: "Title",
       dataIndex: "title",
-      render: (value, record) => (
-        <Link to={`${record?.id}/detail`} className="font-medium">
-          {value}
-        </Link>
-      ),
+      render: (value, record) => <p className="font-medium">{value}</p>,
     },
     {
       title: "Meta title",
@@ -228,6 +225,20 @@ const Services = () => {
       render: (value) => <p className="text-wrap">{value}</p>,
     },
     {
+      title: "Description",
+      dataIndex: "description",
+      render: (value, record) => (
+        <Button
+          onClick={() => {
+            setDescModal(true);
+            setRowData(record);
+          }}
+        >
+          View
+        </Button>
+      ),
+    },
+    {
       title: "Actions",
       dataIndex: "actions",
       render: (value, record, rowIndex) => {
@@ -239,9 +250,16 @@ const Services = () => {
               setOpenDropdowns((prev) => ({ ...prev, [record.id]: open }))
             }
             items={[
-              { key: 1, label: "edit", onClick: () => handleEdit(record) },
               {
-                key: 2,
+                key: 1,
+                label: (
+                  <Link to={`${record?.id}/detail`}>Add table of content</Link>
+                ),
+              },
+              { key: 2, label: <Link to={`${record?.id}/faqs`}>FAQ's</Link> },
+              { key: 3, label: "edit", onClick: () => handleEdit(record) },
+              {
+                key: 4,
                 label: (
                   <PopConfirm
                     title="Are you sure you want to delete?"
@@ -288,6 +306,7 @@ const Services = () => {
         dataSource={filteredData}
         topContent={topContent}
         className="w-full"
+        scroll={{ y: "78vh" }}
       />
       <Modal
         title={rowData ? "Update service" : "Create service"}
@@ -320,6 +339,65 @@ const Services = () => {
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter slug" />
+              )}
+            />
+            {errors.slug && (
+              <p className="text-red-600 text-sm">{errors.slug.message}</p>
+            )}
+          </div>
+
+          {/* category */}
+          <div className="flex flex-col">
+            <label className="mb-1">Category</label>
+            <Controller
+              name="categoryId"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  options={
+                    categoryList?.length > 0
+                      ? categoryList?.map((item) => ({
+                          label: item?.name,
+                          value: item?.id,
+                        }))
+                      : []
+                  }
+                  placeholder="Select category"
+                  onChange={(e) => {
+                    dispatch(getAllSubCategoriesByCategoryId(e));
+                    field.onChange(e);
+                  }}
+                />
+              )}
+            />
+            {errors.slug && (
+              <p className="text-red-600 text-sm">{errors.slug.message}</p>
+            )}
+          </div>
+
+          {/* sub category */}
+          <div className="flex flex-col">
+            <label className="mb-1">Subcategory</label>
+            <Controller
+              name="subcategoryId"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  options={
+                    subcategoryList?.length > 0
+                      ? subcategoryList?.map((item) => ({
+                          label: item?.name,
+                          value: item?.id,
+                        }))
+                      : []
+                  }
+                  placeholder="Select subcategory"
+                  onChange={(e) => {
+                    field.onChange(e);
+                  }}
+                />
               )}
             />
             {errors.slug && (
@@ -501,6 +579,24 @@ const Services = () => {
             />
           </div>
         </form>
+      </Modal>
+
+      <Modal
+        title={"Description"}
+        open={descModal}
+        width={"60%"}
+        onCancel={() => {
+          setDescModal(false);
+          setRowData(null);
+        }}
+        footer={false}
+      >
+        <div className="px-8 py-10 max-w-4xl mx-auto max-h-[80vh] overflow-auto">
+          <div
+            className="prose prose-lg"
+            dangerouslySetInnerHTML={{ __html: rowData?.fullDescription }}
+          ></div>
+        </div>
       </Modal>
     </>
   );

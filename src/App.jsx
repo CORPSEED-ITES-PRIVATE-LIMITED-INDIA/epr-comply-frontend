@@ -18,6 +18,7 @@ import Rating from "./admin/rating/Rating";
 import BlogDetail from "./blog/BlogDetail";
 import Enquiry from "./admin/enquiry/Enquiry";
 import ServiceTableOfContentss from "./admin/service/ServiceTableOfContentss";
+import ServiceFAQS from "./admin/service/ServiceFAQS";
 
 const App = () => {
   return (
@@ -64,7 +65,7 @@ const App = () => {
             }
           />
           <Route
-            path="category/:categoryId/subcategory/:subcategoryId/services"
+            path="services"
             element={
               <ProtectedRoute>
                 <Services />
@@ -72,10 +73,18 @@ const App = () => {
             }
           />
           <Route
-            path="category/:categoryId/subcategory/:subcategoryId/services/:serviceId/detail"
+            path="services/:serviceId/detail"
             element={
               <ProtectedRoute>
                 <ServiceTableOfContentss />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="services/:serviceId/faqs"
+            element={
+              <ProtectedRoute>
+                <ServiceFAQS />
               </ProtectedRoute>
             }
           />
