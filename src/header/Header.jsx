@@ -40,7 +40,7 @@ const Header = () => {
       return;
     }
 
-    const rect = navRefs.current[item]?.getBoundingClientRect();
+    const rect = navRefs?.current[item]?.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
 
     const dropdownWidth = 900;
@@ -91,7 +91,7 @@ const Header = () => {
 
             <div className="flex items-center justify-end gap-4">
               <nav className="hidden lg:flex items-center gap-8 relative">
-                {["Services", "Blogs"].map((item) => (
+                {["Services", "Blogs"]?.map((item) => (
                   <div
                     key={item}
                     ref={(el) => (navRefs.current[item] = el)}
@@ -136,7 +136,7 @@ const Header = () => {
                     <div className="w-1/3 border-r border-gray-200 overflow-y-auto py-4">
                       {formatMegaMenu(serviceList, blogList)[
                         openMenu
-                      ].categories.map((cat, index) => (
+                      ]?.categories?.map((cat, index) => (
                         <div
                           key={index}
                           className={`px-4 py-3 cursor-pointer font-medium ${
@@ -146,7 +146,7 @@ const Header = () => {
                           }`}
                           onMouseEnter={() => setActiveCategoryIndex(index)}
                         >
-                          {cat.title}
+                          {cat?.title}
                         </div>
                       ))}
                     </div>
@@ -154,7 +154,7 @@ const Header = () => {
                     <div className="w-2/3 p-6 overflow-y-auto grid grid-cols-3 gap-4">
                       {formatMegaMenu(serviceList, blogList)[
                         openMenu
-                      ].categories[activeCategoryIndex].items.map((sub, i) => (
+                      ]?.categories[activeCategoryIndex]?.items?.map((sub, i) => (
                         <Link
                           to={
                             sub?.type === "service"

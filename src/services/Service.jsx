@@ -1,10 +1,20 @@
 import { BsShieldCheck, BsWhatsapp } from "react-icons/bs";
 import bgImg from "../assets/serviceimg.jpg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ServiceTableOfContent from "./ServiceTableOfContent";
 import EnquiryForm from "../components/EnquiryForm";
+import { useDispatch, useSelector } from "react-redux";
+import { getServiceDetailById } from "../toolkit/slices/serviceSlice";
+import { useParams } from "react-router-dom";
 
 const Service = () => {
+  const { serviceId } = useParams();
+  const dispatch = useDispatch();
+  const serviceDetail = useSelector((state) => state.service.serviceDetail);
+
+  useEffect(() => {
+    dispatch(getServiceDetailById(serviceId));
+  }, [dispatch, serviceId]);
 
   return (
     <>
@@ -20,13 +30,11 @@ const Service = () => {
             {/* LEFT SECTION */}
             <div className="w-full">
               <h1 className="text-xl sm:text-4xl font-bold text-white leading-snug break-words">
-                Udyam (MSME) Registration <br className="hidden sm:block" />{" "}
-                Online in India
+                {serviceDetail?.title}
               </h1>
 
               <p className="text-white mt-4 text-sm sm:text-lg break-words hyphens-auto">
-                Register your Micro, Small & Medium Enterprise (MSME) easily to
-                avail of government benefits and subsidies.
+                {serviceDetail?.shortDescription}
               </p>
 
               <ul className="mt-6 space-y-3">
@@ -114,6 +122,7 @@ const Service = () => {
           </div>
         </div>
       </section>
+      <section>{serviceDetail?.fullDescription}</section>
       <ServiceTableOfContent />
     </>
   );

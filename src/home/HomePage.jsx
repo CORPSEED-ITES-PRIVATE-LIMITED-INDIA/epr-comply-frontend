@@ -145,7 +145,7 @@ const HomePage = () => {
         {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto text-center text-white px-5">
           {/* Main Heading */}
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 leading-snug md:leading-tight">
             Revolutionize Sustainability Confidently with Reliable EPR Solutions{" "}
           </h2>
 

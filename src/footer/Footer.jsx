@@ -55,7 +55,7 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-4">Services</h3>
           <ul className="space-y-2 text-gray-400">
-            {serviceList?.slice(0,5)?.map((item, idx) => (
+            {serviceList?.slice(0, 5)?.map((item, idx) => (
               <li
                 key={`${idx}service`}
                 className="hover:text-white cursor-pointer"
@@ -122,10 +122,14 @@ const Footer = () => {
 
           {/* Copyright */}
           <div className="text-center">
-            © 2022 Solatec, All Rights Reserved.
-            <span className="text-green-500 hover:text-green-400 cursor-pointer">
-              epr comply.com
-            </span>
+            © 2025 EPR Comply, All Rights Reserved.
+            <a
+              href="https://www.eprcomply.com"
+              target="_blank"
+              className="text-green-500 hover:text-green-400 cursor-pointer"
+            >
+              eprcomply.com
+            </a>
           </div>
         </div>
       </div>

@@ -65,9 +65,6 @@ const ServiceFAQS = () => {
     },
   });
 
-  console.log("kfugkugu", serviceSchema);
-  console.log("kfugkugu 1111", getValues());
-
   const handleDelete = (rowData) => {
     dispatch(deleteServiceFaqs({ id: rowData?.id, userId }))
       .then((resp) => {

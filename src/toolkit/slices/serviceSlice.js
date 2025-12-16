@@ -160,7 +160,7 @@ export const addService = createAsyncThunk(
 
 export const updateService = createAsyncThunk(
   "updateService",
-  async ({ id, userId, data },{rejectWithValue}) => {
+  async ({ id, userId, data }, { rejectWithValue }) => {
     try {
       const response = await api.put(
         `/api/services/${id}?userId=${userId}`,
@@ -190,6 +190,18 @@ export const getAllServices = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get(`/api/services`);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data?.message);
+    }
+  }
+);
+
+export const getServiceDetailById = createAsyncThunk(
+  "getServiceDetailById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/services/${id}`);
       return response.data;
     } catch (err) {
       return rejectWithValue(err?.response?.data?.message);
@@ -321,6 +333,7 @@ const serviceSlice = createSlice({
     allServiceList: [],
     serviceTableOfContentList: [],
     serviceFaqsList: [],
+    serviceDetail:{}
   },
   extraReducers: (builder) => {
     builder.addCase(getAllCategories.pending, (state) => {
@@ -392,6 +405,17 @@ const serviceSlice = createSlice({
       state.serviceFaqsList = action.payload;
     });
     builder.addCase(getAllServiceFAQS.rejected, (state) => {
+      state.loading = "rejected";
+    });
+
+    builder.addCase(getServiceDetailById.pending, (state) => {
+      state.loading = "pending";
+    });
+    builder.addCase(getServiceDetailById.fulfilled, (state, action) => {
+      state.loading = "success";
+      state.serviceDetail = action.payload;
+    });
+    builder.addCase(getServiceDetailById.rejected, (state) => {
       state.loading = "rejected";
     });
   },
