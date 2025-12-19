@@ -116,6 +116,7 @@ const Rating = () => {
               description: "Service has been updated successfully !.",
               status: "success",
             });
+            reset()
             setOpenModal(false);
             setRowData(null);
             dispatch(getAllRating());
@@ -143,6 +144,7 @@ const Rating = () => {
               description: "Blog has been added successfully.",
               status: "success",
             });
+            reset()
             setOpenModal(false);
             dispatch(getAllRating());
           } else {

@@ -98,6 +98,7 @@ const ServiceTableOfContentss = () => {
       displayOrder: item.displayOrder,
       displayStatus: item.displayStatus,
     });
+    setOpenModal(true);
   };
 
   const onSubmit = (e) => {
@@ -119,6 +120,7 @@ const ServiceTableOfContentss = () => {
             });
             setOpenModal(false);
             setRowData(null);
+            setFormData(initialForm);
             dispatch(getServiceTableContentList({ serviceId }));
           } else {
             showToast({
@@ -146,6 +148,7 @@ const ServiceTableOfContentss = () => {
             });
             setOpenModal(false);
             dispatch(getServiceTableContentList({ serviceId }));
+            setFormData(initialForm);
           } else {
             showToast({
               title: resp?.payload?.status,

@@ -168,6 +168,7 @@ const Services = () => {
             });
             setOpenModal(false);
             setRowData(null);
+            setFormData(initialData);
             dispatch(getServiceListBySubCategoryId(subcategoryId));
           } else {
             showToast({
@@ -194,6 +195,7 @@ const Services = () => {
               status: "success",
             });
             setOpenModal(false);
+            setFormData(initialData);
             dispatch(getServiceListBySubCategoryId(subcategoryId));
           } else {
             showToast({

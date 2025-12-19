@@ -102,7 +102,6 @@ const Category = () => {
   };
 
   const handleEdit = (rowItem) => {
-    console.log("dfjbhjdfhjdfg", rowItem);
     reset({
       name: rowItem?.name,
       slug: rowItem?.slug,
@@ -128,6 +127,7 @@ const Category = () => {
               description: "Category has been updated successfully !.",
               status: "success",
             });
+            reset()
             setOpenModal(false);
             setRowData(null);
             dispatch(getAllCategories());
@@ -155,6 +155,7 @@ const Category = () => {
               description: "Category has been added successfully.",
               status: "success",
             });
+            reset()
             setOpenModal(false);
             dispatch(getAllCategories());
           } else {

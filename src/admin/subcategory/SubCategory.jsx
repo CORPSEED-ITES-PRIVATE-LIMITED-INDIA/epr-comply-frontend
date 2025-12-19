@@ -122,6 +122,7 @@ const Category = () => {
               description: "Subcategory has been updated successfully !.",
               status: "success",
             });
+            reset()
             setOpenModal(false);
             setRowData(null);
             dispatch(getAllSubCategoriesByCategoryId(categoryId));
@@ -149,6 +150,7 @@ const Category = () => {
               description: "Subcategory has been added successfully.",
               status: "success",
             });
+            reset()
             setOpenModal(false);
             dispatch(getAllSubCategoriesByCategoryId(categoryId));
           } else {

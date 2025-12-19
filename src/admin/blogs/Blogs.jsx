@@ -160,6 +160,7 @@ const Blogs = () => {
               description: "Service has been updated successfully !.",
               status: "success",
             });
+            setFormData(initialForm);
             setOpenModal(false);
             setRowData(null);
             dispatch(getBlogList(userId));
@@ -187,6 +188,7 @@ const Blogs = () => {
               description: "Blog has been added successfully.",
               status: "success",
             });
+            setFormData(initialForm);
             setOpenModal(false);
             dispatch(getBlogList(userId));
           } else {

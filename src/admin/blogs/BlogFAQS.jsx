@@ -122,6 +122,7 @@ const BlogFAQS = () => {
             setOpenModal(false);
             setRowData(null);
             dispatch(getBlogFaqsList(blogId));
+            setFormData(initialForm);
           } else {
             showToast({
               title: resp?.payload?.status,
@@ -148,6 +149,7 @@ const BlogFAQS = () => {
             });
             setOpenModal(false);
             dispatch(getBlogFaqsList(blogId));
+            setFormData(initialForm);
           } else {
             showToast({
               title: resp?.payload?.status,
