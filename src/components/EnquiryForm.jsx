@@ -19,7 +19,7 @@ const schema = z.object({
     .string()
     .min(10, "Mobile number must be at least 10 digits")
     .max(10, "Mobile number must be 10 digits"),
-  state: z.string().min(1, "State is required"),
+  city: z.string().min(1, "City is required"),
   location: z.string().min(1, "Location is required"),
   whatsappUpdates: z.boolean().optional(),
 });
@@ -45,7 +45,7 @@ const EnquiryForm = () => {
       name: "",
       email: "",
       mobile: "",
-      state: "",
+      city: "",
       location: "",
       whatsappUpdates: true,
     },
@@ -153,8 +153,8 @@ const EnquiryForm = () => {
           <>
             <Input placeholder="Enter city" {...field} />
 
-            {errors.state && (
-              <p className="text-red-500 text-sm">{errors.state.message}</p>
+            {errors.city && (
+              <p className="text-red-500 text-sm">{errors.city.message}</p>
             )}
           </>
         )}
