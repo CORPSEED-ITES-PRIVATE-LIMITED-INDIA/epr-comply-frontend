@@ -3,7 +3,7 @@ import Table from "../../components/Table";
 import Button from "../../components/Button";
 import Modal from "../../components/Modal";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useToast } from "../../components/ToastProvider";
 import dayjs from "dayjs";
 import Input from "../../components/Input";
@@ -214,11 +214,6 @@ const Blogs = () => {
       render: (value, record) => <p className="font-medium">{value}</p>,
     },
     {
-      title: "Meta title",
-      dataIndex: "metaTitle",
-      render: (value) => <p className="text-wrap">{value}</p>,
-    },
-    {
       title: "Slug",
       dataIndex: "slug",
     },
@@ -226,16 +221,6 @@ const Blogs = () => {
       title: "Post date",
       dataIndex: "postDate",
       render: (value) => <p>{dayjs(value).format("DD-MM-YYYY")}</p>,
-    },
-    {
-      title: "Meta description",
-      dataIndex: "metaDescription",
-      render: (value) => <p className="text-wrap">{value}</p>,
-    },
-    {
-      title: "Meta keywords",
-      dataIndex: "metaKeyword",
-      render: (value) => <p className="text-wrap">{value}</p>,
     },
     {
       title: "Description",
@@ -263,9 +248,10 @@ const Blogs = () => {
               setOpenDropdowns((prev) => ({ ...prev, [record.id]: open }))
             }
             items={[
-              { key: 1, label: "edit", onClick: () => handleEdit(record) },
+              { key: 1, label: <Link to={`${record.id}/blogFaq`}>FAQ's</Link> },
+              { key: 2, label: "edit", onClick: () => handleEdit(record) },
               {
-                key: 2,
+                key: 3,
                 label: (
                   <PopConfirm
                     title="Are you sure you want to delete?"

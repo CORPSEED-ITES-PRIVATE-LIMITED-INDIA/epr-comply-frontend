@@ -28,7 +28,7 @@ const BlogFAQS = () => {
   const { userId, blogId } = useParams();
   const { showToast } = useToast();
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.service.serviceFaqsList);
+  const data = useSelector((state) => state.blogs.blogFaqList);
   const [search, setSearch] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [openDropdowns, setOpenDropdowns] = useState({});
@@ -60,10 +60,8 @@ const BlogFAQS = () => {
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.question.trim()) newErrors.question = "Question is required";
-
-    if (!formData.answer.trim()) newErrors.answer = "description is required";
+    if (!formData.title.trim()) newErrors.title = "Title is required";
+    if (!formData.description.trim()) newErrors.description = "Description is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -99,9 +97,8 @@ const BlogFAQS = () => {
   const handleEdit = (item) => {
     setRowData(item);
     setFormData({
-      question: item.question,
-      answer: item.answer,
-      displayOrder: Number(item.displayOrder || 0),
+      title: item.title,
+      description: item.description,
       displayStatus: Number(item.displayStatus || 1),
     });
     setOpenModal(true);
@@ -110,7 +107,7 @@ const BlogFAQS = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-    const payload = { ...formData, serviceId };
+    const payload = { ...formData };
     if (rowData) {
       dispatch(
         updateBlogFAQS({ faqId: rowData?.id, blogId, userId, data: payload })
@@ -172,12 +169,12 @@ const BlogFAQS = () => {
   const dummyColumns = [
     {
       title: "Question",
-      dataIndex: "question",
+      dataIndex: "title",
       render: (value, record) => <p className="font-medium">{value}</p>,
     },
     {
-      title: "Answer",
-      dataIndex: "answer",
+      title: "Description",
+      dataIndex: "description",
       render: (value, record) => (
         <Button
           onClick={() => {
@@ -349,7 +346,7 @@ const BlogFAQS = () => {
         <div className="px-8 py-10 max-w-4xl mx-auto max-h-[80vh] overflow-auto">
           <div
             className="prose prose-lg"
-            dangerouslySetInnerHTML={{ __html: rowData?.answer }}
+            dangerouslySetInnerHTML={{ __html: rowData?.description }}
           ></div>
         </div>
       </Modal>

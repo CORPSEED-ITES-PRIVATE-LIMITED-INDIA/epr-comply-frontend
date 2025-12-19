@@ -145,7 +145,7 @@ const Header = () => {
         {openMenu && (
           <div
             className="hidden lg:flex fixed top-[88px] left-1/2 -translate-x-1/2
-                       w-[55vw] h-[400px] bg-white border border-gray-200 rounded-2xl shadow-xl z-[9999]"
+                       w-[65vw] h-[400px] bg-white border border-gray-200 rounded-2xl shadow-xl z-[9999]"
             onMouseEnter={() => setOpenMenu(openMenu)}
             onMouseLeave={() => setOpenMenu(null)}
           >

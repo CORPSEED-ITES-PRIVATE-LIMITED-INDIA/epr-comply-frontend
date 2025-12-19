@@ -44,11 +44,11 @@ const BlogFAQS = () => {
                   {/* QUESTION */}
                   <button
                     onClick={() => toggleFaq(index)}
-                    className="w-full flex justify-between items-center px-5 py-4
+                    className="w-full flex justify-between items-center px-3 py-2
                              text-left cursor-pointer focus:outline-none"
                   >
                     <span className="text-gray-800 font-medium text-sm sm:text-base">
-                      {faq.question}
+                      {faq.title}
                     </span>
 
                     <span
@@ -67,7 +67,10 @@ const BlogFAQS = () => {
                     }`}
                   >
                     <div className="px-5 pb-4 text-gray-600 text-sm sm:text-base leading-relaxed">
-                      {faq.answer}
+                      <div
+                      className="prose prose-lg"
+                      dangerouslySetInnerHTML={{ __html: faq.description }}
+                    ></div>
                     </div>
                   </div>
                 </div>

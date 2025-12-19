@@ -220,11 +220,6 @@ const Services = () => {
       render: (value, record) => <p className="font-medium">{value}</p>,
     },
     {
-      title: "Meta title",
-      dataIndex: "metaTitle",
-      render: (value) => <p className="text-wrap">{value}</p>,
-    },
-    {
       title: "Slug",
       dataIndex: "slug",
     },
@@ -232,16 +227,6 @@ const Services = () => {
       title: "Post date",
       dataIndex: "postDate",
       render: (value) => <p>{dayjs(value).format("DD-MM-YYYY")}</p>,
-    },
-    {
-      title: "Meta description",
-      dataIndex: "metaDescription",
-      render: (value) => <p className="text-wrap">{value}</p>,
-    },
-    {
-      title: "Meta keywords",
-      dataIndex: "metaKeyword",
-      render: (value) => <p className="text-wrap">{value}</p>,
     },
     {
       title: "Description",
@@ -326,7 +311,7 @@ const Services = () => {
             columns={dummyColumns}
             dataSource={filteredData}
             topContent={topContent}
-            scroll={{ y: "78vh", x: 1200 }}
+            className="w-full"
           />
         </>
       ) : (

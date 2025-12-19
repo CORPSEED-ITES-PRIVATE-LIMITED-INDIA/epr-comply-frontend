@@ -4,6 +4,7 @@ import { getClientBlogDetailBySlug } from "../toolkit/slices/blogSlice";
 import { useParams } from "react-router-dom";
 import img from "../assets/service2.jpg";
 import BlogFAQS from "./BlogFAQS";
+import EnquiryForm from "../components/EnquiryForm";
 
 const BlogDetail = () => {
   const { blogSlug } = useParams();
@@ -12,7 +13,7 @@ const BlogDetail = () => {
 
   useEffect(() => {
     dispatch(getClientBlogDetailBySlug(blogSlug));
-  }, [dispatch,blogSlug]);
+  }, [dispatch, blogSlug]);
 
   return (
     <div className="w-full">
@@ -45,25 +46,7 @@ const BlogDetail = () => {
 
         {/* Right Enquiry Form */}
         <div className="w-[30%] bg-white shadow-md rounded-xl p-6 ">
-          <h2 className="text-xl font-semibold mb-4">Enquiry Form</h2>
-
-          <form className="flex flex-col space-y-4">
-            <input className="p-3 rounded" placeholder="Your Name" />
-            <input className="p-3 rounded" placeholder="Email Address" />
-            <input className="p-3 rounded" placeholder="Phone Number" />
-            <textarea
-              className="p-3 rounded"
-              rows="4"
-              placeholder="Message"
-            ></textarea>
-
-            <button
-              className="bg-blue-600 text-white p-3 rounded font-semibold hover:bg-blue-700 cursor-pointer"
-              type="submit"
-            >
-              Submit
-            </button>
-          </form>
+          <EnquiryForm />
         </div>
       </div>
 

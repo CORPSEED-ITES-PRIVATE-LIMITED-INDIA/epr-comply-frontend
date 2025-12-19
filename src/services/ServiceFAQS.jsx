@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { getClientServiceFAQS } from "../toolkit/slices/serviceSlice";
 
 const faqs = [
   {
@@ -24,11 +27,18 @@ const faqs = [
 ];
 
 const ServiceFAQS = () => {
+  const dispatch = useDispatch();
+  const { serviceSlug } = useParams();
+  const faqs = useSelector((state) => state.service.clientServiceFAQSList);
   const [openIndex, setOpenIndex] = useState(null);
 
   const toggleFaq = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
+
+  useEffect(() => {
+    dispatch(getClientServiceFAQS(serviceSlug));
+  }, [dispatch, serviceSlug]);
 
   return (
     <section className="w-full bg-gray-50 py-12 sm:py-16">
@@ -56,7 +66,7 @@ const ServiceFAQS = () => {
                 {/* QUESTION */}
                 <button
                   onClick={() => toggleFaq(index)}
-                  className="w-full flex justify-between items-center px-5 py-4
+                  className="w-full flex justify-between items-center px-3 py-2
                              text-left cursor-pointer focus:outline-none"
                 >
                   <span className="text-gray-800 font-medium text-sm sm:text-base">
@@ -78,8 +88,11 @@ const ServiceFAQS = () => {
                     isOpen ? "max-h-40 sm:max-h-32" : "max-h-0"
                   }`}
                 >
-                  <div className="px-5 pb-4 text-gray-600 text-sm sm:text-base leading-relaxed">
-                    {faq.answer}
+                  <div className="px-3 pb-2 text-gray-600 text-sm sm:text-base leading-relaxed">
+                    <div
+                      className="prose prose-lg"
+                      dangerouslySetInnerHTML={{ __html: faq.answer }}
+                    ></div>
                   </div>
                 </div>
               </div>

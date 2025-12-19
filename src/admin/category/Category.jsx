@@ -203,16 +203,6 @@ const Category = () => {
       render: (value) => <p>{dayjs(value).format("DD-MM-YYYY")}</p>,
     },
     {
-      title: "Meta description",
-      dataIndex: "metaDescription",
-      render: (value) => <p className="text-wrap">{value}</p>,
-    },
-    {
-      title: "Meta keywords",
-      dataIndex: "metaKeyword",
-      render: (value) => <p className="text-wrap">{value}</p>,
-    },
-    {
       title: "Search keywords",
       dataIndex: "searchKeywords",
       render: (value) => <p className="text-wrap">{value}</p>,
