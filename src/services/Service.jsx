@@ -5,6 +5,7 @@ import EnquiryForm from "../components/EnquiryForm";
 import { useDispatch, useSelector } from "react-redux";
 import { getClientServiceDetailBySlug } from "../toolkit/slices/serviceSlice";
 import { useParams } from "react-router-dom";
+import ServiceFAQS from "./ServiceFAQS";
 
 const Service = () => {
   const { serviceSlug } = useParams();
@@ -97,6 +98,7 @@ const Service = () => {
         />
       </section>
       <ServiceTableOfContent />
+      <ServiceFAQS/>
     </>
   );
 };

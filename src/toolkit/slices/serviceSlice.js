@@ -327,7 +327,7 @@ export const getClientServiceList = createAsyncThunk(
   "getClientServiceList",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/services`);
+      const response = await api.get(`/client/services`);
       return response.data;
     } catch (err) {
       return rejectWithValue(err?.response?.data?.message);
@@ -339,7 +339,22 @@ export const getClientServiceDetailBySlug = createAsyncThunk(
   "getClientServiceDetailBySlug",
   async (slug) => {
     try {
-      const response = await api.get(`/services/slug/${slug}`);
+      const response = await api.get(`/client/services/${slug}`);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data?.message);
+    }
+  }
+);
+
+
+export const getClientServiceTableContentList = createAsyncThunk(
+  "getClientServiceTableContentList",
+  async (slug, { rejectWithValue }) => {
+    try {
+      const response = await api.get(
+        `/client/services/${slug}/sections`
+      );
       return response.data;
     } catch (err) {
       return rejectWithValue(err?.response?.data?.message);
@@ -360,6 +375,7 @@ const serviceSlice = createSlice({
     serviceDetail: {},
     clientServiceList: [],
     clientServiceDetail: {},
+    clientServiceTableOfContentList: [],
   },
   extraReducers: (builder) => {
     builder.addCase(getAllCategories.pending, (state) => {
@@ -464,6 +480,17 @@ const serviceSlice = createSlice({
       state.clientServiceDetail = action.payload;
     });
     builder.addCase(getClientServiceDetailBySlug.rejected, (state) => {
+      state.loading = "rejected";
+    });
+
+    builder.addCase(getClientServiceTableContentList.pending, (state) => {
+      state.loading = "pending";
+    });
+    builder.addCase(getClientServiceTableContentList.fulfilled, (state, action) => {
+      state.loading = "success";
+      state.clientServiceTableOfContentList = action.payload;
+    });
+    builder.addCase(getClientServiceTableContentList.rejected, (state) => {
       state.loading = "rejected";
     });
   },

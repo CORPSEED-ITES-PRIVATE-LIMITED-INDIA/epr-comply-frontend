@@ -1,4 +1,3 @@
-import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomePage from "./home/HomePage";
 import Layout from "./Layout";
@@ -13,7 +12,6 @@ import Dashboard from "./admin/dashboard/Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import AboutUs from "./aboutus/AboutUs";
 import ContactUs from "./contactus/ContactUs";
-import Setting from "./admin/setting/Setting";
 import Rating from "./admin/rating/Rating";
 import BlogDetail from "./blog/BlogDetail";
 import Enquiry from "./admin/enquiry/Enquiry";
@@ -28,7 +26,7 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="/:serviceSlug" element={<Service />} />
-          <Route path="blog/:blogId/:blogSlug" element={<BlogDetail />} />
+          <Route path="/blog/:blogSlug" element={<BlogDetail />} />
           <Route path="aboutus" element={<AboutUs />} />
           <Route path="contactus" element={<ContactUs />} />
         </Route>

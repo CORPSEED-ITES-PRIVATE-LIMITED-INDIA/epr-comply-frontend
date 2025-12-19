@@ -1,17 +1,18 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getBlogDetailById } from "../toolkit/slices/blogSlice";
+import { getClientBlogDetailBySlug } from "../toolkit/slices/blogSlice";
 import { useParams } from "react-router-dom";
-import img from '../assets/service2.jpg'
+import img from "../assets/service2.jpg";
+import BlogFAQS from "./BlogFAQS";
 
 const BlogDetail = () => {
-  const { blogId } = useParams();
+  const { blogSlug } = useParams();
   const dispatch = useDispatch();
-  const blog = useSelector((state) => state.blogs.blogDetail);
+  const blog = useSelector((state) => state.blogs.clientBlogDetail);
 
   useEffect(() => {
-    dispatch(getBlogDetailById(blogId));
-  }, [dispatch]);
+    dispatch(getClientBlogDetailBySlug(blogSlug));
+  }, [dispatch,blogSlug]);
 
   return (
     <div className="w-full">
@@ -73,6 +74,9 @@ const BlogDetail = () => {
           dangerouslySetInnerHTML={{ __html: blog.description }}
         ></div>
       </div>
+
+      {/* ---------------- FAQ SECTION ---------------- */}
+      <BlogFAQS />
     </div>
   );
 };

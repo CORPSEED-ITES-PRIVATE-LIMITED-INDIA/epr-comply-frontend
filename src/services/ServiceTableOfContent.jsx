@@ -2,19 +2,19 @@ import { ArrowRight } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { getServiceTableContentList } from "../toolkit/slices/serviceSlice";
+import { getClientServiceTableContentList,  } from "../toolkit/slices/serviceSlice";
 
 const ServiceTableOfContent = () => {
   const dispatch = useDispatch();
-  const { serviceId } = useParams();
+  const { serviceSlug } = useParams();
   const services = useSelector(
-    (state) => state.service.serviceTableOfContentList
+    (state) => state.service.clientServiceTableOfContentList
   );
   const [active, setActive] = useState(services[0]);
 
   useEffect(() => {
-    dispatch(getServiceTableContentList({ serviceId }));
-  }, [dispatch]);
+    dispatch(getClientServiceTableContentList(serviceSlug));
+  }, [dispatch,serviceSlug]);
 
   return (
     <section className="py-16 bg-white">

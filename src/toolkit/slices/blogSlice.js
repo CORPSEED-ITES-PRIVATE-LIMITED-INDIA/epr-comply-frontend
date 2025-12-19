@@ -65,7 +65,7 @@ export const getClientBlogList = createAsyncThunk(
   "getClientBlogList",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/blogs`);
+      const response = await api.get(`/client/blogs`);
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response.data.message);
@@ -77,7 +77,7 @@ export const getClientBlogDetailBySlug = createAsyncThunk(
   "getClientBlogDetailBySlug",
   async (slug, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/blogs/${slug}`);
+      const response = await api.get(`/client/blogs/${slug}`);
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response.data.message);
@@ -102,10 +102,10 @@ export const addBlogFAQS = createAsyncThunk(
 
 export const updateBlogFAQS = createAsyncThunk(
   "updateBlogFAQS",
-  async ({ blogId, faqId , userId, data }, { rejectWithValue }) => {
+  async ({ blogId, faqId, userId, data }, { rejectWithValue }) => {
     try {
       const response = await api.put(
-        `/api/blogs/${blogId}/faqs/${faqId }?userId=${userId}`,
+        `/api/blogs/${blogId}/faqs/${faqId}?userId=${userId}`,
         data
       );
       return response.data;
@@ -141,6 +141,19 @@ export const getBlogFaqsList = createAsyncThunk(
   }
 );
 
+export const getClientBlogFAQSList = createAsyncThunk(
+  "getClientBlogFAQSList",
+  async (slug, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/client/blogs/${slug}/faqs`);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data.message);
+    }
+  }
+);
+
+
 const blogSlice = createSlice({
   name: "blogs",
   initialState: {
@@ -149,7 +162,8 @@ const blogSlice = createSlice({
     blogDetail: {},
     clientBlogList: [],
     clientBlogDetail: {},
-    blogFaqList:[]
+    blogFaqList: [],
+    clientBlogFAQList: []
   },
   extraReducers: (builder) => {
     builder.addCase(getBlogList.pending, (state) => {
@@ -204,6 +218,17 @@ const blogSlice = createSlice({
       state.blogFaqList = action.payload;
     });
     builder.addCase(getBlogFaqsList.rejected, (state) => {
+      state.loading = "error";
+    });
+
+    builder.addCase(getClientBlogFAQSList.pending, (state) => {
+      state.loading = "pending";
+    });
+    builder.addCase(getClientBlogFAQSList.fulfilled, (state, action) => {
+      state.loading = "success";
+      state.clientBlogFAQList = action.payload;
+    });
+    builder.addCase(getClientBlogFAQSList.rejected, (state) => {
       state.loading = "error";
     });
   },

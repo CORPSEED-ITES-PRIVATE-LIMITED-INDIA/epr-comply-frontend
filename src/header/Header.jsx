@@ -5,76 +5,63 @@ import { FiSearch, FiX } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
+const DROPDOWN_NAV_ITEMS = ["Services", "Blogs"];
+
 const Header = () => {
   const serviceList = useSelector((state) => state.service.clientServiceList);
   const blogList = useSelector((state) => state.blogs.clientBlogList);
+
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [openCategory, setOpenCategory] = useState(null);
+
+  // Desktop mega menu
   const [openMenu, setOpenMenu] = useState(null);
   const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
-  const [popoverPos, setPopoverPos] = useState({ left: 0, width: 900 });
+
+  // Search
   const [open, setOpen] = useState(false);
   const inputRef = useRef(null);
   const wrapperRef = useRef(null);
 
-  // Track nav item DOM nodes
-  const navRefs = useRef({});
+  const megaMenuData = formatMegaMenu(serviceList, blogList);
 
+  /* ---------------- SCROLL ---------------- */
   useEffect(() => {
-    const handleScroll = () => {
-      const isScrolled = window.scrollY > 20;
-      setScrolled((prev) => {
-        if (prev !== isScrolled) return isScrolled;
-        return prev;
-      });
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const handleNavHover = (item) => {
-    if (!formatMegaMenu(serviceList, blogList)[item]) {
-      setOpenMenu(null);
-      return;
-    }
-
-    const rect = navRefs?.current[item]?.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-
-    const dropdownWidth = 900;
-    let leftPos = centerX - dropdownWidth / 2;
-
-    // Avoid going outside screen edges
-    if (leftPos < 20) leftPos = 20;
-    if (leftPos + dropdownWidth > window.innerWidth - 20)
-      leftPos = window.innerWidth - dropdownWidth - 20;
-
-    setPopoverPos({
-      left: leftPos,
-      width: dropdownWidth,
-    });
-
-    setOpenMenu(item);
-    setActiveCategoryIndex(0);
-  };
-
+  /* ---------------- SEARCH OUTSIDE CLICK ---------------- */
   useEffect(() => {
-    function handleClick(e) {
+    const handleClick = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
         setOpen(false);
       }
-    }
+    };
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
   useEffect(() => {
-    if (open && inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (open && inputRef.current) inputRef.current.focus();
   }, [open]);
+
+  /* ---------------- NAV HOVER ---------------- */
+  const handleNavHover = (menu) => {
+    if (!DROPDOWN_NAV_ITEMS.includes(menu)) {
+      setOpenMenu(null);
+      return;
+    }
+
+    if (!megaMenuData[menu]) {
+      setOpenMenu(null);
+      return;
+    }
+
+    setOpenMenu(menu);
+    setActiveCategoryIndex(0);
+  };
 
   return (
     <>
@@ -84,199 +71,122 @@ const Header = () => {
         }`}
       >
         <div className="container mx-auto px-4">
-          <div className="w-full flex items-center justify-between py-4">
-            <Link href="/" alt="home_page">
-              <img src={logo} alt="logo" className="h-10 w-auto" />
+          <div className="flex items-center justify-between py-4">
+            {/* LOGO */}
+            <Link to="/">
+              <img src={logo} alt="logo" className="h-10" />
             </Link>
 
-            <div className="flex items-center justify-end gap-4">
-              <nav className="hidden lg:flex items-center gap-8 relative">
-                {["Services", "Blogs"]?.map((item) => (
-                  <div
-                    key={item}
-                    ref={(el) => (navRefs.current[item] = el)}
-                    className="relative"
-                    onMouseEnter={() => handleNavHover(item)}
-                  >
-                    <span className="cursor-pointer font-semibold hover:text-green-600 flex items-center gap-1">
-                      {item}
-                    </span>
-                  </div>
-                ))}
-                <div className="relative">
-                  <Link
-                    to="aboutus"
-                    className="cursor-pointer font-semibold hover:text-green-600 flex items-center gap-1"
-                  >
-                    About Us
-                  </Link>
-                </div>
-                <div className="relative">
-                  <Link
-                    to="contactus"
-                    className="cursor-pointer font-semibold hover:text-green-600 flex items-center gap-1"
-                  >
-                    Contact Us
-                  </Link>
-                </div>
+            {/* DESKTOP NAV */}
+            <nav className="hidden lg:flex items-center gap-8">
+              {DROPDOWN_NAV_ITEMS.map((menu) => (
+                <span
+                  key={menu}
+                  onMouseEnter={() => handleNavHover(menu)}
+                  className="cursor-pointer font-semibold hover:text-green-600"
+                >
+                  {menu}
+                </span>
+              ))}
 
-                {openMenu && (
-                  <div
-                    className="fixed top-20 bg-white shadow-xl rounded-2xl border border-gray-200 h-[400px] flex opacity-0 translate-y-2 transition-all duration-200 ease-out"
-                    style={{
-                      left: popoverPos.left,
-                      width: popoverPos.width,
-                      opacity: 1,
-                      transform: "translateY(0)",
-                    }}
-                    onMouseEnter={() => setOpenMenu(openMenu)}
-                    onMouseLeave={() => setOpenMenu(null)}
-                  >
-                    {/* LEFT SIDE TITLES */}
-                    <div className="w-1/3 border-r border-gray-200 overflow-y-auto py-4">
-                      {formatMegaMenu(serviceList, blogList)[
-                        openMenu
-                      ]?.categories?.map((cat, index) => (
-                        <div
-                          key={index}
-                          className={`px-4 py-3 cursor-pointer font-medium ${
-                            activeCategoryIndex === index
-                              ? "bg-orange-500 text-white"
-                              : "hover:bg-gray-100"
-                          }`}
-                          onMouseEnter={() => setActiveCategoryIndex(index)}
-                        >
-                          {cat?.title}
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="w-2/3 p-6 overflow-y-auto grid grid-cols-3 gap-4">
-                      {formatMegaMenu(serviceList, blogList)[
-                        openMenu
-                      ]?.categories[activeCategoryIndex]?.items?.map((sub, i) => (
-                        <Link
-                          to={
-                            sub?.type === "service"
-                              ? `/${sub?.slug}`
-                              : `blog/${sub?.id}/${sub?.slug}`
-                          }
-                          key={i}
-                          className="text-gray-700 hover:text-green-600"
-                        >
-                          {sub?.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </nav>
-
-              <button
-                className="lg:hidden text-3xl"
-                onClick={() => setDrawerOpen(true)}
+              <Link
+                to="/aboutus"
+                onMouseEnter={() => setOpenMenu(null)}
+                className="font-semibold hover:text-green-600"
               >
-                ☰
-              </button>
-            </div>
-            <div className="hidden lg:flex items-center">
+                About Us
+              </Link>
+
+              <Link
+                to="/contactus"
+                onMouseEnter={() => setOpenMenu(null)}
+                className="font-semibold hover:text-green-600"
+              >
+                Contact Us
+              </Link>
+            </nav>
+
+            {/* SEARCH */}
+            <div className="hidden lg:flex items-center gap-2">
               <FiSearch
                 size={20}
-                className="text-gray-700 cursor-pointer"
+                className="cursor-pointer"
                 onClick={() => setOpen(!open)}
               />
 
               <div
                 ref={wrapperRef}
-                className={`overflow-hidden transition-all duration-300 
-                ${open ? "w-44" : "w-0"}`}
+                className={`overflow-hidden transition-all duration-300 ${
+                  open ? "w-44" : "w-0"
+                }`}
               >
                 <input
                   ref={inputRef}
                   type="text"
                   placeholder="Search..."
-                  className={`border border-gray-300 rounded-full px-4 py-1 text-sm outline-none bg-white transition-all duration-300 ${
+                  className={`border rounded-full px-4 py-1 text-sm transition-all duration-300 ${
                     open ? "opacity-100" : "opacity-0"
                   }`}
-                  style={{
-                    width: open ? "100%" : "0px",
-                    paddingLeft: open ? "16px" : "0px",
-                    paddingRight: open ? "16px" : "0px",
-                  }}
                 />
               </div>
             </div>
+
+            {/* MOBILE BUTTON */}
+            <button
+              className="lg:hidden text-3xl"
+              onClick={() => setDrawerOpen(true)}
+            >
+              ☰
+            </button>
           </div>
         </div>
-      </header>
-      <div
-        className={`fixed top-0 right-0 h-full w-screen max-w-[320px] bg-white shadow-xl z-[99999] 
-  transition-transform duration-300 overflow-y-auto overflow-x-hidden
-  ${drawerOpen ? "translate-x-0" : "translate-x-full"}`}
-      >
-        <div className="flex items-center justify-between px-4 py-4 border-b">
-          <h2 className="text-xl font-bold text-green-600">Menu</h2>
 
-          <button
-            className="text-3xl text-gray-700"
-            onClick={() => setDrawerOpen(false)}
+        {/* COMMON MEGA DROPDOWN */}
+        {openMenu && (
+          <div
+            className="hidden lg:flex fixed top-[88px] left-1/2 -translate-x-1/2
+                       w-[55vw] h-[400px] bg-white border border-gray-200 rounded-2xl shadow-xl z-[9999]"
+            onMouseEnter={() => setOpenMenu(openMenu)}
+            onMouseLeave={() => setOpenMenu(null)}
           >
-            <FiX />
-          </button>
-        </div>
-
-        <div className="px-4 py-4 flex flex-col gap-3">
-          {Object.keys(formatMegaMenu(serviceList, blogList)).map((menu, i) => (
-            <div key={i}>
-              {/* PARENT ITEM */}
-              <div
-                className="flex justify-between items-center py-3 cursor-pointer border-b"
-                onClick={() =>
-                  setOpenCategory(openCategory === menu ? null : menu)
-                }
-              >
-                <span className="font-medium text-gray-800">{menu}</span>
-                <span className="text-green-600 font-bold">
-                  {openCategory === menu ? "−" : "+"}
-                </span>
-              </div>
-
-              {/* COLLAPSIBLE CHILDREN */}
-              {openCategory === menu && (
-                <div className="pl-4 py-2 flex flex-col gap-4">
-                  {formatMegaMenu(serviceList, blogList)[menu].categories.map(
-                    (cat, j) => (
-                      <div key={j}>
-                        <p className="text-green-600 font-semibold">
-                          {cat.title}
-                        </p>
-                        <ul className="pl-3 mt-1 flex flex-col gap-1">
-                          {cat.items.map((item, k) => (
-                            <li
-                              key={k}
-                              className="text-gray-600 hover:text-green-600 cursor-pointer"
-                            >
-                              <Link to={"service"}>{item}</Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )
-                  )}
+            {/* LEFT */}
+            <div className="w-1/3 border-r border-gray-200 overflow-y-auto py-4">
+              {megaMenuData[openMenu]?.categories?.map((cat, idx) => (
+                <div
+                  key={idx}
+                  onMouseEnter={() => setActiveCategoryIndex(idx)}
+                  className={`px-4 py-3 cursor-pointer font-medium ${
+                    activeCategoryIndex === idx
+                      ? "bg-orange-500 text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  {cat.title}
                 </div>
-              )}
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* BACKDROP */}
-      {drawerOpen && (
-        <div
-          onClick={() => setDrawerOpen(false)}
-          className="fixed inset-0 bg-black/40 z-40"
-        ></div>
-      )}
+            {/* RIGHT */}
+            <div className="w-2/3 p-6 grid grid-cols-3 gap-4 overflow-y-auto">
+              {megaMenuData[openMenu]?.categories[
+                activeCategoryIndex
+              ]?.items?.map((item, i) => (
+                <Link
+                  key={i}
+                  to={
+                    item?.type === "blog"
+                      ? `/blog/${item.slug}`
+                      : `/${item.slug}`
+                  }
+                  className="text-gray-700 hover:text-green-600"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </header>
     </>
   );
 };

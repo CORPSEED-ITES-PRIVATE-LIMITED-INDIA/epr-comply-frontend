@@ -326,7 +326,6 @@ const Services = () => {
             columns={dummyColumns}
             dataSource={filteredData}
             topContent={topContent}
-            className="w-full"
             scroll={{ y: "78vh", x: 1200 }}
           />
         </>
