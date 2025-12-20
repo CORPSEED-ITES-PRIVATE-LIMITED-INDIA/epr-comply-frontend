@@ -15,21 +15,21 @@ const ContactUs = () => {
           {/* LEFT SIDE - CONTACT INFO */}
           <div className="space-y-6">
             {/* Card 1 */}
-            <div className="bg-green-100 p-6 rounded-2xl shadow">
+            {/* <div className="bg-green-100 p-6 rounded-2xl shadow">
               <h2 className="text-xl font-semibold mb-3">📞 Call Us</h2>
               <p className="text-gray-700">+91 98765 43210</p>
               <p className="text-gray-700">+91 91234 56789</p>
-            </div>
+            </div> */}
 
             {/* Card 2 */}
-            <div className="bg-green-100 p-6 rounded-2xl shadow">
+            {/* <div className="bg-green-100 p-6 rounded-2xl shadow">
               <h2 className="text-xl font-semibold mb-3">📧 Email</h2>
               <p className="text-gray-700">support@yourcompany.com</p>
               <p className="text-gray-700">info@yourcompany.com</p>
-            </div>
+            </div> */}
 
             {/* Card 3 */}
-            <div className="bg-green-100 p-6 rounded-2xl shadow">
+            {/* <div className="bg-green-100 p-6 rounded-2xl shadow">
               <h2 className="text-xl font-semibold mb-3">📍 Offices</h2>
               <p className="text-gray-700 font-medium">Head Office</p>
               <p className="text-gray-500 text-sm">Delhi, India</p>
@@ -39,7 +39,7 @@ const ContactUs = () => {
 
               <p className="text-gray-700 font-medium mt-3">International</p>
               <p className="text-gray-500 text-sm">Dubai, UAE</p>
-            </div>
+            </div> */}
           </div>
 
           {/* RIGHT SIDE - ENQUIRY FORM */}
