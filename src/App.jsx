@@ -18,6 +18,7 @@ import Enquiry from "./admin/enquiry/Enquiry";
 import ServiceTableOfContentss from "./admin/service/ServiceTableOfContentss";
 import ServiceFAQS from "./admin/service/ServiceFAQS";
 import BlogFAQS from "./admin/blogs/BlogFAQS";
+import Reviews from "./admin/reviews/Reviews";
 
 const App = () => {
   return (
@@ -116,6 +117,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <Enquiry />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="reviews"
+            element={
+              <ProtectedRoute>
+                <Reviews />
               </ProtectedRoute>
             }
           />

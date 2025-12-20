@@ -18,12 +18,15 @@ import glassdoor from "../assets/glassdoorIcon.png";
 import mouthshut from "../assets/moutshutlogoIcon.png";
 import { BsShieldCheck } from "react-icons/bs";
 import Rating45 from "../components/Rating45";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const images = [frontImage, img1, img2, img3];
 
 const HomePage = () => {
-  const [index, setIndex] = useState(0);
   const scrollRef = useRef(null);
+  const serviceList = useSelector((state) => state.service.clientServiceList);
+  const [index, setIndex] = useState(0);
   const [isDown, setIsDown] = useState(false);
   const startXRef = useRef(0);
   const startScrollRef = useRef(0);
@@ -174,21 +177,15 @@ const HomePage = () => {
 
           {/* Tags */}
           <div className="flex flex-wrap justify-center gap-3 mb-10 w-full">
-            {[
-              "EPR Compliance for Plastic Waste",
-              "EPR Registration",
-              "EPR Registration for Battery Waste",
-              "EPR Registration for Used Tyres",
-              "EPR Compliance for Plastic Waste",
-              "CPCB EPR Credits",
-            ].map((item, index) => (
-              <span
-                key={index}
-                className="px-4 py-2 bg-white/10 rounded-full border border-white/20 text-[12px] hover:bg-white/20 cursor-pointer"
-              >
-                {item}
-              </span>
-            ))}
+            {serviceList?.length > 0 &&
+              serviceList.slice(0, 6).map((item, index) => (
+                <span
+                  key={index}
+                  className="px-4 py-2 bg-white/10 rounded-full border border-white/20 text-[12px] hover:bg-white/20 cursor-pointer"
+                >
+                  {item?.title}
+                </span>
+              ))}
           </div>
 
           {/* Ratings Row */}
@@ -201,7 +198,7 @@ const HomePage = () => {
               </div>
               <div className="flex items-center gap-1.5">
                 <Rating45 />
-                <p className="text-gray-300 text-sm">(1,284)</p>
+                <p className="text-gray-300 text-sm">(284)</p>
               </div>
             </div>
 
@@ -213,7 +210,7 @@ const HomePage = () => {
               </div>
               <div className="flex items-center gap-1.5">
                 <Rating45 />
-                <p className="text-gray-300 text-sm">(1,204)</p>
+                <p className="text-gray-300 text-sm">(1,04)</p>
               </div>
             </div>
 
@@ -225,7 +222,7 @@ const HomePage = () => {
               </div>
               <div className="flex items-center gap-1.5">
                 <Rating45 />
-                <p className="text-gray-300 text-sm">(1,084)</p>
+                <p className="text-gray-300 text-sm">(384)</p>
               </div>
             </div>
           </div>
@@ -240,21 +237,21 @@ const HomePage = () => {
                   ),
                 },
                 {
-                  text: "MCA Experts",
+                  text: "Experts",
                   icon: (
-                    <span className="text-green-700 font-medium">500+ </span>
+                    <span className="text-green-700 font-medium">100+ </span>
                   ),
                 },
                 {
                   text: " Reviews",
                   icon: (
-                    <span className="text-green-700 font-medium">10,000+</span>
+                    <span className="text-green-700 font-medium">1,000+</span>
                   ),
                 },
                 {
                   text: " Monthly Clients",
                   icon: (
-                    <span className="text-green-700 font-medium">2500+ </span>
+                    <span className="text-green-700 font-medium">500+ </span>
                   ),
                 },
                 { text: "Serving India Nationwide" },
@@ -370,19 +367,27 @@ const HomePage = () => {
             "
             style={{ touchAction: "pan-y" }}
           >
-            {[...cards, ...cards].map((item, index) => (
-              <div
-                key={index}
-                className="min-w-[280px] bg-white text-black rounded-xl p-6 shadow"
-              >
-                <img src={item.img} className="w-12 mb-3" alt="" />
-                <h3 className="font-semibold text-lg">{item.title}</h3>
-                <p className="text-gray-600 mt-2">{item.text}</p>
-                <div className="mt-4 text-green-600">
-                  <FiArrowRight />
-                </div>
-              </div>
-            ))}
+            {serviceList?.length > 0 &&
+              serviceList?.map((item, index) => (
+                <Link key={index} to={`${item?.slug}`}>
+                  <div className="min-w-[280px] h-[200px] bg-white text-black rounded-xl p-6 shadow flex flex-col">
+                    <img src={item.img} className="w-12 mb-3" alt="" />
+
+                    <h3 className="font-semibold text-lg mb-2 line-clamp-2">
+                      {item.title}
+                    </h3>
+
+                    <div
+                      className="line-clamp-3 prose max-w-none text-sm flex-1 overflow-hidden"
+                      dangerouslySetInnerHTML={{ __html: item.metaDescription }}
+                    />
+
+                    <div className="mt-4 text-green-600">
+                      <FiArrowRight />
+                    </div>
+                  </div>
+                </Link>
+              ))}
           </div>
         </div>
         <div className="bg-black text-white pt-20 pb-40">

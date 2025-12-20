@@ -18,7 +18,7 @@ import {
   updateBlog,
 } from "../../toolkit/slices/blogSlice";
 import {
-  getAllCategories,
+  getAllServices,
   getAllSubCategoriesByCategoryId,
   getServiceListBySubCategoryId,
 } from "../../toolkit/slices/serviceSlice";
@@ -35,7 +35,7 @@ const Blogs = () => {
   const data = useSelector((state) => state.blogs.blogList);
   const categoryList = useSelector((state) => state.service.categoryList);
   const subCategoryList = useSelector((state) => state.service.subcategoryList);
-  const serviceList = useSelector((state) => state.service.serviceList);
+  const serviceList = useSelector((state) => state.service.allServiceList);
   const [search, setSearch] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [descModal, setDescModal] = useState(false);
@@ -62,7 +62,7 @@ const Blogs = () => {
 
   useEffect(() => {
     dispatch(getBlogList(userId));
-    dispatch(getAllCategories());
+    dispatch(getAllServices());
   }, [dispatch, userId]);
 
   const filteredData = useMemo(() => {

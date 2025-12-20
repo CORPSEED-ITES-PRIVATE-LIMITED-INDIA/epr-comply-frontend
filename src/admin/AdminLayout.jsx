@@ -16,6 +16,7 @@ const AdminLayout = () => {
     { title: "Blogs", icon: "🧾", path: "blogs" },
     { title: "Rating", icon: <Star />, path: "rating" },
     { title: "Enquiry", icon: <List />, path: "enquiry" },
+    { title: "Reviews", icon: <List />, path: "reviews" },
   ];
 
   const handleLogout = () => {
