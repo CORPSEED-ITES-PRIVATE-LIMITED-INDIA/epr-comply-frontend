@@ -43,35 +43,6 @@ const BlogsCarousel = () => {
     });
   }, []);
 
-  const blogs = [
-    {
-      img: img1,
-      category: "Oil & Gas, Insights",
-      author: "Mike Dooley",
-      date: "Jan 20, 2020",
-      title: "Filing Solar Power Permits In 2020? Important Factors",
-      desc: "All of these factors are important to consider...",
-    },
-    {
-      img: img2,
-      category: "Oil & Gas, Insights",
-      author: "Mike Dooley",
-      date: "Jan 20, 2020",
-      title: "Filing Solar Power Permits In 2020? Important Factors",
-      desc: "Batteries are the most expensive part...",
-    },
-    {
-      img: img3,
-      category: "Oil & Gas, Insights",
-      author: "Mike Dooley",
-      date: "Jan 20, 2020",
-      title: "Filing Solar Power Permits In 2020? Important Factors",
-      desc: "Department of Energy has funded teams...",
-    },
-  ];
-
-  // duplicate for smooth infinite scroll
-  const infiniteBlogs = [...blogs, ...blogs];
 
   return (
     <section className="py-8 max-w-7xl mx-auto px-6">

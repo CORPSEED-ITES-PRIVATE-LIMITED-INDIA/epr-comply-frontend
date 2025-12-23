@@ -75,7 +75,7 @@ const EnquiryForm = () => {
   // ⭐ FORM SUBMIT
   // --------------------
   const onSubmit = (data) => {
-    dispatch(addEnquiry())
+    dispatch(addEnquiry(data))
       .then((resp) => {
         if (resp.meta.requestStatus === "fulfilled") {
           showToast({
@@ -83,6 +83,7 @@ const EnquiryForm = () => {
             description: "Enquiry has been added successfully !.",
             status: "success",
           });
+          setLocationValue("");
           reset();
         } else {
           showToast({

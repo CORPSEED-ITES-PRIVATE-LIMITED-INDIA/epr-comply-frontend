@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getClientBlogDetailBySlug } from "../toolkit/slices/blogSlice";
 import { useParams } from "react-router-dom";
@@ -12,6 +12,7 @@ const BlogDetail = () => {
   const blog = useSelector((state) => state.blogs.clientBlogDetail);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     dispatch(getClientBlogDetailBySlug(blogSlug));
   }, [dispatch, blogSlug]);
 

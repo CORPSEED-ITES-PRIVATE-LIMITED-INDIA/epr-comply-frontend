@@ -3,11 +3,13 @@ import logo from "../assets/logo.png";
 import { formatMegaMenu } from "../navData";
 import { FiSearch, FiX } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { globalSearch } from "../toolkit/slices/settingSlice";
 
 const DROPDOWN_NAV_ITEMS = ["Services", "Blogs"];
 
 const Header = () => {
+  const dispatch = useDispatch();
   const serviceList = useSelector((state) => state.service.clientServiceList);
   const blogList = useSelector((state) => state.blogs.clientBlogList);
 
@@ -20,6 +22,13 @@ const Header = () => {
 
   // Search
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const [results, setResults] = useState({
+    blogs: [],
+    services: [],
+  });
   const inputRef = useRef(null);
   const wrapperRef = useRef(null);
 
@@ -62,6 +71,35 @@ const Header = () => {
     setOpenMenu(menu);
     setActiveCategoryIndex(0);
   };
+
+  useEffect(() => {
+    if (!query) return;
+
+    const timer = setTimeout(async () => {
+      // CALL API HERE
+      const res = await dispatch(globalSearch(query)).unwrap();
+
+      console.log("Search Results:", res);
+      setResults({
+        blogs: res.blogs || [],
+        services: res.services || [],
+      });
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (!e.target.closest(".mega-search")) {
+        setShowDropdown(false);
+        setQuery("");
+      }
+    };
+
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, []);
 
   return (
     <>
@@ -107,26 +145,29 @@ const Header = () => {
             </nav>
 
             {/* SEARCH */}
-            <div className="hidden lg:flex items-center gap-2">
-              <FiSearch
-                size={20}
-                className="cursor-pointer"
-                onClick={() => setOpen(!open)}
-              />
-
+            <div className="hidden lg:flex items-center relative">
               <div
-                ref={wrapperRef}
-                className={`overflow-hidden transition-all duration-300 ${
-                  open ? "w-44" : "w-0"
-                }`}
+                className={`flex items-center border border-gray-200 rounded-full px-3 py-1 transition-all duration-300
+      ${open ? "max-w-[180px]" : "max-w-[36px]"}
+    `}
               >
+                <FiSearch
+                  size={18}
+                  className="cursor-pointer shrink-0 text-gray-400"
+                  onClick={() => setOpen(true)}
+                />
+
                 <input
-                  ref={inputRef}
                   type="text"
                   placeholder="Search..."
-                  className={`border rounded-full px-4 py-1 text-sm transition-all duration-300 ${
-                    open ? "opacity-100" : "opacity-0"
-                  }`}
+                  className={`ml-2 bg-transparent outline-none text-sm transition-all duration-300
+        ${open ? "w-full opacity-100" : "w-0 opacity-0"}
+      `}
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setShowDropdown(e.target.value.length > 0);
+                  }}
                 />
               </div>
             </div>
@@ -187,6 +228,56 @@ const Header = () => {
           </div>
         )}
       </header>
+
+      {showDropdown && (
+        <div className="fixed top-[72px] left-0 w-screen bg-white shadow-lg z-50">
+          <div className="max-w-7xl mx-auto px-6 py-6 grid grid-cols-2 gap-8">
+            {/* BLOGS COLUMN */}
+            <div>
+              <h3 className="text-sm font-semibold mb-3 text-gray-700">
+                Blogs
+              </h3>
+
+              {results.blogs.length === 0 ? (
+                <p className="text-sm text-gray-400">No blogs found</p>
+              ) : (
+                <ul className="space-y-2">
+                  {results.blogs.map((blog) => (
+                    <li
+                      key={blog.id}
+                      className="cursor-pointer text-sm px-2 py-1.5 rounded hover:bg-gray-100"
+                    >
+                      {blog.title}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* SERVICES COLUMN */}
+            <div>
+              <h3 className="text-sm font-semibold mb-3 text-gray-700">
+                Services
+              </h3>
+
+              {results.services.length === 0 ? (
+                <p className="text-sm text-gray-400">No services found</p>
+              ) : (
+                <ul className="space-y-2">
+                  {results.services.map((service) => (
+                    <li
+                      key={service.id}
+                      className="cursor-pointer text-sm px-2 py-1.5 rounded hover:bg-gray-100"
+                    >
+                      {service.title}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

@@ -133,6 +133,19 @@ export const deleteReview = createAsyncThunk(
   }
 );
 
+export const globalSearch = createAsyncThunk(
+  "globalSearch",
+  async (query, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/client/search?q=${query}`);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data.message);
+    }
+  }
+);
+
+
 const settingSlice = createSlice({
   name: "setting",
   initialState: {

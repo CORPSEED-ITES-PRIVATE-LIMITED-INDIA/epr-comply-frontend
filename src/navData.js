@@ -110,6 +110,28 @@ export function formatMegaMenu(servicesData, blogsData) {
   };
 }
 
+export const groupServicesByCategory = (data = []) => {
+  console.log("Grouping services by category:", data);
+  return data.reduce((acc, item) => {
+    if (!acc[item.categoryId]) {
+      acc[item.categoryId] = {
+        categoryName: item.categoryName,
+        categorySlug: item.categorySlug,
+        services: [],
+      };
+    }
+
+    acc[item.categoryId].services.push({
+      id: item.id,
+      title: item.title,
+      slug: item.slug,
+    });
+
+    return acc;
+  }, {});
+};
+
+
 export const cards = [
   {
     img: "/icons/save-money.png",

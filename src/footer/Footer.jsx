@@ -9,9 +9,17 @@ import {
 import { FaFilePdf } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { groupServicesByCategory } from "../navData";
 
 const Footer = () => {
-  const serviceList = useSelector((state) => state.service.allServiceList);
+  const serviceList = useSelector((state) => state.service.clientServiceList);
+  const [servicesByCategory, setServicesByCategory] = React.useState({});
+
+  React.useEffect(() => {
+    const groupedServices = groupServicesByCategory(serviceList);
+    setServicesByCategory(groupedServices);
+  }, [serviceList]);
+
   return (
     <footer className="bg-[#0e0e0e] text-white pt-16 pb-10">
       {/* TOP FOOTER */}
@@ -52,21 +60,26 @@ const Footer = () => {
         </div>
 
         {/* Services */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4">Services</h3>
-          <ul className="space-y-2 text-gray-400">
-            {serviceList?.slice(0, 5)?.map((item, idx) => (
-              <li
-                key={`${idx}service`}
-                className="hover:text-white cursor-pointer"
-              >
-                <Link to={`service/${item?.id}/${item?.slug}`}>
-                  {item?.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {Object.values(servicesByCategory).map(
+          (category, catIdx) => (
+            <div key={catIdx}>
+              <h3 className="text-lg font-semibold mb-4 text-white">
+                {category.categoryName}
+              </h3>
+
+              <ul className="space-y-2 text-gray-400">
+                {category.services.map((service) => (
+                  <li
+                    key={service.id}
+                    className="hover:text-white cursor-pointer"
+                  >
+                    <Link to={`/service/${service.slug}`}>{service.title}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        )}
 
         {/* Support */}
         {/* <div>

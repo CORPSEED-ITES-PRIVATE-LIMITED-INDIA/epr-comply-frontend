@@ -15,6 +15,7 @@ const Service = () => {
   );
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     dispatch(getClientServiceDetailBySlug(serviceSlug));
   }, [dispatch, serviceSlug]);
 
@@ -98,7 +99,7 @@ const Service = () => {
         />
       </section>
       <ServiceTableOfContent />
-      <ServiceFAQS/>
+      <ServiceFAQS />
     </>
   );
 };

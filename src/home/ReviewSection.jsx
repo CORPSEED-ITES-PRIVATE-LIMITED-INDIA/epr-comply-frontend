@@ -1,30 +1,20 @@
-import React from "react";
+import React, { use, useEffect } from "react";
 import { FaQuoteLeft, FaStar } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllReviews } from "../toolkit/slices/settingSlice";
 
 const ReviewSection = () => {
-  const reviews = [
-    {
-      title: "Perfect Choice!!",
-      rating: 5,
-      text: "They Were Fantastic Through The Entire Purchase Process. I Had Lots Of Questions And They Were Patient. My System Arrived It Was Well Packed And Shipping With Xpo.",
-      name: "Ahmed Abdallah",
-      role: "Front End Developer",
-      img: "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQPAQfc03o7FiZ1xqlgnOkGHXNh5sjm8hB72Z0a5XSENQExW1mn",
-    },
-    {
-      title: "Excellent!!",
-      rating: 5,
-      text: "They Helped Lead Me Through The Process Of System Selection, Site Layout And Placing My Order. They Were Very Knowledgeable And Has Provided Guidance Each Step.",
-      name: "John Peter",
-      role: "Pro systems",
-      img: "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcS1rDH_nWadT1GXFPomdutqV1PUMA8uXIWS2Js5_fq4pJ1lwG16",
-    },
-  ];
+  const dispatch = useDispatch();
+  const reviews = useSelector((state) => state.setting.reviewList);
+
+  useEffect(() => {
+    dispatch(getAllReviews());
+  }, [dispatch]);
 
   return (
     <section className="max-w-7xl mx-auto px-4 pb-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-14">
-        {reviews.map((review, i) => (
+        {reviews?.length > 0 && reviews?.slice(0, 5)?.map((review, i) => (
           <div key={i} className="space-y-6">
             {/* Icon & rating */}
             <div className="flex items-center gap-3">
@@ -41,22 +31,25 @@ const ReviewSection = () => {
 
             {/* Title */}
             <h3 className="text-lg font-semibold text-green-600">
-              {review.title}
+              {review.serviceTitle}
             </h3>
 
             {/* Text */}
-            <p className="text-gray-700 leading-relaxed">{review.text}</p>
+            <div
+              className="text-gray-700 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: review.reviewMessage }}
+            ></div>
 
             {/* Profile */}
             <div className="flex items-center gap-4">
               <img
-                src={review.img}
+                src={review.customerPhoto}
                 alt="user"
                 className="w-14 h-14 rounded-full object-cover border"
               />
               <div>
-                <h4 className="text-lg font-semibold">{review.name}</h4>
-                <p className="text-sm text-gray-500">{review.role}</p>
+                <h4 className="text-lg font-semibold">{review.customerName}</h4>
+                <p className="text-sm text-gray-500">{review.customerDesignation}</p>
               </div>
             </div>
           </div>
