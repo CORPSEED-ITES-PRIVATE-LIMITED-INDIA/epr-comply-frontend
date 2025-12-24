@@ -19,6 +19,20 @@ const Service = () => {
     dispatch(getClientServiceDetailBySlug(serviceSlug));
   }, [dispatch, serviceSlug]);
 
+  // Add this inside your Service component
+  useEffect(() => {
+    if (serviceDetail?.metaTitle) {
+      document.title = serviceDetail.metaTitle;
+    } else if (serviceDetail?.title) {
+      document.title = serviceDetail.title;
+    }
+
+    // Optional: Reset title when leaving the page
+    return () => {
+      document.title = "EPR Comply";
+    };
+  }, [serviceDetail]);
+
   return (
     <>
       <section className="bg-gradient-to-br from-[#0E1F3A] via-[#1B3A6B] to-[#0E1F3A]">

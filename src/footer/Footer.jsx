@@ -73,7 +73,7 @@ const Footer = () => {
                     key={service.id}
                     className="hover:text-white cursor-pointer"
                   >
-                    <Link to={`/service/${service.slug}`}>{service.title}</Link>
+                    <Link to={`${service.slug}`}>{service.title}</Link>
                   </li>
                 ))}
               </ul>

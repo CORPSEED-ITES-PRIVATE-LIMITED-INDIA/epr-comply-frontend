@@ -136,23 +136,20 @@ const HomePage = () => {
   return (
     <>
       <section className="relative w-full py-14 md:py-16 overflow-hidden">
-        {/* 🔥 Blurred Background Image */}
         <div
-          className="absolute inset-0 bg-cover bg-center blur-sm scale-105"
-          style={{ backgroundImage: `url(${images[index]})` }}
+          className="absolute inset-0 bg-cover bg-center scale-100"
+          style={{
+            backgroundImage: `url(${images[index]})`,
+            backgroundColor: "#0A3558",
+            backgroundAttachment: "fixed",
+          }}
         ></div>
-
-        {/* Dark Overlay */}
         <div className="absolute inset-0 bg-[#0A3558]/50"></div>
-
-        {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto text-center text-white px-5">
-          {/* Main Heading */}
           <h2 className="text-3xl md:text-5xl font-bold mb-4 leading-snug md:leading-tight">
             Revolutionize Sustainability Confidently with Reliable EPR Solutions{" "}
           </h2>
 
-          {/* Sub Text */}
           <p className="text-base md:text-lg text-gray-200 max-w-6xl mx-auto mb-10">
             Revolutionize your approach to EPR with solutions focused on
             compliance, circularity, and cost efficiency. Our end-to-end support
@@ -161,7 +158,6 @@ const HomePage = () => {
             savings.
           </p>
 
-          {/* Search Field */}
           <div className="flex justify-center mb-6">
             <div className="flex bg-white rounded-lg overflow-hidden shadow-lg w-full max-w-2xl">
               <input
@@ -175,22 +171,20 @@ const HomePage = () => {
             </div>
           </div>
 
-          {/* Tags */}
           <div className="flex flex-wrap justify-center gap-3 mb-10 w-full">
             {serviceList?.length > 0 &&
               serviceList.slice(0, 6).map((item, index) => (
-                <span
+                <Link
+                  to={`${item?.slug}`}
                   key={index}
                   className="px-4 py-2 bg-white/10 rounded-full border border-white/20 text-[12px] hover:bg-white/20 cursor-pointer"
                 >
                   {item?.title}
-                </span>
+                </Link>
               ))}
           </div>
 
-          {/* Ratings Row */}
           <div className="flex flex-wrap justify-center gap-10 mb-12">
-            {/* Google Rating */}
             <div className="flex flex-col items-center justify-center">
               <div className="flex items-center gap-1.5">
                 <img src={google} className="h-6 mb-1" alt="Google" />
@@ -202,7 +196,6 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Glassdoor Rating */}
             <div className="flex flex-col items-center justify-center">
               <div className="flex items-center gap-1.5">
                 <img src={glassdoor} className="h-6 mb-1" alt="Glassdoor" />
@@ -214,7 +207,6 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Trustpilot Rating */}
             <div className="flex flex-col items-center justify-center">
               <div className="flex items-center gap-1.5">
                 <img src={mouthshut} className="h-6 mb-1" alt="Trustpilot" />
