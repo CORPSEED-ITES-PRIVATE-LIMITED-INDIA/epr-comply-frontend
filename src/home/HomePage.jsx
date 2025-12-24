@@ -133,14 +133,35 @@ const HomePage = () => {
     if (!isDown) startAuto();
   };
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Filter logic
+  const filteredServices = serviceList?.filter((service) =>
+    service.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <section className="relative w-full py-14 md:py-16 overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center scale-100"
+          className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage: `url(${images[index]})`,
-            backgroundColor: "#0A3558",
+            filter: "blur(8px)",
+            transform: "scale(1.1)",
             backgroundAttachment: "fixed",
           }}
         ></div>
@@ -158,17 +179,48 @@ const HomePage = () => {
             savings.
           </p>
 
-          <div className="flex justify-center mb-6">
-            <div className="flex bg-white rounded-lg overflow-hidden shadow-lg w-full max-w-2xl">
+          <div className="flex justify-center mb-6 relative" ref={dropdownRef}>
+            <div className="flex bg-white rounded-lg overflow-hidden shadow-lg w-full max-w-2xl relative z-20">
               <input
                 type="text"
-                placeholder="EPR Registration for Plastic Waste"
-                className="flex-1 px-4 py-2 text-gray-800 focus:outline-none"
+                placeholder="Search for EPR Services..."
+                className="flex-1 px-4 py-3 text-gray-800 focus:outline-none"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setShowDropdown(true);
+                }}
+                onFocus={() => setShowDropdown(true)}
               />
-              <button className="bg-blue-600 px-6 text-white font-semibold hover:bg-blue-700 cursor-pointer">
+              <button className="bg-blue-600 px-6 text-white font-semibold hover:bg-blue-700 transition-colors">
                 Search
               </button>
             </div>
+
+            {/* Dropdown Results */}
+            {showDropdown && searchTerm.length > 0 && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 w-full max-w-2xl bg-white mt-1 rounded-lg shadow-2xl overflow-hidden z-50 border border-gray-200">
+                {filteredServices?.length > 0 ? (
+                  <ul className="max-h-60 overflow-y-auto">
+                    {filteredServices.map((service, idx) => (
+                      <li key={idx}>
+                        <Link
+                          to={`${service.slug}`}
+                          className="block px-4 py-3 text-left text-gray-800 hover:bg-blue-50 hover:text-blue-700 transition-colors border-b border-gray-100 last:border-none"
+                          onClick={() => setShowDropdown(false)}
+                        >
+                          <span className="font-medium">{service.title}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="px-4 py-3 text-gray-500 text-left">
+                    No services found
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="flex flex-wrap justify-center gap-3 mb-10 w-full">

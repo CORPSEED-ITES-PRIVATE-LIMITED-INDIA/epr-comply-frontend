@@ -18,6 +18,7 @@ import {
   getAllRating,
   updateRating,
 } from "../../toolkit/slices/settingSlice";
+import FileUploader from "../../components/FileUploader";
 
 const blogSchema = z.object({
   platform: z.string().nonempty("plateform name is required"),
@@ -116,7 +117,7 @@ const Rating = () => {
               description: "Service has been updated successfully !.",
               status: "success",
             });
-            reset()
+            reset();
             setOpenModal(false);
             setRowData(null);
             dispatch(getAllRating());
@@ -144,7 +145,7 @@ const Rating = () => {
               description: "Blog has been added successfully.",
               status: "success",
             });
-            reset()
+            reset();
             setOpenModal(false);
             dispatch(getAllRating());
           } else {
@@ -248,7 +249,11 @@ const Rating = () => {
         className="w-full"
       />
       <Modal
-        title={rowData ? "Update service" : "Create service"}
+        title={
+          rowData
+            ? "Update rating plateform details"
+            : "Add rating plateform details"
+        }
         open={openModal}
         width={"60%"}
         onCancel={() => setOpenModal(false)}
@@ -277,7 +282,7 @@ const Rating = () => {
               name="platformDisplayName"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter slug" />
+                <Input {...field} placeholder="Enter platform display name" />
               )}
             />
             {errors.platformDisplayName && (
@@ -308,7 +313,10 @@ const Rating = () => {
               name="iconUrl"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter review URL" />
+                <FileUploader
+                  value={field.value}
+                  onChange={(file) => field.onChange(file)}
+                />
               )}
             />
             {errors.iconUrl && (
