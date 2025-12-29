@@ -28,7 +28,7 @@ const BlogDetail = () => {
         }}
       >
         <h1 className="text-3xl font-bold drop-shadow-lg">{blog?.title}</h1>
-        <p className="text-lg opacity-90 drop-shadow-md">
+        <p className="text-lg opacity-90 drop-shadow-md mt-1.5">
           {blog?.metaDescription}
         </p>
       </div>

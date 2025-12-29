@@ -168,6 +168,7 @@ const Reviews = () => {
             columns={columns}
             dataSource={filteredData}
             topContent={topContent}
+            className="w-full"
           />
         </>
       ) : (
