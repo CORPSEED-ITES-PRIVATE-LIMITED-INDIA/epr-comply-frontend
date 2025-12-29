@@ -4,6 +4,7 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { logoutUser } from "../toolkit/slices/authSlice";
 import { useToast } from "../components/ToastProvider";
 import { FileSliders, Folder, Grid2x2, List, Star } from "lucide-react";
+import logo from "../assets/logo.png";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
@@ -55,7 +56,7 @@ const AdminLayout = () => {
         {/* Top Section */}
         <div>
           <div className="p-5">
-            <h1 className="text-xl font-semibold">Admin Panel</h1>
+             <img src={logo} alt="logo" className="h-10" />
           </div>
 
           <nav className="mt-4">

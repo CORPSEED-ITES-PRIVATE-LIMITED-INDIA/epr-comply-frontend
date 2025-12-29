@@ -237,8 +237,8 @@ const Reviews = () => {
               </label>
               <TextEditor
                 data={formData.reviewMessage}
-                onChange={(evt, editor) =>
-                  handleChange("reviewMessage", editor.getData())
+                onChange={(editorData) =>
+                  handleChange("reviewMessage", editorData)
                 }
               />
             </div>

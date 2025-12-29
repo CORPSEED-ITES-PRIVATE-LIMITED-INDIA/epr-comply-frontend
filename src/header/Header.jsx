@@ -78,8 +78,6 @@ const Header = () => {
     const timer = setTimeout(async () => {
       // CALL API HERE
       const res = await dispatch(globalSearch(query)).unwrap();
-
-      console.log("Search Results:", res);
       setResults({
         blogs: res.blogs || [],
         services: res.services || [],
@@ -186,7 +184,7 @@ const Header = () => {
         {openMenu && (
           <div
             className="hidden lg:flex fixed top-[88px] left-1/2 -translate-x-1/2
-                       w-[65vw] h-[400px] bg-white border border-gray-200 rounded-2xl shadow-xl z-[9999]"
+                       w-[75vw] h-[400px] bg-white border border-gray-200 rounded-2xl shadow-xl z-[9999]"
             onMouseEnter={() => setOpenMenu(openMenu)}
             onMouseLeave={() => setOpenMenu(null)}
           >
@@ -198,7 +196,7 @@ const Header = () => {
                   onMouseEnter={() => setActiveCategoryIndex(idx)}
                   className={`px-4 py-3 cursor-pointer font-medium ${
                     activeCategoryIndex === idx
-                      ? "bg-orange-500 text-white"
+                      ? "bg-[#006400] text-white"
                       : "hover:bg-gray-100"
                   }`}
                 >
@@ -208,7 +206,7 @@ const Header = () => {
             </div>
 
             {/* RIGHT */}
-            <div className="w-2/3 p-6 grid grid-cols-3 gap-4 overflow-y-auto">
+            <div className="w-2/3 flex flex-wrap gap-4 overflow-y-auto p-4">
               {megaMenuData[openMenu]?.categories[
                 activeCategoryIndex
               ]?.items?.map((item, i) => (
@@ -216,12 +214,13 @@ const Header = () => {
                   key={i}
                   to={
                     item?.type === "blog"
-                      ? `/blog/${item.slug}`
-                      : `/${item.slug}`
+                      ? `/blog/${item?.slug}`
+                      : `/${item?.slug}`
                   }
-                  className="text-gray-700 hover:text-green-600"
+                  className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:text-green-600 hover:bg-gray-100 transition whitespace-nowrap"
+                  style={{ flex: "0 0 calc(33.333% - 1rem)" }}
                 >
-                  {item.name}
+                  {item?.name}
                 </Link>
               ))}
             </div>

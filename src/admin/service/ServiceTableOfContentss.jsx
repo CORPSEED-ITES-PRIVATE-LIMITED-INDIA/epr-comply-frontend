@@ -309,8 +309,8 @@ const ServiceTableOfContentss = () => {
               <label>Description</label>
               <TextEditor
                 data={formData.description}
-                onChange={(prev, editor) =>
-                  handleChange("description", editor.getData())
+                onChange={(editorData) =>
+                  handleChange("description", editorData)
                 }
               />
             </div>

@@ -289,8 +289,8 @@ const ServiceFAQS = () => {
               </label>
               <TextEditor
                 data={formData.answer}
-                onChange={(prev, editor) =>
-                  handleChange("answer", editor.getData())
+                onChange={(editorData) =>
+                  handleChange("answer", editorData)
                 }
               />
               {errors.answer && (

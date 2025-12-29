@@ -23,6 +23,7 @@ import { ArrowLeft, EllipsisVertical } from "lucide-react";
 import FileUploader from "../../components/FileUploader";
 import TextEditor from "../../components/TextEditor";
 import { generateSlug } from "../../navData";
+import NewTextEditor from "../../components/NewTextEditor";
 
 const Services = () => {
   const { userId, categoryId, subcategoryId } = useParams();
@@ -407,8 +408,8 @@ const Services = () => {
               <label className="mb-1">Short Description</label>
               <TextEditor
                 data={formData.shortDescription}
-                onChange={(prev, editor) => {
-                  handleChange("shortDescription", editor.getData());
+                onChange={(editorData) => {
+                  handleChange("shortDescription", editorData);
                 }}
               />
             </div>
@@ -418,8 +419,8 @@ const Services = () => {
               <label className="mb-1">Full Description</label>
               <TextEditor
                 data={formData.fullDescription}
-                onChange={(prev, editor) => {
-                  handleChange("fullDescription", editor.getData());
+                onChange={(editorData) => {
+                  handleChange("fullDescription", editorData);
                 }}
               />
               {errors.fullDescription && (

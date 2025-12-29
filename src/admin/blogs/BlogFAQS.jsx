@@ -292,8 +292,8 @@ const BlogFAQS = () => {
               </label>
               <TextEditor
                 data={formData.description}
-                onChange={(prev, editor) =>
-                  handleChange("description", editor.getData())
+                onChange={(editorData) =>
+                  handleChange("description", editorData)
                 }
               />
               {errors.description && (

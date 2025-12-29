@@ -74,7 +74,7 @@ const ServiceTableOfContent = () => {
                   <div
                     key={item?.id}
                     id={`section-${item?.id}`}
-                    className="scroll-mt-24 pb-10 border-b border-gray-100 last:border-0"
+                    className="scroll-mt-16 pb-4 border-b border-gray-100 last:border-0"
                   >
                     <h2 className="text-3xl font-bold mb-6 text-gray-900">
                       {item?.title}

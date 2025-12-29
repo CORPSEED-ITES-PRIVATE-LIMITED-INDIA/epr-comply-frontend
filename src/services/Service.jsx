@@ -59,7 +59,7 @@ const Service = () => {
                   Limited Time Offer
                 </div>
 
-                <h2 className="text-center text-lg sm:text-2xl font-semibold text-gray-800 mb-6 break-words hyphens-auto pt-2 sm:pt-0">
+                <h2 className="text-center text-sm sm:text-xl font-medium text-gray-800 mb-6 break-words hyphens-auto pt-2 sm:pt-0">
                   Get Free Expert Consultation
                 </h2>
 

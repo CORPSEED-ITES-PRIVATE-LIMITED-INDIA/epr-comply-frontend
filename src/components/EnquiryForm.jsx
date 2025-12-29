@@ -9,15 +9,13 @@ import { useDispatch } from "react-redux";
 import { addEnquiry } from "../toolkit/slices/settingSlice";
 import { useToast } from "./ToastProvider";
 
-// --------------------
-// ⭐ ZOD VALIDATION SCHEMA
-// --------------------
+/* ---------------- ZOD SCHEMA ---------------- */
 const schema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email"),
   mobile: z
     .string()
-    .min(10, "Mobile number must be at least 10 digits")
+    .min(10, "Mobile number must be 10 digits")
     .max(10, "Mobile number must be 10 digits"),
   city: z.string().min(1, "City is required"),
   location: z.string().min(1, "Location is required"),
@@ -30,9 +28,6 @@ const EnquiryForm = () => {
   const [loading, setLoading] = useState(false);
   const [locationValue, setLocationValue] = useState("");
 
-  // --------------------
-  // ⭐ React Hook Form
-  // --------------------
   const {
     control,
     handleSubmit,
@@ -51,12 +46,9 @@ const EnquiryForm = () => {
     },
   });
 
-  // --------------------
-  // ⭐ GET USER LOCATION
-  // --------------------
+  /* -------- LOCATION -------- */
   const getLocation = () => {
     setLoading(true);
-
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const loc = `${pos.coords.latitude}, ${pos.coords.longitude}`;
@@ -71,20 +63,18 @@ const EnquiryForm = () => {
     );
   };
 
-  // --------------------
-  // ⭐ FORM SUBMIT
-  // --------------------
+  /* -------- SUBMIT -------- */
   const onSubmit = (data) => {
     dispatch(addEnquiry(data))
       .then((resp) => {
         if (resp.meta.requestStatus === "fulfilled") {
           showToast({
             title: "Success!",
-            description: "Enquiry has been added successfully !.",
+            description: "Enquiry submitted successfully.",
             status: "success",
           });
-          setLocationValue("");
           reset();
+          setLocationValue("");
         } else {
           showToast({
             title: resp?.payload?.status,
@@ -95,24 +85,24 @@ const EnquiryForm = () => {
       })
       .catch(() => {
         showToast({
-          title: "Something went wrong !.",
-          description: "Failed to delete blog.",
+          title: "Error",
+          description: "Something went wrong.",
           status: "error",
         });
       });
   };
 
   return (
-    <form className="space-y-1 sm:space-y-2" onSubmit={handleSubmit(onSubmit)}>
+    <form className="space-y-2" onSubmit={handleSubmit(onSubmit)}>
       {/* NAME */}
       <Controller
         name="name"
         control={control}
         render={({ field }) => (
           <>
-            <Input {...field} type="text" placeholder="Your Name" />
+            <Input {...field} placeholder="Your Name" className="h-9 text-sm px-3" />
             {errors.name && (
-              <p className="text-red-500 text-sm">{errors.name.message}</p>
+              <p className="text-red-500 text-xs">{errors.name.message}</p>
             )}
           </>
         )}
@@ -124,9 +114,9 @@ const EnquiryForm = () => {
         control={control}
         render={({ field }) => (
           <>
-            <Input {...field} type="email" placeholder="Email Address" />
+            <Input {...field} placeholder="Email Address" className="h-9 text-sm px-3" />
             {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email.message}</p>
+              <p className="text-red-500 text-xs">{errors.email.message}</p>
             )}
           </>
         )}
@@ -138,32 +128,29 @@ const EnquiryForm = () => {
         control={control}
         render={({ field }) => (
           <>
-            <Input {...field} type="text" placeholder="Mobile Number" />
+            <Input {...field} placeholder="Mobile Number" className="h-9 text-sm px-3" />
             {errors.mobile && (
-              <p className="text-red-500 text-sm">{errors.mobile.message}</p>
+              <p className="text-red-500 text-xs">{errors.mobile.message}</p>
             )}
           </>
         )}
       />
 
-      {/* STATE SELECT */}
+      {/* CITY */}
       <Controller
         name="city"
         control={control}
         render={({ field }) => (
           <>
-            <Input placeholder="Enter city" {...field} />
-
+            <Input {...field} placeholder="City" className="h-9 text-sm px-3" />
             {errors.city && (
-              <p className="text-red-500 text-sm">{errors.city.message}</p>
+              <p className="text-red-500 text-xs">{errors.city.message}</p>
             )}
           </>
         )}
       />
 
-      {/* LOCATION INPUT */}
-      {/* <label className="block text-sm font-semibold">Your Location</label> */}
-
+      {/* LOCATION */}
       <Controller
         name="location"
         control={control}
@@ -174,34 +161,29 @@ const EnquiryForm = () => {
                 {...field}
                 readOnly
                 value={locationValue}
-                placeholder="Click the icon to get your location"
+                placeholder="Get your location"
+                className="h-9 text-sm px-3 pr-8"
               />
-
               <button
                 type="button"
                 onClick={getLocation}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 cursor-pointer"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-600 cursor-pointer"
               >
-                {loading ? (
-                  <span className="animate-spin">⏳</span>
-                ) : (
-                  <MapPin size={20} />
-                )}
+                {loading ? "⏳" : <MapPin size={16} />}
               </button>
             </div>
-
             {errors.location && (
-              <p className="text-red-500 text-sm">{errors.location.message}</p>
+              <p className="text-red-500 text-xs">{errors.location.message}</p>
             )}
           </>
         )}
       />
 
-      {/* WHATSAPP UPDATES */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 text-xs sm:text-sm pt-1 sm:pt-2">
-        <div className="flex items-center gap-1 flex-1 min-w-0">
-          <span className="text-gray-700">Get Update on</span>
-          <BsWhatsapp color="green" className="w-4 h-4" />
+      {/* WHATSAPP */}
+      <div className="flex items-center justify-between text-xs pt-1">
+        <div className="flex items-center gap-1">
+          <span>Get updates on</span>
+          <BsWhatsapp className="text-green-600" size={14} />
           <span className="font-medium">WhatsApp</span>
         </div>
 
@@ -209,15 +191,15 @@ const EnquiryForm = () => {
           name="whatsappUpdates"
           control={control}
           render={({ field }) => (
-            <label className="relative inline-flex items-center cursor-pointer">
+            <label className="relative inline-flex cursor-pointer">
               <input
                 type="checkbox"
                 className="sr-only peer"
                 checked={field.value}
                 onChange={(e) => field.onChange(e.target.checked)}
               />
-              <div className="w-8 h-4 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-all"></div>
-              <div className="absolute left-0.5 top-0.5 w-3 h-3 bg-white rounded-full shadow-sm transform peer-checked:translate-x-3.5 transition-all"></div>
+              <div className="w-7 h-3.5 bg-gray-300 rounded-full peer-checked:bg-green-500" />
+              <div className="absolute left-0.5 top-0.5 w-2.5 h-2.5 bg-white rounded-full peer-checked:translate-x-3 transition-all" />
             </label>
           )}
         />
@@ -226,7 +208,7 @@ const EnquiryForm = () => {
       {/* SUBMIT */}
       <button
         type="submit"
-        className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 mt-4 rounded-lg transition text-sm sm:text-base cursor-pointer"
+        className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 mt-3 rounded-md text-sm cursor-pointer"
       >
         Submit
       </button>

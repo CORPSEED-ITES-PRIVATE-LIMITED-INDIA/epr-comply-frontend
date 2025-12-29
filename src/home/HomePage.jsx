@@ -3,9 +3,6 @@ import frontImage from "../assets/front_page.jpg";
 import img1 from "../assets/nature1.jfif";
 import img2 from "../assets/nature2.webp";
 import img3 from "../assets/nature3.jpg";
-import wind from "../assets/wind.jfif";
-import { cards } from "../navData";
-// import solarImg from "../assets/service2.jpg";
 import solarImg from "../assets/section1.jpg";
 import businessImg from "../assets/business.webp";
 import { FiArrowRight, FiCheck } from "react-icons/fi";
@@ -152,6 +149,10 @@ const HomePage = () => {
   const filteredServices = serviceList?.filter((service) =>
     service.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <>
