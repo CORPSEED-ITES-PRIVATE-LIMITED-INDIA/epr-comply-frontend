@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { api } from "../httpcommon";
 
-
 const FileUploader = ({
   value,
   onChange,
@@ -13,20 +12,19 @@ const FileUploader = ({
   const dropRef = useRef(null);
   const fileInputRef = useRef(null);
   const [files, setFiles] = useState([]);
-  const [statuses, setStatuses] = useState({}); // Track status for each file
-
-
+  const [statuses, setStatuses] = useState({});
   const allowedTypes = [
     "image/png",
     "image/jpeg",
     "image/jpg",
     "image/gif",
+    "image/webp",
     "application/pdf",
     "text/plain",
     "application/msword",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "application/vnd.ms-excel", // .xls & sometimes .csv
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     "text/csv",
     "application/csv",
   ];
@@ -208,10 +206,10 @@ const FileUploader = ({
             Object.values(statuses).includes("success")
               ? "Files uploaded. Add more or replace."
               : uploadingType === "multiple"
-                ? "or Drag & Drop Files Here, or Paste"
-                : files.length > 0 && statuses[0] === "success"
-                  ? "File uploaded. Click to replace."
-                  : "or Drag & Drop File Here, or Paste"}
+              ? "or Drag & Drop Files Here, or Paste"
+              : files.length > 0 && statuses[0] === "success"
+              ? "File uploaded. Click to replace."
+              : "or Drag & Drop File Here, or Paste"}
           </p>
         </div>
       </div>

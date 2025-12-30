@@ -483,12 +483,12 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
         .toolbar { display:flex; flex-wrap:wrap; gap:6px; padding:8px; background:#f8f8f8; }
         .toolbar button, select { cursor:pointer; padding:4px; }
         .editor-content { padding:16px; min-height:300px; }
-        .editor-content h1 { font-size: 2.2em; font-weight: 700; }
-        .editor-content h2 { font-size: 1.9em; font-weight: 700; }
-        .editor-content h3 { font-size: 1.6em; font-weight: 600; }
-        .editor-content h4 { font-size: 1.3em; font-weight: 600; }
-        .editor-content h5 { font-size: 1.1em; font-weight: 600; }
-        .editor-content h6 { font-size: 1em;   font-weight: 600; }
+        .editor-content h1 { font-size: 2.2em;}
+        .editor-content h2 { font-size: 1.9em;}
+        .editor-content h3 { font-size: 1.6em;}
+        .editor-content h4 { font-size: 1.3em;}
+        .editor-content h5 { font-size: 1.1em;}
+        .editor-content h6 { font-size: 1em;}
         .editor-content h1,
         .editor-content h2,
         .editor-content h3,

@@ -38,12 +38,12 @@ body {
   --ck-editor-height: 700px;
 }
 
-.tiptap-render h1 { font-size: 2.2em; font-weight: 700; }
-.tiptap-render h2 { font-size: 1.9em; font-weight: 700; }
-.tiptap-render h3 { font-size: 1.6em; font-weight: 600; }
-.tiptap-render h4 { font-size: 1.3em; font-weight: 600; }
-.tiptap-render h5 { font-size: 1.1em; font-weight: 600; }
-.tiptap-render h6 { font-size: 1em; font-weight: 600; }
+.tiptap-render h1 { font-size: 2.2em; }
+.tiptap-render h2 { font-size: 1.9em; }
+.tiptap-render h3 { font-size: 1.6em; }
+.tiptap-render h4 { font-size: 1.3em; }
+.tiptap-render h5 { font-size: 1.1em; }
+.tiptap-render h6 { font-size: 1em; }
 
 .tiptap-render ul {
   list-style: disc;
