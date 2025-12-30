@@ -40,8 +40,7 @@ const FontSize = TextStyle.extend({
     return {
       fontSize: {
         default: null,
-        parseHTML: (el) =>
-          el.style.fontSize && el.tagName === "P" ? el.style.fontSize : null,
+        parseHTML: (el) => (el.style.fontSize ? el.style.fontSize : null),
         renderHTML: (attrs) =>
           attrs.fontSize ? { style: `font-size:${attrs.fontSize}` } : {},
       },
@@ -102,13 +101,11 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
       onChange(html); // 🔥 send HTML to parent
     },
   });
-  useEffect(() => {
-    if (!editor) return;
 
-    if (data !== editor.getHTML()) {
-      editor.commands.setContent(data, false);
-    }
-  }, [data, editor]);
+  useEffect(() => {
+    if (!editor || !data) return;
+    editor.commands.setContent(data);
+  }, [editor]);
 
   if (!editor) return null;
 
@@ -233,12 +230,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
                 .setParagraph()
                 .run();
             } else {
-              editor
-                .chain()
-                .focus()
-                .unsetMark("textStyle") // 🔥 REQUIRED
-                .setHeading({ level }) // 🔥 DO NOT use toggle here
-                .run();
+              editor.chain().focus().setHeading({ level }).run();
             }
           }}
         >
@@ -421,7 +413,9 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
       </div>
 
       {/* EDITOR */}
-      <EditorContent editor={editor} className="editor-content" />
+      <div className="editor-workspace">
+        <EditorContent editor={editor} className="editor-content" />
+      </div>
 
       {menu && (
         <div className="context-menu" style={{ top: menu.y, left: menu.x }}>
@@ -557,22 +551,6 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
 };
 
 export default TextEditor;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import { useState, useEffect, useRef, useMemo } from "react";
 // import { CKEditor } from "@ckeditor/ckeditor5-react";

@@ -552,7 +552,7 @@ const Services = () => {
       >
         <div className="px-8 py-10 max-w-4xl mx-auto max-h-[80vh] overflow-auto">
           <div
-            className="prose prose-lg"
+            className="tiptap-render prose prose-lg"
             dangerouslySetInnerHTML={{ __html: rowData?.fullDescription }}
           ></div>
         </div>

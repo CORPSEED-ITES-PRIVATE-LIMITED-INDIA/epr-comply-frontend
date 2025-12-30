@@ -423,7 +423,7 @@ const HomePage = () => {
                     </h3>
 
                     <div
-                      className="line-clamp-3 prose max-w-none text-sm flex-1 overflow-hidden"
+                      className="tiptap-render line-clamp-3 prose max-w-none text-sm flex-1 overflow-hidden"
                       dangerouslySetInnerHTML={{ __html: item.metaDescription }}
                     />
 

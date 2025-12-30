@@ -53,7 +53,7 @@ const BlogDetail = () => {
       {/* ---------------- RICH TEXT HTML CONTENT ---------------- */}
       <div className="px-8 py-10 max-w-4xl mx-auto">
         <div
-          className="prose prose-lg text-left max-w-none"
+          className="tiptap-render prose prose-lg text-left max-w-none"
           dangerouslySetInnerHTML={{ __html: blog?.description }}
         />
       </div>

@@ -68,9 +68,9 @@ const BlogFAQS = () => {
                   >
                     <div className="px-5 pb-4 text-gray-600 text-sm sm:text-base leading-relaxed">
                       <div
-                      className="prose prose-lg"
-                      dangerouslySetInnerHTML={{ __html: faq.description }}
-                    ></div>
+                        className="tiptap-render prose prose-lg"
+                        dangerouslySetInnerHTML={{ __html: faq.description }}
+                      ></div>
                     </div>
                   </div>
                 </div>

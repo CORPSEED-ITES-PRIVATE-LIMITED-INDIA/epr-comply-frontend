@@ -44,7 +44,7 @@ const Service = () => {
                 {serviceDetail?.title}
               </h1>
               <div
-                className="text-white mt-4 text-sm sm:text-lg break-words hyphens-auto"
+                className="tiptap-render text-white mt-4 text-sm sm:text-lg break-words hyphens-auto"
                 dangerouslySetInnerHTML={{
                   __html: serviceDetail?.shortDescription,
                 }}
@@ -109,6 +109,7 @@ const Service = () => {
 
       <section>
         <div
+          className="tiptap-render"
           dangerouslySetInnerHTML={{ __html: serviceDetail?.fullDescription }}
         />
       </section>

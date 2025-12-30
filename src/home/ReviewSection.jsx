@@ -36,7 +36,7 @@ const ReviewSection = () => {
 
             {/* Text */}
             <div
-              className="text-gray-700 leading-relaxed"
+              className="tiptap-render text-gray-700 leading-relaxed"
               dangerouslySetInnerHTML={{ __html: review.reviewMessage }}
             ></div>
 

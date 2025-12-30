@@ -80,7 +80,7 @@ const ServiceTableOfContent = () => {
                       {item?.title}
                     </h2>
                     <div
-                      className="prose max-w-none text-gray-800 leading-relaxed prose-headings:text-green-800 prose-a:text-blue-600"
+                      className="tiptap-render prose max-w-none text-gray-800 leading-relaxed prose-headings:text-green-800 prose-a:text-blue-600"
                       dangerouslySetInnerHTML={{ __html: item?.description }}
                     ></div>
                   </div>

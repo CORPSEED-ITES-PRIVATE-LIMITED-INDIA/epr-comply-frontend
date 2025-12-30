@@ -68,7 +68,7 @@ const ServiceFAQS = () => {
                   >
                     <div className="px-3 pb-2 text-gray-600 text-sm sm:text-base leading-relaxed">
                       <div
-                        className="prose prose-lg"
+                        className="tiptap-render prose prose-lg"
                         dangerouslySetInnerHTML={{ __html: faq.answer }}
                       ></div>
                     </div>
