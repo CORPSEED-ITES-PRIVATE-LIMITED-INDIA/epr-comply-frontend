@@ -18,6 +18,7 @@ import {
   updateBlog,
 } from "../../toolkit/slices/blogSlice";
 import {
+  getAllCategories,
   getAllServices,
   getAllSubCategoriesByCategoryId,
   getServiceListBySubCategoryId,
@@ -63,6 +64,7 @@ const Blogs = () => {
   useEffect(() => {
     dispatch(getBlogList(userId));
     dispatch(getAllServices());
+    dispatch(getAllCategories());
   }, [dispatch, userId]);
 
   const filteredData = useMemo(() => {
@@ -92,8 +94,8 @@ const Blogs = () => {
 
     if (!formData.categoryId) newErrors.categoryId = "Category is required";
 
-    if (!formData.subcategoryId)
-      newErrors.subcategoryId = "Subcategory is required";
+    // if (!formData.subcategoryId)
+    //   newErrors.subcategoryId = "Subcategory is required";
 
     if (!formData.description || formData.description.trim() === "")
       newErrors.description = "Description is required";
@@ -412,7 +414,7 @@ const Blogs = () => {
             {/* Subcategory ID */}
             <div className="flex flex-col">
               <label className="mb-1">
-                Subcategory <Required />
+                Subcategory
               </label>
               <Select
                 value={formData.subcategoryId}

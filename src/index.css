@@ -130,3 +130,23 @@ body {
   outline: none;
 }
 
+.editor-content p {
+  margin: 0.5em 0;
+  min-height: 1em;
+}
+
+.editor-content a {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.editor-content a:hover {
+  opacity: 0.85;
+}
+
+.editor-workspace {
+  min-height: 100%;
+  cursor: text;
+}
+

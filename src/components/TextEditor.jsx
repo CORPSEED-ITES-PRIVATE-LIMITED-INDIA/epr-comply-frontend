@@ -13,6 +13,8 @@ import { Image } from "@tiptap/extension-image";
 import { Underline } from "@tiptap/extension-underline";
 import { TaskList } from "@tiptap/extension-task-list";
 import { TaskItem } from "@tiptap/extension-task-item";
+import { Extension } from "@tiptap/core";
+import { Link } from "@tiptap/extension-link";
 
 import {
   Bold,
@@ -32,6 +34,8 @@ import {
   Plus,
   Minus,
   ListChecks,
+  Link as LinkIcon,
+  Unlink,
 } from "lucide-react";
 
 /* ---------- FONT SIZE EXTENSION ---------- */
@@ -44,6 +48,55 @@ const FontSize = TextStyle.extend({
         renderHTML: (attrs) =>
           attrs.fontSize ? { style: `font-size:${attrs.fontSize}` } : {},
       },
+    };
+  },
+});
+
+
+const Indentation = Extension.create({
+  name: "indentation",
+  addGlobalAttributes() {
+    return [
+      {
+        types: ["paragraph", "heading"],
+        attributes: {
+          indent: {
+            default: 0,
+            renderHTML: (attrs) => {
+              if (!attrs.indent) return {};
+              return {
+                style: `margin-left: ${attrs.indent * 2}em`,
+              };
+            },
+            parseHTML: (el) => {
+              const margin = el.style.marginLeft;
+              return margin ? parseInt(margin) / 2 : 0;
+            },
+          },
+        },
+      },
+    ];
+  },
+
+  addCommands() {
+    return {
+      indent:
+        () =>
+        ({ chain }) =>
+          chain()
+            .updateAttributes("paragraph", {
+              indent: (attrs) => (attrs.indent || 0) + 1,
+            })
+            .run(),
+
+      outdent:
+        () =>
+        ({ chain }) =>
+          chain()
+            .updateAttributes("paragraph", {
+              indent: (attrs) => Math.max((attrs.indent || 0) - 1, 0),
+            })
+            .run(),
     };
   },
 });
@@ -80,7 +133,18 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           levels: [1, 2, 3, 4, 5, 6],
         },
       }),
+      Link.configure({
+        openOnClick: false, // prevents navigation inside editor
+        autolink: true, // auto-detect pasted links
+        linkOnPaste: true,
+        HTMLAttributes: {
+          rel: "noopener noreferrer",
+          target: "_blank",
+        },
+      }),
+
       Underline,
+      Indentation,
       TextStyle,
       FontSize,
       Color,
@@ -97,8 +161,9 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
     ],
     content: data,
     onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      onChange(html); // 🔥 send HTML to parent
+      let html = editor.getHTML();
+      html = html.replace(/<p><\/p>/g, "<p><br></p>");
+      onChange(html);
     },
   });
 
@@ -169,6 +234,12 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
         .run();
     }
   };
+
+  useEffect(() => {
+    if (editor && editor.isEmpty) {
+      editor.commands.setContent("<p></p>");
+    }
+  }, [editor]);
 
   return (
     <div className="editor-container">
@@ -410,10 +481,77 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
         >
           <ImageIcon size={16} />
         </button>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            editor.chain().focus().indent().run();
+          }}
+        >
+          ➡️
+        </button>
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            editor.chain().focus().outdent().run();
+          }}
+        >
+          ⬅️
+        </button>
+        {/* LINK */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+
+            const previousUrl = editor.getAttributes("link").href;
+            const url = window.prompt("Enter URL", previousUrl);
+
+            if (url === null) return;
+
+            if (url === "") {
+              editor.chain().focus().unsetLink().run();
+              return;
+            }
+
+            editor
+              .chain()
+              .focus()
+              .extendMarkRange("link")
+              .setLink({ href: url })
+              .run();
+          }}
+        >
+          <LinkIcon size={16} />
+        </button>
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            editor.chain().focus().unsetLink().run();
+          }}
+        >
+          <Unlink size={16} />
+        </button>
       </div>
 
       {/* EDITOR */}
-      <div className="editor-workspace">
+      <div
+        className="editor-workspace"
+        onClick={() => {
+          if (!editor) return;
+
+          // If editor is empty, place cursor at start
+          if (editor.isEmpty) {
+            editor.chain().focus().setTextSelection(1).run();
+          } else {
+            editor.commands.focus();
+          }
+        }}
+      >
         <EditorContent editor={editor} className="editor-content" />
       </div>
 
@@ -495,7 +633,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
         .editor-content h4,
         .editor-content h5,
         .editor-content h6 {margin: 0.67em 0;}
-        .ProseMirror:focus { outline:none;min-height:300px }
+        .ProseMirror:focus { outline:none;min-height:100% }
         .editor-content ul {
         list-style: disc;
         padding-left: 1.5rem;

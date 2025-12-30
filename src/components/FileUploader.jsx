@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { api } from "../httpcommon";
+import axios from "axios";
 
 const FileUploader = ({
   value,
@@ -35,8 +36,18 @@ const FileUploader = ({
     formData.append("file", selectedFile);
 
     try {
-      const response = await api.post(
-        "/leadService/api/v1/upload/uploadimageToFileSystem",
+      // const response = await api.post(
+      //   "/leadService/api/v1/upload/uploadimageToFileSystem",
+      //   formData,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
+
+      const response = await axios.post(
+        "https://erp.corpseed.com/leadService/api/v1/upload/uploadimageToFileSystem",
         formData,
         {
           headers: {
