@@ -45,6 +45,13 @@ body {
 .tiptap-render h5 { font-size: 1.1em; }
 .tiptap-render h6 { font-size: 1em; }
 
+.tiptap-render p {
+  margin: 0.5em 0;
+  min-height: 1em;
+  white-space: pre-wrap;
+}
+
+
 .tiptap-render ul {
   list-style: disc;
   padding-left: 1.5rem;
@@ -114,6 +121,17 @@ body {
   flex: 1;
   overflow-y: auto;
 }
+
+.tiptap-render {
+  display: flow-root; /* prevents margin collapse */
+}
+
+.editor-content p,
+.tiptap-render p {
+  margin: 0.5em 0;
+  min-height: 1em;
+}
+
 
 /* ACTUAL CONTENT */
 .editor-content {

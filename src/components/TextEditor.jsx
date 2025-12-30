@@ -52,7 +52,6 @@ const FontSize = TextStyle.extend({
   },
 });
 
-
 const Indentation = Extension.create({
   name: "indentation",
   addGlobalAttributes() {
@@ -162,7 +161,11 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
     content: data,
     onUpdate: ({ editor }) => {
       let html = editor.getHTML();
-      html = html.replace(/<p><\/p>/g, "<p><br></p>");
+
+      // Preserve empty lines EXACTLY
+      html = html.replace(/<p><\/p>/g, "<p>&nbsp;</p>");
+      html = html.replace(/<p><br><\/p>/g, "<p>&nbsp;</p>");
+
       onChange(html);
     },
   });
