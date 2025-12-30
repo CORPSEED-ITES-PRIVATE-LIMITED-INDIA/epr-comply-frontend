@@ -36,18 +36,8 @@ const FileUploader = ({
     formData.append("file", selectedFile);
 
     try {
-      // const response = await api.post(
-      //   "/leadService/api/v1/upload/uploadimageToFileSystem",
-      //   formData,
-      //   {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   }
-      // );
-
-      const response = await axios.post(
-        "https://erp.corpseed.com/leadService/api/v1/upload/uploadimageToFileSystem",
+      const response = await api.post(
+        "/leadService/api/v1/upload/uploadimageToFileSystem",
         formData,
         {
           headers: {
@@ -55,6 +45,16 @@ const FileUploader = ({
           },
         }
       );
+
+      // const response = await axios.post(
+      //   "https://erp.corpseed.com/leadService/api/v1/upload/uploadimageToFileSystem",
+      //   formData,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
 
       const url = response?.data;
       if (response?.status === 200 && url) {
