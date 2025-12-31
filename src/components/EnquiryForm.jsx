@@ -19,6 +19,7 @@ const schema = z.object({
     .max(10, "Mobile number must be 10 digits"),
   city: z.string().min(1, "City is required"),
   location: z.string().min(1, "Location is required"),
+  message: z.string().min(5, "Message is required"),
   whatsappUpdates: z.boolean().optional(),
 });
 
@@ -42,6 +43,7 @@ const EnquiryForm = () => {
       mobile: "",
       city: "",
       location: "",
+      message: "",
       whatsappUpdates: true,
     },
   });
@@ -94,6 +96,7 @@ const EnquiryForm = () => {
 
   return (
     <form className="space-y-2" onSubmit={handleSubmit(onSubmit)}>
+      
       {/* NAME */}
       <Controller
         name="name"
@@ -101,9 +104,7 @@ const EnquiryForm = () => {
         render={({ field }) => (
           <>
             <Input {...field} placeholder="Your Name" className="h-9 text-sm px-3" />
-            {errors.name && (
-              <p className="text-red-500 text-xs">{errors.name.message}</p>
-            )}
+            {errors.name && <p className="text-red-500 text-xs">{errors.name.message}</p>}
           </>
         )}
       />
@@ -115,9 +116,7 @@ const EnquiryForm = () => {
         render={({ field }) => (
           <>
             <Input {...field} placeholder="Email Address" className="h-9 text-sm px-3" />
-            {errors.email && (
-              <p className="text-red-500 text-xs">{errors.email.message}</p>
-            )}
+            {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
           </>
         )}
       />
@@ -129,9 +128,7 @@ const EnquiryForm = () => {
         render={({ field }) => (
           <>
             <Input {...field} placeholder="Mobile Number" className="h-9 text-sm px-3" />
-            {errors.mobile && (
-              <p className="text-red-500 text-xs">{errors.mobile.message}</p>
-            )}
+            {errors.mobile && <p className="text-red-500 text-xs">{errors.mobile.message}</p>}
           </>
         )}
       />
@@ -143,9 +140,7 @@ const EnquiryForm = () => {
         render={({ field }) => (
           <>
             <Input {...field} placeholder="City" className="h-9 text-sm px-3" />
-            {errors.city && (
-              <p className="text-red-500 text-xs">{errors.city.message}</p>
-            )}
+            {errors.city && <p className="text-red-500 text-xs">{errors.city.message}</p>}
           </>
         )}
       />
@@ -174,6 +169,36 @@ const EnquiryForm = () => {
             </div>
             {errors.location && (
               <p className="text-red-500 text-xs">{errors.location.message}</p>
+            )}
+          </>
+        )}
+      />
+
+      {/* MESSAGE */}
+      <Controller
+        name="message"
+        control={control}
+        render={({ field }) => (
+          <>
+            <textarea
+              {...field}
+              placeholder="Your Message"
+              rows={3}
+              className="
+                w-full
+                rounded-md
+                border
+                border-gray-300
+                px-3
+                py-2
+                text-sm
+                resize-none
+                outline-none
+                focus:border-green-500
+              "
+            />
+            {errors.message && (
+              <p className="text-red-500 text-xs">{errors.message.message}</p>
             )}
           </>
         )}
@@ -208,7 +233,18 @@ const EnquiryForm = () => {
       {/* SUBMIT */}
       <button
         type="submit"
-        className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 mt-3 rounded-md text-sm cursor-pointer"
+        className="
+          w-full
+          bg-green-600
+          hover:bg-green-700
+          text-white
+          font-semibold
+          py-2
+          mt-3
+          rounded-md
+          text-sm
+          cursor-pointer
+        "
       >
         Submit
       </button>

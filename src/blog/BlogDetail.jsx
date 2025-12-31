@@ -37,7 +37,7 @@ const BlogDetail = () => {
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-8 items-start">
           {/* Left Image */}
-          <div className="h-[360px] overflow-hidden rounded-2xl shadow-md">
+          <div className="h-[450px] overflow-hidden rounded-2xl shadow-md">
             <img
               src={blog?.image}
               alt="blog visual"
