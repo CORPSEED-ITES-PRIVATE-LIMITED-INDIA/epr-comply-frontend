@@ -196,7 +196,7 @@ const Header = () => {
             </div>
 
             {/* RIGHT */}
-            <div className="w-3/4 flex flex-wrap gap-4 overflow-y-auto p-4 items-start">
+            <div className="w-3/4 grid grid-cols-3 auto-rows-min items-start gap-x-6 gap-y-2 overflow-y-auto p-4">
               {megaMenuData[openMenu]?.categories[
                 activeCategoryIndex
               ]?.items?.map((item, i) => (
@@ -207,10 +207,8 @@ const Header = () => {
                       ? `/blog/${item?.slug}`
                       : `/${item?.slug}`
                   }
-                  className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:text-green-600 hover:bg-gray-100 transition text-left"
-                  style={{
-                    flex: "0 0 calc(33.333% - 1rem)",
-                  }}
+                  className="inline-flex items-start text-sm font-medium leading-snug text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-100
+        dark:hover:bg-gray-800 p-3 rounded-md transition-colors cursor-pointer "
                 >
                   {item?.name}
                 </Link>
