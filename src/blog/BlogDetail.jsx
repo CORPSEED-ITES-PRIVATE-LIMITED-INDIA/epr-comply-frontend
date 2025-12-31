@@ -40,7 +40,7 @@ const BlogDetail = () => {
           <div className="h-[450px] overflow-hidden rounded-2xl shadow-md">
             <img
               src={blog?.image}
-              alt="blog visual"
+              alt="blog visual" 
               className="w-full h-full object-cover"
             />
           </div>
