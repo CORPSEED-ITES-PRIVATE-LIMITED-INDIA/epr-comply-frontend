@@ -199,12 +199,12 @@ const FileUploader = ({
           </button>
           <p className="text-tiny text-gray-400">
             {uploadingType === "multiple" &&
-            files.length > 0 &&
-            Object.values(statuses).includes("success")
+            files?.length > 0 &&
+            Object?.values(statuses)?.includes("success")
               ? "Files uploaded. Add more or replace."
               : uploadingType === "multiple"
               ? "or Drag & Drop Files Here, or Paste"
-              : files.length > 0 && statuses[0] === "success"
+              : files?.length > 0 && statuses[0] === "success"
               ? "File uploaded. Click to replace."
               : "or Drag & Drop File Here, or Paste"}
           </p>
@@ -223,7 +223,7 @@ const FileUploader = ({
                     : "text-gray-800"
                 } text-tiny`}
               >
-                {file.name} ({Math.round(file.size / 1024)} KB)
+                {file?.name} ({Math.round(file?.size / 1024)} KB)
                 {statuses[index] === "success" && (
                   <>
                     {" "}
