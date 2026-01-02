@@ -36,25 +36,11 @@ const FileUploader = ({
     formData.append("file", selectedFile);
 
     try {
-      // const response = await api.post(
-      //   "/leadService/api/v1/upload/uploadimageToFileSystem",
-      //   formData,
-      //   {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   }
-      // );
-
-      const response = await axios.post(
-        "https://erp.corpseed.com/leadService/api/v1/upload/uploadimageToFileSystem",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await api.post("/api/images/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       const url = response?.data;
       if (response?.status === 200 && url) {
@@ -226,7 +212,7 @@ const FileUploader = ({
       </div>
       {errorMessage && <p className="text-red-500 text-xs">{errorMessage}</p>}
 
-      {files.length > 0 && (
+      {files?.length > 0 && (
         <div className="mt-4 flex flex-col gap-2">
           {files.map((file, index) => (
             <div key={index} className="flex items-center gap-2">
@@ -238,12 +224,14 @@ const FileUploader = ({
                 } text-tiny`}
               >
                 {file.name} ({Math.round(file.size / 1024)} KB)
-                {statuses[index] === "success" && value?.[index] && (
+                {statuses[index] === "success" && (
                   <>
                     {" "}
                     –{" "}
                     <a
-                      href={value[index]}
+                      href={
+                        uploadingType === "multiple" ? value?.[index] : value
+                      }
                       className="underline"
                       target="_blank"
                       rel="noreferrer"

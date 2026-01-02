@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import logo from "../assets/logo.png";
 import { formatMegaMenu } from "../navData";
 import { FiSearch, FiX } from "react-icons/fi";
@@ -32,11 +32,25 @@ const Header = () => {
   const inputRef = useRef(null);
   const wrapperRef = useRef(null);
 
-  const megaMenuData = formatMegaMenu(serviceList, blogList);
+  const megaMenuData = useMemo(() => {
+    return formatMegaMenu(serviceList, blogList);
+  }, [serviceList, blogList]);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    let ticking = false;
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 20);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -98,9 +112,9 @@ const Header = () => {
   return (
     <>
       <header
-        className={`w-full bg-white sticky top-0 z-[10000] ${
-          scrolled ? "shadow-md border-b border-gray-200" : ""
-        }`}
+        className={`w-full bg-white sticky top-0 z-[10000] transition-all duration-200
+    ${scrolled ? "border-b border-gray-200" : ""}
+  `}
       >
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between py-4">
@@ -269,4 +283,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default React.memo(Header);
