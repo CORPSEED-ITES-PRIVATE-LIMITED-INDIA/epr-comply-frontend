@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from "react";
 import { api } from "../httpcommon";
-import axios from "axios";
 
 const FileUploader = ({
   value,
@@ -45,7 +44,6 @@ const FileUploader = ({
       const url = response?.data;
       if (response?.status === 200 && url) {
         setStatuses((prev) => ({ ...prev, [index]: "success" }));
-        // Update the value array with the new URL
         onChange(uploadingType === "multiple" ? [...(value || []), url] : url);
       } else {
         console.warn("Unexpected response structure:", response?.data);
@@ -114,7 +112,7 @@ const FileUploader = ({
       files.length > 0 &&
       statuses[0] === "success"
     ) {
-      return; // Prevent clicking if single file is already uploaded successfully
+      return;
     }
     fileInputRef.current.click();
   };
@@ -124,7 +122,6 @@ const FileUploader = ({
     setStatuses((prev) => {
       const newStatuses = { ...prev };
       delete newStatuses[index];
-      // Reindex statuses
       const reindexedStatuses = {};
       Object.keys(newStatuses)
         .sort()
@@ -133,7 +130,6 @@ const FileUploader = ({
         });
       return reindexedStatuses;
     });
-    // Update value by removing the URL at the specific index
     if (uploadingType === "multiple") {
       const newValue = (value || []).filter((_, i) => i !== index);
       onChange(newValue.length > 0 ? newValue : []);
