@@ -60,20 +60,20 @@ const Footer = () => {
         </div>
 
         {/* Services */}
-        {Object.values(servicesByCategory).map(
+        {Object.values(servicesByCategory)?.map(
           (category, catIdx) => (
             <div key={catIdx}>
               <h3 className="text-lg font-semibold mb-4 text-white">
-                {category.categoryName}
+                {category?.categoryName}
               </h3>
 
               <ul className="space-y-2 text-gray-400">
-                {category.services.map((service) => (
+                {category?.services?.slice(0,5)?.map((service) => (
                   <li
-                    key={service.id}
+                    key={service?.id}
                     className="hover:text-white cursor-pointer"
                   >
-                    <Link to={`${service.slug}`}>{service.title}</Link>
+                    <Link to={`${service?.slug}`}>{service?.title}</Link>
                   </li>
                 ))}
               </ul>

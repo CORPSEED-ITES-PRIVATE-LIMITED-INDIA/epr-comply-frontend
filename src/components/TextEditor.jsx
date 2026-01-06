@@ -686,7 +686,39 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           background:none;
         }
         .context-menu button:hover { background:#eee; }
-      `}</style>
+
+        .editor-workspace {
+  height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.editor-content {
+  min-height: 100%;
+}
+
+.ProseMirror {
+  min-height: 100%;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.editor-content ul,
+.editor-content ol {
+  margin: 0.5rem 0;
+}
+
+.editor-content ul[data-type="taskList"] {
+  padding-left: 1.5rem;
+}
+
+.editor-content ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+`}</style>
     </div>
   );
 };

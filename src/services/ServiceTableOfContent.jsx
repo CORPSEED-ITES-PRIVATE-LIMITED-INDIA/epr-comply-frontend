@@ -68,23 +68,32 @@ const ServiceTableOfContent = () => {
               </div>
             </div>
 
-            <div className="lg:col-span-2 space-y-16">
-              {services?.length > 0 &&
-                services?.map((item) => (
-                  <div
-                    key={item?.id}
-                    id={`section-${item?.id}`}
-                    className="scroll-mt-8 border-b border-gray-100 last:border-0 mb-0"
+            <div className="lg:col-span-2 space-y-0">
+              {services?.map((item, index) => (
+                <React.Fragment key={item.id}>
+                  <section
+                    id={`section-${item.id}`}
+                    className="scroll-mt-24 py-4"
                   >
-                    <h2 className="text-3xl font-bold mb-2.5 text-gray-900">
-                      {item?.title}
+                    <h2 className="text-3xl font-bold mb-4 text-gray-900">
+                      {item.title}
                     </h2>
+
                     <div
-                      className="tiptap-render prose max-w-none text-gray-800 leading-relaxed prose-headings:text-green-800 prose-a:text-blue-600"
-                      dangerouslySetInnerHTML={{ __html: item?.description }}
-                    ></div>
-                  </div>
-                ))}
+                      className="tiptap-render prose max-w-none text-gray-800 leading-relaxed
+                     prose-headings:text-green-800
+                     prose-a:text-blue-600"
+                      dangerouslySetInnerHTML={{ __html: item.description }}
+                    />
+                  </section>
+
+                  {index !== services.length - 1 && (
+                    <div className="w-full">
+                      <div className="h-px w-full bg-gray-200" />
+                    </div>
+                  )}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         </div>

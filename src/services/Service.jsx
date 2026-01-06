@@ -4,8 +4,12 @@ import ServiceTableOfContent from "./ServiceTableOfContent";
 import EnquiryForm from "../components/EnquiryForm";
 import { useDispatch, useSelector } from "react-redux";
 import { getClientServiceDetailBySlug } from "../toolkit/slices/serviceSlice";
+import google from "../assets/googleIcon.png";
+import glassdoor from "../assets/glassdoorIcon.png";
+import mouthshut from "../assets/moutshutlogoIcon.png";
 import { useParams } from "react-router-dom";
 import ServiceFAQS from "./ServiceFAQS";
+import Rating45 from "../components/Rating45";
 
 const Service = () => {
   const { serviceSlug } = useParams();
@@ -39,16 +43,72 @@ const Service = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10">
             {/* LEFT SECTION */}
-            <div className="w-full">
-              <h1 className="text-xl sm:text-4xl font-bold text-white leading-snug break-words">
-                {serviceDetail?.title}
-              </h1>
-              <div
-                className="tiptap-render text-white mt-4 text-sm sm:text-lg break-words hyphens-auto"
-                dangerouslySetInnerHTML={{
-                  __html: serviceDetail?.shortDescription,
-                }}
-              />
+            <div className="w-full flex flex-col h-full">
+              {/* TOP CONTENT */}
+              <div>
+                <h1 className="text-xl sm:text-4xl font-bold text-white leading-snug break-words">
+                  {serviceDetail?.title}
+                </h1>
+
+                <div
+                  className="tiptap-render text-white mt-4 text-sm sm:text-lg break-words hyphens-auto"
+                  dangerouslySetInnerHTML={{
+                    __html: serviceDetail?.shortDescription,
+                  }}
+                />
+              </div>
+
+              {/* RATINGS — FIXED TO BOTTOM */}
+              {/* <div className="mt-10 lg:mt-auto">
+                <div className="flex flex-wrap justify-start sm:justify-center lg:justify-start gap-8 sm:gap-10">
+                  <div className="flex flex-col items-center sm:items-start">
+                    <div className="flex items-center gap-1.5">
+                      <img src={google} className="h-6 mb-1" alt="Google" />
+                      <p className="text-yellow-400 font-semibold">
+                        4.5 Out of 5
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Rating45 />
+                      <p className="text-gray-300 text-sm">(284)</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-center sm:items-start">
+                    <div className="flex items-center gap-1.5">
+                      <img
+                        src={glassdoor}
+                        className="h-6 mb-1"
+                        alt="Glassdoor"
+                      />
+                      <p className="text-yellow-400 font-semibold">
+                        4.5 Out of 5
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Rating45 />
+                      <p className="text-gray-300 text-sm">(1,04)</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-center sm:items-start">
+                    <div className="flex items-center gap-1.5">
+                      <img
+                        src={mouthshut}
+                        className="h-6 mb-1"
+                        alt="Mouthshut"
+                      />
+                      <p className="text-yellow-400 font-semibold">
+                        4.5 Out of 5
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Rating45 />
+                      <p className="text-gray-300 text-sm">(384)</p>
+                    </div>
+                  </div>
+                </div>
+              </div> */}
             </div>
 
             {/* RIGHT FORM SECTION */}

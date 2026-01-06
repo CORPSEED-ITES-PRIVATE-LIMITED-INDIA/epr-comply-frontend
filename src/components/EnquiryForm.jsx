@@ -51,17 +51,52 @@ const EnquiryForm = () => {
   /* -------- LOCATION -------- */
   const getLocation = () => {
     setLoading(true);
+
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported");
+      setLoading(false);
+      return;
+    }
+
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const loc = `${pos.coords.latitude}, ${pos.coords.longitude}`;
-        setLocationValue(loc);
-        setValue("location", loc);
-        setLoading(false);
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+
+        try {
+          const res = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+          );
+
+          if (!res.ok) throw new Error("Failed");
+
+          const data = await res.json();
+
+          const city =
+            data.locality || data.city || data.principalSubdivision || "";
+
+          const subDivision = data.principalSubdivision || "";
+
+          const country = data.countryName || "";
+
+          const locationText = [city, subDivision, country]
+            .filter(Boolean)
+            .join(", ");
+
+          setLocationValue(locationText);
+          setValue("location", locationText);
+          setValue("city", city);
+        } catch (err) {
+          console.error(err);
+          alert("Unable to fetch location details");
+        } finally {
+          setLoading(false);
+        }
       },
       () => {
-        alert("Unable to fetch location.");
+        alert("Location permission denied");
         setLoading(false);
-      }
+      },
+      { enableHighAccuracy: true }
     );
   };
 
@@ -96,15 +131,20 @@ const EnquiryForm = () => {
 
   return (
     <form className="space-y-2" onSubmit={handleSubmit(onSubmit)}>
-      
       {/* NAME */}
       <Controller
         name="name"
         control={control}
         render={({ field }) => (
           <>
-            <Input {...field} placeholder="Your Name" className="h-9 text-sm px-3" />
-            {errors.name && <p className="text-red-500 text-xs">{errors.name.message}</p>}
+            <Input
+              {...field}
+              placeholder="Your Name"
+              className="h-9 text-sm px-3"
+            />
+            {errors.name && (
+              <p className="text-red-500 text-xs">{errors.name.message}</p>
+            )}
           </>
         )}
       />
@@ -115,8 +155,14 @@ const EnquiryForm = () => {
         control={control}
         render={({ field }) => (
           <>
-            <Input {...field} placeholder="Email Address" className="h-9 text-sm px-3" />
-            {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
+            <Input
+              {...field}
+              placeholder="Email Address"
+              className="h-9 text-sm px-3"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-xs">{errors.email.message}</p>
+            )}
           </>
         )}
       />
@@ -127,14 +173,20 @@ const EnquiryForm = () => {
         control={control}
         render={({ field }) => (
           <>
-            <Input {...field} placeholder="Mobile Number" className="h-9 text-sm px-3" />
-            {errors.mobile && <p className="text-red-500 text-xs">{errors.mobile.message}</p>}
+            <Input
+              {...field}
+              placeholder="Mobile Number"
+              className="h-9 text-sm px-3"
+            />
+            {errors.mobile && (
+              <p className="text-red-500 text-xs">{errors.mobile.message}</p>
+            )}
           </>
         )}
       />
 
       {/* CITY */}
-      <Controller
+      {/* <Controller
         name="city"
         control={control}
         render={({ field }) => (
@@ -143,7 +195,7 @@ const EnquiryForm = () => {
             {errors.city && <p className="text-red-500 text-xs">{errors.city.message}</p>}
           </>
         )}
-      />
+      /> */}
 
       {/* LOCATION */}
       <Controller

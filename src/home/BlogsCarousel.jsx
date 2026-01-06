@@ -1,7 +1,4 @@
 import React, { useRef, useEffect } from "react";
-import img1 from "../assets/nature1.jfif";
-import img2 from "../assets/nature2.webp";
-import img3 from "../assets/nature3.jpg";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 import { Link } from "react-router-dom";
@@ -43,7 +40,6 @@ const BlogsCarousel = () => {
     });
   }, []);
 
-
   return (
     <section className="py-8 max-w-7xl mx-auto px-6">
       <h2 className="text-3xl font-bold mb-10">Latest Blog Posts</h2>
@@ -54,7 +50,7 @@ const BlogsCarousel = () => {
           className="flex gap-8 whitespace-nowrap no-scrollbar auto-slider cursor-grab py-6"
         >
           {blogList?.length > 0 &&
-            [...blogList, ...blogList,...blogList]?.map((blog, index) => (
+            [...blogList, ...blogList, ...blogList]?.map((blog, index) => (
               <div
                 key={index}
                 className="
@@ -69,10 +65,11 @@ const BlogsCarousel = () => {
                     src={blog?.image}
                     alt=""
                     className="
-                w-full h-full object-cover
-                transition-transform duration-500
-                group-hover:scale-105
-              "
+    w-full h-full
+    object-cover object-center
+    transition-transform duration-500
+    group-hover:scale-105
+  "
                   />
 
                   <span className="absolute top-3 right-3 bg-white/90 backdrop-blur text-gray-800 text-xs px-3 py-1 rounded-full shadow">

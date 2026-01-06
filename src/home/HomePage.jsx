@@ -185,7 +185,7 @@ const HomePage = () => {
               <input
                 type="text"
                 placeholder="Search for EPR Services..."
-                className="flex-1 px-4 py-3 text-gray-800 focus:outline-none"
+                className="flex-1 px-4 py-2 text-gray-800 focus:outline-none"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -193,9 +193,9 @@ const HomePage = () => {
                 }}
                 onFocus={() => setShowDropdown(true)}
               />
-              <button className="bg-blue-600 px-6 text-white font-semibold hover:bg-blue-700 transition-colors">
+              {/* <button className="bg-blue-600 px-6 text-white font-semibold hover:bg-blue-700 transition-colors cursor-pointer">
                 Search
-              </button>
+              </button> */}
             </div>
 
             {/* Dropdown Results */}

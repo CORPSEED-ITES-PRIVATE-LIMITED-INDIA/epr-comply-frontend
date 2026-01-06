@@ -38,19 +38,30 @@ body {
   --ck-editor-height: 700px;
 }
 
-.tiptap-render h1 { font-size: 2.2em; }
-.tiptap-render h2 { font-size: 1.9em; }
-.tiptap-render h3 { font-size: 1.6em; }
-.tiptap-render h4 { font-size: 1.3em; }
-.tiptap-render h5 { font-size: 1.1em; }
-.tiptap-render h6 { font-size: 1em; }
+.tiptap-render h1 {
+  font-size: 2.2em;
+}
+.tiptap-render h2 {
+  font-size: 1.9em;
+}
+.tiptap-render h3 {
+  font-size: 1.6em;
+}
+.tiptap-render h4 {
+  font-size: 1.3em;
+}
+.tiptap-render h5 {
+  font-size: 1.1em;
+}
+.tiptap-render h6 {
+  font-size: 1em;
+}
 
 .tiptap-render p {
   margin: 0.5em 0;
   min-height: 1em;
   white-space: pre-wrap;
 }
-
 
 .tiptap-render ul {
   list-style: disc;
@@ -70,12 +81,13 @@ body {
 
 .tiptap-render ul[data-type="taskList"] li {
   display: flex;
-  align-items: center;
+  align-items: start;
 }
 
 .tiptap-render ul[data-type="taskList"] li::before {
   content: "👉";
   margin-right: 8px;
+  margin-top: 6px;
 }
 
 .tiptap-render ul[data-type="taskList"] input[type="checkbox"] {
@@ -94,11 +106,10 @@ body {
   padding: 6px;
 }
 
-
 .editor-container {
   border: 1px solid #ccc;
   border-radius: 8px;
-  height: 500px;              /* total editor height */
+  height: 500px; /* total editor height */
   display: flex;
   flex-direction: column;
 }
@@ -118,9 +129,11 @@ body {
 
 /* ONLY THIS PART SCROLLS */
 .editor-workspace {
-  flex: 1;
+  max-height: 500px;
+  min-height: 300px;
   overflow-y: auto;
 }
+
 
 .tiptap-render {
   display: flow-root; /* prevents margin collapse */
@@ -132,16 +145,14 @@ body {
   min-height: 1em;
 }
 
-
 /* ACTUAL CONTENT */
 .editor-content {
-  padding: 16px;
   min-height: 100%;
 }
 
-/* Remove outline jump */
 .ProseMirror {
   min-height: 100%;
+  box-sizing: border-box;
 }
 
 .ProseMirror:focus {
@@ -166,5 +177,25 @@ body {
 .editor-workspace {
   min-height: 100%;
   cursor: text;
+}
+
+.editor-content ul,
+.editor-content ol {
+  margin: 0.5rem 0;
+}
+
+.editor-content ul[data-type="taskList"] {
+  padding-left: 1.5rem;
+}
+
+.editor-content ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ProseMirror {
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 
