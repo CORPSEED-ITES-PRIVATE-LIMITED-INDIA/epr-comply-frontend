@@ -39,19 +39,19 @@ const Service = () => {
 
   return (
     <>
-      <section className="bg-gradient-to-br from-[#0E1F3A] via-[#1B3A6B] to-[#0E1F3A]">
+      <section className="bg-linear-to-br from-[#0E1F3A] via-[#1B3A6B] to-[#0E1F3A]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10">
             {/* LEFT SECTION */}
             <div className="w-full flex flex-col h-full">
               {/* TOP CONTENT */}
               <div>
-                <h1 className="text-xl sm:text-4xl font-bold text-white leading-snug break-words">
+                <h1 className="text-xl sm:text-4xl font-bold text-white leading-snug wrap-break-words">
                   {serviceDetail?.title}
                 </h1>
 
                 <div
-                  className="tiptap-render text-white mt-4 text-sm sm:text-lg break-words hyphens-auto"
+                  className="tiptap-render text-white mt-4 text-sm sm:text-lg wrap-break-words hyphens-auto"
                   dangerouslySetInnerHTML={{
                     __html: serviceDetail?.shortDescription,
                   }}
@@ -119,7 +119,7 @@ const Service = () => {
                   Limited Time Offer
                 </div>
 
-                <h2 className="text-center text-sm sm:text-xl font-medium text-gray-800 mb-6 break-words hyphens-auto pt-2 sm:pt-0">
+                <h2 className="text-center text-sm sm:text-xl font-medium text-gray-800 mb-6 wrap-break-words hyphens-auto pt-2 sm:pt-0">
                   Get Free Expert Consultation
                 </h2>
 
@@ -135,7 +135,7 @@ const Service = () => {
                 {
                   text: "What Sets Us Apart",
                   icon: (
-                    <BsShieldCheck className="w-3 h-3 sm:w-4 sm:h-4 text-green-700 flex-shrink-0" />
+                    <BsShieldCheck className="w-3 h-3 sm:w-4 sm:h-4 text-green-700 shrink-0" />
                   ),
                 },
                 {
@@ -154,10 +154,10 @@ const Service = () => {
               ].map((item, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-1 sm:gap-2 flex-shrink-0 px-2 py-1 bg-gray-100 rounded-full text-xs sm:text-sm"
+                  className="flex items-center gap-1 sm:gap-2 shrink-0 px-2 py-1 bg-gray-100 rounded-full text-xs sm:text-sm"
                 >
                   {item.icon && item.icon}
-                  <span className="font-semibold text-gray-600 break-words hyphens-auto">
+                  <span className="font-semibold text-gray-600 wrap-break-words hyphens-auto">
                     {item.text}
                   </span>
                 </div>

@@ -278,7 +278,7 @@ const HomePage = () => {
                 {
                   text: "What Sets Us Apart",
                   icon: (
-                    <BsShieldCheck className="w-3 h-3 sm:w-4 sm:h-4 text-green-700 font-bold flex-shrink-0" />
+                    <BsShieldCheck className="w-3 h-3 sm:w-4 sm:h-4 text-green-700 font-bold shrink-0" />
                   ),
                 },
                 {
@@ -303,10 +303,10 @@ const HomePage = () => {
               ].map((item, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-1 sm:gap-2 flex-shrink-0 px-2 py-1 bg-gray-200 rounded-full text-xs sm:text-sm"
+                  className="flex items-center gap-1 sm:gap-2 shrink-0 px-2 py-1 bg-gray-200 rounded-full text-xs sm:text-sm"
                 >
                   {item.icon && item.icon}
-                  <span className="font-semibold text-gray-600 break-words hyphens-auto">
+                  <span className="font-semibold text-gray-600 wrap-break-word hyphens-auto">
                     {item.text}
                   </span>
                 </div>
