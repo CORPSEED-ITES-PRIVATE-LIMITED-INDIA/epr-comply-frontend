@@ -53,6 +53,7 @@ const Services = () => {
     metaDescription: "",
     displayStatus: 0,
     showHomeStatus: 0,
+    displayOrder: "",
   };
   const [formData, setFormData] = useState(initialData);
 
@@ -151,70 +152,32 @@ const Services = () => {
       metaDescription: item?.metaDescription,
       displayStatus: item?.displayStatus,
       showHomeStatus: item?.showHomeStatus,
+       displayOrder:
+      item?.displayOrder === 0 || item?.displayOrder == null
+        ? ""
+        : item.displayOrder,
     });
     setRowData(item);
     setOpenModal(true);
   };
 
-  const onSubmit = (data) => {
-    if (!validateForm()) return;
-    if (rowData) {
-      dispatch(updateService({ id: rowData?.id, userId, data }))
-        .then((resp) => {
-          if (resp.meta.requestStatus === "fulfilled") {
-            showToast({
-              title: "Success!",
-              description: "Service has been updated successfully !.",
-              status: "success",
-            });
-            setOpenModal(false);
-            setRowData(null);
-            setFormData(initialData);
-            dispatch(getServiceListBySubCategoryId(subcategoryId));
-          } else {
-            showToast({
-              title: resp?.payload?.status,
-              description: resp?.payload?.message,
-              status: "error",
-            });
-          }
-        })
-        .catch(() => {
-          showToast({
-            title: "Something went wrong !.",
-            description: "Failed to update service.",
-            status: "error",
-          });
-        });
-    } else {
-      dispatch(addService({ userId, data }))
-        .then((resp) => {
-          if (resp.meta.requestStatus === "fulfilled") {
-            showToast({
-              title: "Success!",
-              description: "Service has been added successfully.",
-              status: "success",
-            });
-            setOpenModal(false);
-            setFormData(initialData);
-            dispatch(getServiceListBySubCategoryId(subcategoryId));
-          } else {
-            showToast({
-              title: resp?.payload?.status,
-              description: resp?.payload?.message,
-              status: "error",
-            });
-          }
-        })
-        .catch(() => {
-          showToast({
-            title: "Something went wrong !.",
-            description: "Failed to add service.",
-            status: "error",
-          });
-        });
-    }
+ const onSubmit = (data) => {
+  if (!validateForm()) return;
+
+  const payload = {
+    ...data,
+    displayOrder:
+      data.displayOrder === "" ? null : Number(data.displayOrder),
   };
+
+  if (rowData) {
+    dispatch(updateService({ id: rowData.id, userId, data: payload }))
+    
+  } else {
+    dispatch(addService({ userId, data: payload }))
+  
+  }
+};
 
   const dummyColumns = [
     {
@@ -386,7 +349,7 @@ const Services = () => {
 
             {/* Subcategory */}
             <div className="flex flex-col">
-              <label className="mb-1">Subcategory</label>
+              <label className="mb-1">Subcategori</label>
               <Select
                 value={formData.subcategoryId}
                 options={subcategoryList?.map((item) => ({
@@ -470,6 +433,21 @@ const Services = () => {
                 onChange={(value) => handleChange("displayStatus", value)}
               />
             </div>
+            {/* Display Order */}
+<div className="flex flex-col">
+  <label className="mb-1">Display Order</label>
+  <Input
+    type="text"                 //  arrows gone
+    inputMode="numeric"         //  numeric keypad
+    pattern="[0-9]*"
+    placeholder="Enter display order (e.g. 1, 2, 10)"
+    value={formData.displayOrder}
+    onChange={(e) => {
+      const value = e.target.value.replace(/\D/g, ""); // only numbers
+      handleChange("displayOrder", value);
+    }}
+  />
+</div>
 
             {/* Show Home Status */}
             <div className="flex flex-col">

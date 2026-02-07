@@ -42,12 +42,35 @@ const ServiceTableOfContentss = () => {
     dispatch(getServiceTableContentList({ serviceId }));
   }, [dispatch, serviceId]);
 
-  const filteredData = useMemo(() => {
-    if (!search) return data;
-    return data?.filter((item) =>
-      Object.values(item).join(" ").toLowerCase().includes(search.toLowerCase())
-    );
-  }, [search, data]);
+ const filteredData = useMemo(() => {
+  let list = Array.isArray(data) ? [...data] : [];
+
+  // 🔥 SORT BY DISPLAY ORDER
+  list.sort((a, b) => {
+    const aOrder =
+      a.displayOrder === null || a.displayOrder === 0
+        ? Number.MAX_SAFE_INTEGER
+        : Number(a.displayOrder);
+
+    const bOrder =
+      b.displayOrder === null || b.displayOrder === 0
+        ? Number.MAX_SAFE_INTEGER
+        : Number(b.displayOrder);
+
+    return aOrder - bOrder;
+  });
+
+  // 🔍 SEARCH FILTER
+  if (!search) return list;
+
+  return list.filter((item) =>
+    Object.values(item)
+      .join(" ")
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+}, [search, data]);
+
 
   const handleChange = (key, value) => {
     setFormData((prev) => ({ ...prev, [key]: value }));

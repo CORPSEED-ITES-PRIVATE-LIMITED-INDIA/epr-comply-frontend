@@ -5,6 +5,7 @@ import { FiSearch, FiX } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { globalSearch } from "../toolkit/slices/settingSlice";
+import {getClientMegaMenu} from "../toolkit/slices/serviceSlice"
 
 const DROPDOWN_NAV_ITEMS = ["Services", "Blogs"];
 
@@ -19,7 +20,6 @@ const Header = () => {
   // Desktop mega menu
   const [openMenu, setOpenMenu] = useState(null);
   const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
-
   // Search
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -53,6 +53,58 @@ const Header = () => {
 
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+  const megaMenu = useSelector(
+  (state) => state.service.clientMegaMenu
+);
+
+useEffect(() => {
+  dispatch(getClientMegaMenu());
+}, []);
+const serviceCategories = useMemo(() => {
+  const map = {};
+
+  serviceList.forEach((service) => {
+    const {
+      categoryId,
+      categoryName,
+      categorySlug,
+      displayOrder,
+    } = service;
+
+    // ✅ GROUP BY categoryId (NOT displayOrder)
+    if (!map[categoryId]) {
+      map[categoryId] = {
+        categoryId,
+        categoryName,
+        categorySlug,
+        displayOrder,
+        items: [],
+      };
+    }
+
+    map[categoryId].items.push(service);
+  });
+
+  // ✅ convert to array + SORT by displayOrder
+  return Object.values(map).sort(
+    (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0)
+  );
+}, [serviceList]);
+
+const visibleMegaMenu = useMemo(() => {
+  return (megaMenu || [])
+    .filter(
+      (item) =>
+        Array.isArray(item.services) &&
+        item.services.length > 0
+    )
+    .sort(
+      (a, b) =>
+        (a.category.displayOrder ?? 0) -
+        (b.category.displayOrder ?? 0)
+    );
+}, [megaMenu]);
+
 
   useEffect(() => {
     const handleClick = (e) => {
@@ -122,7 +174,7 @@ const Header = () => {
               <img src={logo} alt="logo" className="h-10" />
             </Link>
 
-            <nav className="hidden lg:flex items-center gap-8">
+            <nav className="hidden lg:flex items-center gap-4">
               {DROPDOWN_NAV_ITEMS.map((menu) => (
                 <span
                   key={menu}
@@ -192,42 +244,52 @@ const Header = () => {
             onMouseEnter={() => setOpenMenu(openMenu)}
             onMouseLeave={() => setOpenMenu(null)}
           >
-            {/* LEFT */}
-            <div className="w-1/4 border-r border-gray-200 overflow-y-auto py-4">
-              {megaMenuData[openMenu]?.categories?.map((cat, idx) => (
-                <div
-                  key={idx}
-                  onMouseEnter={() => setActiveCategoryIndex(idx)}
-                  className={`px-4 py-3 cursor-pointer font-medium ${
-                    activeCategoryIndex === idx
-                      ? "bg-[#006400] text-white"
-                      : "hover:bg-gray-100"
-                  }`}
-                >
-                  {cat.title}
-                </div>
-              ))}
-            </div>
+          
+          {/* LEFT - SERVICE CATEGORIES */}
+          <div className="w-1/4 border-r border-gray-200 overflow-y-auto py-4">
+  {visibleMegaMenu.map((item, idx) => (
+    <div
+      key={item.category.id}
+      onMouseEnter={() => setActiveCategoryIndex(idx)}
+      className={`px-4 py-3 cursor-pointer font-medium
+        ${
+          activeCategoryIndex === idx
+            ? "bg-[#006400] text-white"
+            : "hover:bg-gray-100"
+        }`}
+    >
+      {item.category.name}
+    </div>
+  ))}
+</div>
+
 
             {/* RIGHT */}
-            <div className="w-3/4 grid grid-cols-3 auto-rows-min items-start gap-x-6 gap-y-2 overflow-y-auto p-4">
-              {megaMenuData[openMenu]?.categories[
-                activeCategoryIndex
-              ]?.items?.map((item, i) => (
-                <Link
-                  key={i}
-                  to={
-                    item?.type === "blog"
-                      ? `/blog/${item?.slug}`
-                      : `/${item?.slug}`
-                  }
-                  className="inline-flex items-start text-sm font-medium leading-snug text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-100
-        dark:hover:bg-gray-800 p-3 rounded-md transition-colors cursor-pointer "
-                >
-                  {item?.name}
-                </Link>
-              ))}
-            </div>
+             <div className=" w-3/4
+    grid
+    [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]
+    gap-x-6
+    gap-y-7
+    p-3
+    content-start
+    overflow-y-auto">
+  {[...(visibleMegaMenu[activeCategoryIndex]?.services || [])]
+    .sort(
+      (a, b) =>
+        (a.displayOrder ?? 0) -
+        (b.displayOrder ?? 0)
+    )
+    .map((service) => (
+      <Link
+        key={service.id}
+        to={`/${service.slug}`}
+        className="text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-gray-100 p-3 rounded-md"
+      >
+        {service.title}
+      </Link>
+    ))}
+</div>
+     
           </div>
         )}
       </header>

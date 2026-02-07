@@ -127,6 +127,18 @@ export const deleteSubCategory = createAsyncThunk(
     }
   }
 );
+export const getClientMegaMenu = createAsyncThunk(
+  "service/getClientMegaMenu",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await api.get("/api/services/sortedCategoryAndService");
+      return res.data;
+    } catch (err) {
+      return rejectWithValue("Failed to load mega menu");
+    }
+  }
+);
+
 
 export const getServiceListBySubCategoryId = createAsyncThunk(
   "getServiceListBySubCategoryId",
@@ -517,6 +529,10 @@ const serviceSlice = createSlice({
     builder.addCase(getClientServiceFAQS.rejected, (state) => {
       state.loading = "rejected";
     });
+    builder.addCase(getClientMegaMenu.fulfilled, (state, action) => {
+  state.clientMegaMenu = action.payload;
+});
+
   },
 });
 

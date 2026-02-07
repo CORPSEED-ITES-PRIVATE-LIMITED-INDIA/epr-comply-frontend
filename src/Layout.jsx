@@ -11,6 +11,7 @@ const Layout = () => {
 
   useEffect(() => {
     dispatch(getClientServiceList());
+    console.log(getClientServiceList)
     dispatch(getClientBlogList());
   }, [dispatch]);
 
