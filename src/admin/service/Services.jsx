@@ -349,7 +349,7 @@ const Services = () => {
 
             {/* Subcategory */}
             <div className="flex flex-col">
-              <label className="mb-1">Subcategori</label>
+              <label className="mb-1">Subcategory</label>
               <Select
                 value={formData.subcategoryId}
                 options={subcategoryList?.map((item) => ({

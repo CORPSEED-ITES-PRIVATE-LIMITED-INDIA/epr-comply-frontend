@@ -247,48 +247,48 @@ const visibleMegaMenu = useMemo(() => {
           
           {/* LEFT - SERVICE CATEGORIES */}
           <div className="w-1/4 border-r border-gray-200 overflow-y-auto py-4">
-  {visibleMegaMenu.map((item, idx) => (
-    <div
-      key={item.category.id}
-      onMouseEnter={() => setActiveCategoryIndex(idx)}
-      className={`px-4 py-3 cursor-pointer font-medium
-        ${
-          activeCategoryIndex === idx
-            ? "bg-[#006400] text-white"
-            : "hover:bg-gray-100"
-        }`}
-    >
-      {item.category.name}
-    </div>
-  ))}
-</div>
+            {visibleMegaMenu.map((item, idx) => (
+              <div
+                key={item.category.id}
+                onMouseEnter={() => setActiveCategoryIndex(idx)}
+                className={`px-4 py-3 cursor-pointer font-medium
+                  ${
+                    activeCategoryIndex === idx
+                      ? "bg-[#006400] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+              >
+                {item.category.name}
+              </div>
+            ))}
+          </div>
 
 
-            {/* RIGHT */}
-             <div className=" w-3/4
-    grid
-    [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]
-    gap-x-6
-    gap-y-7
-    p-3
-    content-start
-    overflow-y-auto">
-  {[...(visibleMegaMenu[activeCategoryIndex]?.services || [])]
-    .sort(
-      (a, b) =>
-        (a.displayOrder ?? 0) -
-        (b.displayOrder ?? 0)
-    )
-    .map((service) => (
-      <Link
-        key={service.id}
-        to={`/${service.slug}`}
-        className="text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-gray-100 p-3 rounded-md"
-      >
-        {service.title}
-      </Link>
-    ))}
-</div>
+          {/* RIGHT */}
+          <div className=" w-3/4
+               grid
+               [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]
+               gap-x-6
+               gap-y-7
+               p-3
+               content-start
+               overflow-y-auto">
+             {[...(visibleMegaMenu[activeCategoryIndex]?.services || [])]
+               .sort(
+                 (a, b) =>
+                   (a.displayOrder ?? 0) -
+                   (b.displayOrder ?? 0)
+               )
+               .map((service) => (
+                 <Link
+                   key={service.id}
+                   to={`/${service.slug}`}
+                   className="text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-gray-100 p-3 rounded-md"
+                 >
+                   {service.title}
+                 </Link>
+               ))}
+          </div>
      
           </div>
         )}
