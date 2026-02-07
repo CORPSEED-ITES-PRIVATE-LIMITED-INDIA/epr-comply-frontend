@@ -21,12 +21,24 @@ import Dropdown from "../../components/Dropdown";
 import PopConfirm from "../../components/PopConfirm";
 import { EllipsisVertical } from "lucide-react";
 
+/* =====================
+   VALIDATION SCHEMA
+===================== */
 const categorySchema = z.object({
   name: z.string().nonempty("Name is required"),
   slug: z.string().nonempty("Slug is required"),
   icon: z.string().optional(),
-  displayStatus: z.number().min(0, "Display status is required"),
-  showHomeStatus: z.number().min(0, "Show on home is required"),
+
+  displayStatus: z.number(),
+  showHomeStatus: z.number(),
+
+  displayOrder: z
+    .number({
+      required_error: "Display order is required",
+      invalid_type_error: "Display order must be a number",
+    })
+    .min(0, "Display order cannot be negative"),
+
   metaTitle: z.string().optional(),
   metaKeyword: z.string().optional(),
   metaDescription: z.string().optional(),
@@ -35,25 +47,45 @@ const categorySchema = z.object({
 
 const Category = () => {
   const { userId } = useParams();
-  const { showToast } = useToast();
   const dispatch = useDispatch();
+  const { showToast } = useToast();
+
   const data = useSelector((state) => state.service.categoryList);
+
   const [search, setSearch] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [openDropdowns, setOpenDropdowns] = useState({});
   const [rowData, setRowData] = useState(null);
 
+  /* =====================
+     FETCH
+  ===================== */
   useEffect(() => {
     dispatch(getAllCategories());
-  }, []);
+  }, [dispatch]);
 
+  /* =====================
+     SORT + SEARCH
+  ===================== */
   const filteredData = useMemo(() => {
-    if (!search) return data;
-    return data?.filter((item) =>
-      Object.values(item).join(" ").toLowerCase().includes(search.toLowerCase())
+    const base = search
+      ? data?.filter((item) =>
+          Object.values(item)
+            .join(" ")
+            .toLowerCase()
+            .includes(search.toLowerCase())
+        )
+      : data;
+
+    return [...(base || [])].sort(
+      (a, b) =>
+        (a.displayOrder ?? 0) - (b.displayOrder ?? 0)
     );
   }, [search, data]);
 
+  /* =====================
+     FORM
+  ===================== */
   const {
     handleSubmit,
     control,
@@ -67,6 +99,7 @@ const Category = () => {
       icon: "",
       displayStatus: 0,
       showHomeStatus: 0,
+      displayOrder: "",
       metaTitle: "",
       metaKeyword: "",
       metaDescription: "",
@@ -74,253 +107,220 @@ const Category = () => {
     },
   });
 
-  const handleDelete = (rowData) => {
-    dispatch(deleteCategories({ id: rowData?.id, userId }))
-      .then((resp) => {
-        if (resp.meta.requestStatus === "fulfilled") {
-          showToast({
-            title: "Success!",
-            description: "Category has been deleted successfully !.",
-            status: "success",
-          });
-          dispatch(getAllCategories());
-        } else {
-          showToast({
-            title: resp?.payload?.status,
-            description: resp?.payload?.message,
-            status: "error",
-          });
-        }
-      })
-      .catch(() => {
-        showToast({
-          title: "Something went wrong !.",
-          description: "Failed to delete category.",
-          status: "error",
-        });
-      });
-  };
-
-  const handleEdit = (rowItem) => {
+  /* =====================
+     ACTIONS
+  ===================== */
+  const handleEdit = (row) => {
     reset({
-      name: rowItem?.name,
-      slug: rowItem?.slug,
-      icon: rowItem?.icon,
-      displayStatus: rowItem?.displayStatus,
-      showHomeStatus: rowItem?.showHomeStatus,
-      metaTitle: rowItem?.metaTitle,
-      metaKeyword: rowItem?.metaKeyword,
-      metaDescription: rowItem?.metaDescription,
-      searchKeywords: rowItem?.searchKeywords,
+      name: row.name,
+      slug: row.slug,
+      icon: row.icon,
+      displayStatus: row.displayStatus,
+      showHomeStatus: row.showHomeStatus,
+      displayOrder:
+      row.displayOrder === 0 || row.displayOrder == null
+        ? ""
+        : row.displayOrder,
+      metaTitle: row.metaTitle,
+      metaKeyword: row.metaKeyword,
+      metaDescription: row.metaDescription,
+      searchKeywords: row.searchKeywords,
     });
-    setRowData(rowItem);
+    setRowData(row);
     setOpenModal(true);
   };
 
-  const onSubmit = (data) => {
-    if (rowData) {
-      dispatch(updateCategories({ id: rowData?.id, userId, data }))
-        .then((resp) => {
-          if (resp.meta.requestStatus === "fulfilled") {
-            showToast({
-              title: "Success!",
-              description: "Category has been updated successfully !.",
-              status: "success",
-            });
-            reset()
-            setOpenModal(false);
-            setRowData(null);
-            dispatch(getAllCategories());
-          } else {
-            showToast({
-              title: resp?.payload?.status,
-              description: resp?.payload?.message,
-              status: "error",
-            });
-          }
-        })
-        .catch(() => {
-          showToast({
-            title: "Something went wrong !.",
-            description: "Failed to update category.",
-            status: "error",
-          });
+  const handleDelete = (row) => {
+    dispatch(deleteCategories({ id: row.id, userId })).then((resp) => {
+      if (resp.meta.requestStatus === "fulfilled") {
+        showToast({
+          title: "Success",
+          description: "Category deleted successfully",
+          status: "success",
         });
-    } else {
-      dispatch(addCategories({ userId, data }))
-        .then((resp) => {
-          if (resp.meta.requestStatus === "fulfilled") {
-            showToast({
-              title: "Success!",
-              description: "Category has been added successfully.",
-              status: "success",
-            });
-            reset()
-            setOpenModal(false);
-            dispatch(getAllCategories());
-          } else {
-            showToast({
-              title: resp?.payload?.status,
-              description: resp?.payload?.message,
-              status: "error",
-            });
-          }
-        })
-        .catch(() => {
-          showToast({
-            title: "Something went wrong !.",
-            description: "Failed to add category.",
-            status: "error",
-          });
-        });
-    }
+        dispatch(getAllCategories());
+      }
+    });
   };
 
-  const dummyColumns = [
+  const onSubmit = (formData) => {
+    const action = rowData
+      ? updateCategories({ id: rowData.id, userId, data: formData })
+      : addCategories({ userId, data: formData });
+
+    dispatch(action).then((resp) => {
+      if (resp.meta.requestStatus === "fulfilled") {
+        showToast({
+          title: "Success",
+          description: rowData
+            ? "Category updated successfully"
+            : "Category added successfully",
+          status: "success",
+        });
+        reset();
+        setRowData(null);
+        setOpenModal(false);
+        dispatch(getAllCategories());
+      }
+    });
+  };
+
+  /* =====================
+     TABLE COLUMNS
+  ===================== */
+  const columns = [
     {
       title: "Name",
       dataIndex: "name",
-      render: (value, record) => (
+      render: (v, r) => (
         <Link
-          to={`${record?.id}/subcategory`}
+          to={`${r.id}/subcategory`}
           className="font-medium text-blue-600"
         >
-          {value}
+          {v}
         </Link>
       ),
     },
     {
-      title: "Meta title",
-      dataIndex: "metaTitle",
-      render: (value) => <p className="text-wrap">{value}</p>,
+      title: "Display Order",
+      dataIndex: "displayOrder",
     },
     {
       title: "Slug",
       dataIndex: "slug",
     },
     {
-      title: "Post date",
+      title: "Post Date",
       dataIndex: "postDate",
-      render: (value) => <p>{dayjs(value).format("DD-MM-YYYY")}</p>,
-    },
-    {
-      title: "Search keywords",
-      dataIndex: "searchKeywords",
-      render: (value) => <p className="text-wrap">{value}</p>,
+      render: (v) => dayjs(v).format("DD-MM-YYYY"),
     },
     {
       title: "Actions",
-      dataIndex: "actions",
-      render: (value, record, rowIndex) => {
-        const isOpen = openDropdowns[record.id] || false; // or record._id, whatever unique
-        return (
-          <Dropdown
-            open={isOpen}
-            onOpenChange={(open) =>
-              setOpenDropdowns((prev) => ({ ...prev, [record.id]: open }))
-            }
-            items={[
-              { key: 1, label: "edit", onClick: () => handleEdit(record) },
-              {
-                key: 2,
-                label: (
-                  <PopConfirm
-                    title="Are you sure you want to delete?"
-                    onConfirm={() => handleDelete(record)}
-                    onCancel={() => console.log("Cancel")}
-                  >
-                    <div className="text-red-600">Delete</div>
-                  </PopConfirm>
-                ),
-                noClose: true,
-              },
-            ]}
-          >
-            <Button size="small" variant="secondary">
-              <EllipsisVertical />
-            </Button>
-          </Dropdown>
-        );
-      },
+      render: (_, record) => (
+        <Dropdown
+          open={openDropdowns[record.id]}
+          onOpenChange={(open) =>
+            setOpenDropdowns((p) => ({ ...p, [record.id]: open }))
+          }
+          items={[
+            { key: 1, label: "Edit", onClick: () => handleEdit(record) },
+            {
+              key: 2,
+              label: (
+                <PopConfirm
+                  title="Are you sure?"
+                  onConfirm={() => handleDelete(record)}
+                >
+                  <span className="text-red-600">Delete</span>
+                </PopConfirm>
+              ),
+              noClose: true,
+            },
+          ]}
+        >
+          <Button size="small" variant="secondary">
+            <EllipsisVertical />
+          </Button>
+        </Dropdown>
+      ),
     },
   ];
 
-  const topContent = useMemo(() => {
-    return (
-      <div className="flex justify-between items-center">
-        <Input
-          type="text"
-          placeholder="Search..."
-          value={search}
-          showIcon
-          onChange={(e) => setSearch(e.target.value)}
-          wrapperClassName="w-80"
-        />
-        <Button onClick={() => setOpenModal(true)}>Add category</Button>
-      </div>
-    );
-  }, [search]);
+  const topContent = (
+    <div className="flex justify-between items-center">
+      <Input
+        placeholder="Search..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        wrapperClassName="w-80"
+      />
+      <Button onClick={() => setOpenModal(true)}>Add Category</Button>
+    </div>
+  );
 
   return (
     <>
-      <h2 className="text-lg font-semibold">Categories list</h2>
+      <h2 className="text-lg font-semibold mb-2">Categories List</h2>
+
       <Table
-        columns={dummyColumns}
+        columns={columns}
         dataSource={filteredData}
         topContent={topContent}
-        className="w-full"
       />
+
       <Modal
-        title={rowData ? "Update category" : "Create category"}
+        title={rowData ? "Update Category" : "Create Category"}
         open={openModal}
-        width={"60%"}
+        width="60%"
         onCancel={() => setOpenModal(false)}
         onOk={handleSubmit(onSubmit)}
       >
         <form className="grid grid-cols-2 gap-6 max-h-[60vh] overflow-auto px-2 py-2.5">
           {/* Name */}
-          <div className="flex flex-col">
-            <label className="mb-1">Name</label>
+          <div>
+            <label>Name</label>
             <Controller
               name="name"
               control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter name" />
-              )}
+              render={({ field }) => <Input {...field} />}
             />
-            {errors.name && <p className="text-red-600 text-sm">Required</p>}
+            {errors.name && (
+              <p className="text-red-600 text-sm">Required</p>
+            )}
           </div>
 
           {/* Slug */}
-          <div className="flex flex-col">
-            <label className="mb-1">Slug</label>
+          <div>
+            <label>Slug</label>
             <Controller
               name="slug"
               control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter slug" />
-              )}
+              render={({ field }) => <Input {...field} />}
             />
-            {errors.slug && <p className="text-red-600 text-sm">Required</p>}
           </div>
 
           {/* Icon */}
-          <div className="flex flex-col">
-            <label className="mb-1">Icon</label>
+          <div>
+            <label>Icon</label>
             <Controller
               name="icon"
               control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter icon" />
-              )}
+              render={({ field }) => <Input {...field} />}
             />
           </div>
 
+          {/* Display Order – NO ARROWS */}
+          <div>
+            <label>Display Order</label>
+            <Controller
+              name="displayOrder"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="Enter display order"
+                  value={field.value ?? ""}
+                  onChange={(e) => {
+                    const v = e.target.value.replace(/\D/g, "");
+                    field.onChange(v === "" ? "" : Number(v));
+                  }}
+                />
+              )}
+            />
+
+            {errors.displayOrder && (
+              <p className="text-red-600 text-sm">
+                {errors.displayOrder.message}
+              </p>
+            )}
+          </div>
+
           {/* Display Status */}
-          <div className="flex flex-col">
-            <label className="mb-1 font-medium">Display Status</label>
+          <div>
+            <label>Display Status</label>
             <Controller
               name="displayStatus"
               control={control}
@@ -331,19 +331,17 @@ const Category = () => {
                     { label: "Inactive", value: 0 },
                     { label: "Active", value: 1 },
                   ]}
-                  placeholder="Select status"
                 />
               )}
             />
           </div>
 
-          {/* Show on Home */}
-          <div className="flex flex-col">
-            <label className="mb-1">Show on Home</label>
+          {/* Show Home */}
+          <div>
+            <label>Show on Home</label>
             <Controller
               name="showHomeStatus"
               control={control}
-              rules={{ required: true }}
               render={({ field }) => (
                 <Select
                   {...field}
@@ -351,62 +349,47 @@ const Category = () => {
                     { label: "No", value: 0 },
                     { label: "Yes", value: 1 },
                   ]}
-                  placeholder="Select option"
                 />
               )}
             />
           </div>
 
-          {/* Meta Title */}
-          <div className="flex flex-col col-span-2">
-            <label className="mb-1">Meta Title</label>
+          {/* Meta fields */}
+          <div className="col-span-2">
+            <label>Meta Title</label>
             <Controller
               name="metaTitle"
               control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Meta Title" />
-              )}
+              render={({ field }) => <Input {...field} />}
             />
           </div>
 
-          {/* Meta Keywords */}
-          <div className="flex flex-col col-span-2">
-            <label className="mb-1">Meta Keywords</label>
+          <div className="col-span-2">
+            <label>Meta Keywords</label>
             <Controller
               name="metaKeyword"
               control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Meta Keywords" />
-              )}
+              render={({ field }) => <Input {...field} />}
             />
           </div>
 
-          {/* Meta Description */}
-          <div className="flex flex-col col-span-2">
-            <label className="mb-1">Meta Description</label>
+          <div className="col-span-2">
+            <label>Meta Description</label>
             <Controller
               name="metaDescription"
               control={control}
               render={({ field }) => (
-                <Input
-                  {...field}
-                  as="textarea"
-                  rows={3}
-                  placeholder="Meta Description"
-                />
+                <Input as="textarea" rows={3} {...field} />
               )}
             />
           </div>
 
-          {/* Search Keywords */}
-          <div className="flex flex-col col-span-2">
-            <label className="mb-1">Search Keywords</label>
+          <div className="col-span-2">
+            <label>Search Keywords</label>
             <Controller
               name="searchKeywords"
               control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Search Keywords" />
-              )}
+              render={({ field }) => <Input {...field} />}
             />
           </div>
         </form>
