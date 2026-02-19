@@ -1,41 +1,63 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import logo from "../assets/logo.png";
 import { formatMegaMenu } from "../navData";
-import { FiSearch, FiX } from "react-icons/fi";
+import { FiSearch } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { globalSearch } from "../toolkit/slices/settingSlice";
-import {getClientMegaMenu} from "../toolkit/slices/serviceSlice"
+import { getClientMegaMenu } from "../toolkit/slices/serviceSlice";
 
 const DROPDOWN_NAV_ITEMS = ["Services", "Blogs"];
 
 const Header = () => {
   const dispatch = useDispatch();
+
+  // lists
   const serviceList = useSelector((state) => state.service.clientServiceList);
   const blogList = useSelector((state) => state.blogs.clientBlogList);
 
+  // (kept, in case you still need it elsewhere)
+  const megaMenu = useSelector((state) => state.service.clientMegaMenu);
+
+  // header ui
   const [scrolled, setScrolled] = useState(false);
+
+  // mobile drawer
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // Desktop mega menu
-  const [openMenu, setOpenMenu] = useState(null);
+  // desktop mega menu
+  const [openMenu, setOpenMenu] = useState(null); // "Services" | "Blogs" | null
   const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
-  // Search
+
+  // desktop search (pill)
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const [results, setResults] = useState({
-    blogs: [],
-    services: [],
-  });
+  const [results, setResults] = useState({ blogs: [], services: [] });
+
   const inputRef = useRef(null);
   const wrapperRef = useRef(null);
 
+  // ✅ ORDERED mega data for BOTH services + blogs
   const megaMenuData = useMemo(() => {
+    // IMPORTANT: formatMegaMenu should already apply ordering inside
+    // (categories + items) for BOTH lists
     return formatMegaMenu(serviceList, blogList);
   }, [serviceList, blogList]);
 
+  // ✅ active categories based on openMenu ("Services" OR "Blogs")
+  const activeCategories = useMemo(() => {
+    if (!openMenu) return [];
+    return megaMenuData?.[openMenu]?.categories || [];
+  }, [megaMenuData, openMenu]);
+
+  // reset active category when switching menu
+  useEffect(() => {
+    if (openMenu) setActiveCategoryIndex(0);
+  }, [openMenu]);
+
+  // sticky header border on scroll
   useEffect(() => {
     let ticking = false;
 
@@ -50,62 +72,15 @@ const Header = () => {
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  const megaMenu = useSelector(
-  (state) => state.service.clientMegaMenu
-);
 
-useEffect(() => {
-  dispatch(getClientMegaMenu());
-}, []);
-const serviceCategories = useMemo(() => {
-  const map = {};
+  // fetch mega menu (kept as-is)
+  useEffect(() => {
+    dispatch(getClientMegaMenu());
+  }, [dispatch]);
 
-  serviceList.forEach((service) => {
-    const {
-      categoryId,
-      categoryName,
-      categorySlug,
-      displayOrder,
-    } = service;
-
-    // ✅ GROUP BY categoryId (NOT displayOrder)
-    if (!map[categoryId]) {
-      map[categoryId] = {
-        categoryId,
-        categoryName,
-        categorySlug,
-        displayOrder,
-        items: [],
-      };
-    }
-
-    map[categoryId].items.push(service);
-  });
-
-  // ✅ convert to array + SORT by displayOrder
-  return Object.values(map).sort(
-    (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0)
-  );
-}, [serviceList]);
-
-const visibleMegaMenu = useMemo(() => {
-  return (megaMenu || [])
-    .filter(
-      (item) =>
-        Array.isArray(item.services) &&
-        item.services.length > 0
-    )
-    .sort(
-      (a, b) =>
-        (a.category.displayOrder ?? 0) -
-        (b.category.displayOrder ?? 0)
-    );
-}, [megaMenu]);
-
-
+  // close search pill when clicking outside wrapperRef (kept)
   useEffect(() => {
     const handleClick = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -120,35 +95,38 @@ const visibleMegaMenu = useMemo(() => {
     if (open && inputRef.current) inputRef.current.focus();
   }, [open]);
 
+  // ✅ open desktop mega menu only if data exists for that tab
   const handleNavHover = (menu) => {
     if (!DROPDOWN_NAV_ITEMS.includes(menu)) {
       setOpenMenu(null);
       return;
     }
 
-    if (!megaMenuData[menu]) {
+    const hasData = (megaMenuData?.[menu]?.categories || []).length > 0;
+    if (!hasData) {
       setOpenMenu(null);
       return;
     }
 
     setOpenMenu(menu);
-    setActiveCategoryIndex(0);
   };
 
+  // global search api (kept)
   useEffect(() => {
     if (!query) return;
 
     const timer = setTimeout(async () => {
       const res = await dispatch(globalSearch(query)).unwrap();
       setResults({
-        blogs: res.blogs || [],
-        services: res.services || [],
+        blogs: res?.blogs || [],
+        services: res?.services || [],
       });
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, dispatch]);
 
+  // close dropdown on click outside ".mega-search" (kept)
   useEffect(() => {
     const handleClick = (e) => {
       if (!e.target.closest(".mega-search")) {
@@ -161,12 +139,21 @@ const visibleMegaMenu = useMemo(() => {
     return () => document.removeEventListener("click", handleClick);
   }, []);
 
+  // ✅ Mobile ordering (use the same ordered megaMenuData)
+  const mobileServicesCategories = useMemo(() => {
+    return megaMenuData?.Services?.categories || [];
+  }, [megaMenuData]);
+
+  const mobileBlogsCategories = useMemo(() => {
+    return megaMenuData?.Blogs?.categories || [];
+  }, [megaMenuData]);
+
   return (
     <>
       <header
-        className={`w-full bg-white sticky top-0 z-[10000] transition-all duration-200
-    ${scrolled ? "border-b border-gray-200" : ""}
-  `}
+        className={`w-full bg-white sticky top-0 z-[10000] transition-all duration-200 ${
+          scrolled ? "border-b border-gray-200" : ""
+        }`}
       >
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between py-4">
@@ -174,6 +161,7 @@ const visibleMegaMenu = useMemo(() => {
               <img src={logo} alt="logo" className="h-10" />
             </Link>
 
+            {/* Desktop nav */}
             <nav className="hidden lg:flex items-center gap-4">
               {DROPDOWN_NAV_ITEMS.map((menu) => (
                 <span
@@ -202,11 +190,15 @@ const visibleMegaMenu = useMemo(() => {
               </Link>
             </nav>
 
-            <div className="hidden lg:flex items-center relative">
+            {/* Desktop search */}
+            <div className="hidden lg:flex items-center relative mega-search">
               <div
-                className={`flex items-center border border-gray-200 rounded-full px-3 py-1 transition-all duration-300
-      ${open ? "max-w-[180px]" : "max-w-[36px]"}
-    `}
+                ref={wrapperRef}
+                // className={`flex items-center border border-gray-200 rounded-full px-3 py-1 transition-all duration-300 ${
+                //   open ? "max-w-[180px]" : "max-w-[36px]"
+                // }`}
+
+                     className={`flex items-center border border-gray-200 rounded-full px-3 py-1 transition-all duration-300 max-w-[180px]`}
               >
                 <FiSearch
                   size={18}
@@ -215,87 +207,78 @@ const visibleMegaMenu = useMemo(() => {
                 />
 
                 <input
+                  ref={inputRef}
                   type="text"
                   placeholder="Search..."
-                  className={`ml-2 bg-transparent outline-none text-sm transition-all duration-300
-        ${open ? "w-full opacity-100" : "w-0 opacity-0"}
-      `}
+                  // className={`ml-2 bg-transparent outline-none text-sm transition-all duration-300 ${
+                  //   open ? "w-full opacity-100" : "w-0 opacity-0"
+                  // }`}
+                     className={`ml-2 bg-transparent outline-none text-sm transition-all duration-300 w-full opacity-100
+`}
                   value={query}
                   onChange={(e) => {
-                    setQuery(e.target.value);
-                    setShowDropdown(e.target.value.length > 0);
+                    const v = e.target.value;
+                    setQuery(v);
+                    setShowDropdown(v.length > 0);
                   }}
                 />
               </div>
             </div>
 
+            {/* Mobile menu button */}
             <button
-              className="lg:hidden text-3xl"
+              className="lg:hidden text-3xl cursor-pointer"
               onClick={() => setDrawerOpen(true)}
+              aria-label="Open menu"
             >
               ☰
             </button>
           </div>
         </div>
 
+        {/* ✅ Desktop Mega Menu (NOW depends on openMenu: Services OR Blogs) */}
         {openMenu && (
           <div
             className="hidden lg:flex fixed top-[88px] left-1/2 -translate-x-1/2 w-[75vw] h-[400px] bg-white border border-gray-200 rounded-2xl shadow-xl z-[9999]"
             onMouseEnter={() => setOpenMenu(openMenu)}
             onMouseLeave={() => setOpenMenu(null)}
           >
-          
-          {/* LEFT - SERVICE CATEGORIES */}
-          <div className="w-1/4 border-r border-gray-200 overflow-y-auto py-4">
-            {visibleMegaMenu.map((item, idx) => (
-              <div
-                key={item.category.id}
-                onMouseEnter={() => setActiveCategoryIndex(idx)}
-                className={`px-4 py-3 cursor-pointer font-medium
-                  ${
+            {/* LEFT - CATEGORIES */}
+            <div className="w-1/4 border-r border-gray-200 overflow-y-auto py-4">
+              {activeCategories.map((cat, idx) => (
+                <div
+                  key={cat.title + idx}
+                  onMouseEnter={() => setActiveCategoryIndex(idx)}
+                  className={`px-4 py-3 cursor-pointer font-medium ${
                     activeCategoryIndex === idx
                       ? "bg-[#006400] text-white"
                       : "hover:bg-gray-100"
                   }`}
-              >
-                {item.category.name}
-              </div>
-            ))}
-          </div>
+                >
+                  {cat.title}
+                </div>
+              ))}
+            </div>
 
-
-          {/* RIGHT */}
-          <div className=" w-3/4
-               grid
-               [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]
-               gap-x-6
-               gap-y-7
-               p-3
-               content-start
-               overflow-y-auto">
-             {[...(visibleMegaMenu[activeCategoryIndex]?.services || [])]
-               .sort(
-                 (a, b) =>
-                   (a.displayOrder ?? 0) -
-                   (b.displayOrder ?? 0)
-               )
-               .map((service) => (
-                 <Link
-                   key={service.id}
-                   to={`/${service.slug}`}
-                   className="text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-gray-100 p-3 rounded-md"
-                 >
-                   {service.title}
-                 </Link>
-               ))}
-          </div>
-     
+            {/* RIGHT - ITEMS */}
+            <div className="w-3/4 grid [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))] gap-x-6 gap-y-7 p-3 content-start overflow-y-auto">
+              {(activeCategories[activeCategoryIndex]?.items || []).map((x) => (
+                <Link
+                  key={x.id}
+                  to={x.type === "blog" ? `/blog/${x.slug}` : `/${x.slug}`}
+                  className="text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-gray-100 p-3 rounded-md cursor-pointer"
+                >
+                  {x.name}
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </header>
 
+      {/* Search dropdown results (kept exactly like yours) */}
       {showDropdown && (
-        <div className="fixed top-[72px] left-0 w-screen bg-white shadow-lg z-50">
+        <div className="fixed top-[72px] left-0 w-screen bg-white shadow-lg z-50 mega-search">
           <div className="max-w-7xl mx-auto px-6 py-6 grid grid-cols-2 gap-8">
             <div>
               <h3 className="text-sm font-semibold mb-3 text-gray-700">
@@ -305,7 +288,7 @@ const visibleMegaMenu = useMemo(() => {
               {results.blogs.length === 0 ? (
                 <p className="text-sm text-gray-400">No blogs found</p>
               ) : (
-                <ul className="space-y-2">
+                <ul className="space-y-2 max-h-[60vh] overflow-auto">
                   {results.blogs.map((blog) => (
                     <li
                       key={blog.id}
@@ -326,7 +309,7 @@ const visibleMegaMenu = useMemo(() => {
               {results.services.length === 0 ? (
                 <p className="text-sm text-gray-400">No services found</p>
               ) : (
-                <ul className="space-y-2">
+                <ul className="space-y-2 max-h-[60vh] overflow-auto">
                   {results.services.map((service) => (
                     <li
                       key={service.id}
@@ -337,6 +320,121 @@ const visibleMegaMenu = useMemo(() => {
                   ))}
                 </ul>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Mobile drawer (safe + DOES NOT disturb your UI)
+          - Uses ordered megaMenuData for both Services and Blogs
+          - If you already have your own drawer UI elsewhere, replace this block
+            with your existing drawer, and only use the computed
+            mobileServicesCategories/mobileBlogsCategories. */}
+      {drawerOpen && (
+        <div className="lg:hidden fixed inset-0 z-[10001]">
+          {/* overlay */}
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setDrawerOpen(false)}
+          />
+
+          {/* panel */}
+          <div className="absolute right-0 top-0 h-full w-[86%] max-w-[360px] bg-white shadow-2xl overflow-y-auto">
+            <div className="flex items-center justify-between px-4 py-4 border-b">
+              <div className="font-semibold">Menu</div>
+              <button
+                className="text-2xl cursor-pointer"
+                onClick={() => setDrawerOpen(false)}
+                aria-label="Close menu"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="px-4 py-4 space-y-6">
+              {/* Services */}
+              <div>
+                <div className="text-sm font-semibold text-gray-800 mb-2">
+                  Services
+                </div>
+
+                {mobileServicesCategories.length === 0 ? (
+                  <div className="text-sm text-gray-400">No services</div>
+                ) : (
+                  <div className="space-y-4">
+                    {mobileServicesCategories.map((cat, idx) => (
+                      <div key={cat.title + idx}>
+                        <div className="text-xs font-semibold text-gray-600 mb-2">
+                          {cat.title}
+                        </div>
+                        <div className="space-y-1">
+                          {(cat.items || []).map((x) => (
+                            <Link
+                              key={x.id}
+                              to={`/${x.slug}`}
+                              onClick={() => setDrawerOpen(false)}
+                              className="block text-sm text-gray-700 hover:text-green-600 px-2 py-1 rounded cursor-pointer"
+                            >
+                              {x.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Blogs */}
+              <div>
+                <div className="text-sm font-semibold text-gray-800 mb-2">
+                  Blogs
+                </div>
+
+                {mobileBlogsCategories.length === 0 ? (
+                  <div className="text-sm text-gray-400">No blogs</div>
+                ) : (
+                  <div className="space-y-4">
+                    {mobileBlogsCategories.map((cat, idx) => (
+                      <div key={cat.title + idx}>
+                        <div className="text-xs font-semibold text-gray-600 mb-2">
+                          {cat.title}
+                        </div>
+                        <div className="space-y-1">
+                          {(cat.items || []).map((x) => (
+                            <Link
+                              key={x.id}
+                              to={`/blogs/${x.slug}`}
+                              onClick={() => setDrawerOpen(false)}
+                              className="block text-sm text-gray-700 hover:text-green-600 px-2 py-1 rounded cursor-pointer"
+                            >
+                              {x.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Static links */}
+              <div className="space-y-2 pt-2 border-t">
+                <Link
+                  to="/aboutus"
+                  onClick={() => setDrawerOpen(false)}
+                  className="block font-semibold hover:text-green-600 cursor-pointer"
+                >
+                  About Us
+                </Link>
+                <Link
+                  to="/contactus"
+                  onClick={() => setDrawerOpen(false)}
+                  className="block font-semibold hover:text-green-600 cursor-pointer"
+                >
+                  Contact Us
+                </Link>
+              </div>
             </div>
           </div>
         </div>

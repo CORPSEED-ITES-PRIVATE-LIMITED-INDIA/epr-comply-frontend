@@ -5,6 +5,7 @@ import Modal from "../../components/Modal";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addService,
+  deleteService,
   deleteSubCategory,
   getAllCategories,
   getAllServices,
@@ -65,7 +66,10 @@ const Services = () => {
   const filteredData = useMemo(() => {
     if (!search) return data;
     return data?.filter((item) =>
-      Object.values(item).join(" ").toLowerCase().includes(search.toLowerCase())
+      Object.values(item)
+        .join(" ")
+        .toLowerCase()
+        .includes(search.toLowerCase()),
     );
   }, [search, data]);
 
@@ -112,7 +116,7 @@ const Services = () => {
   };
 
   const handleDelete = (rowData) => {
-    dispatch(deleteSubCategory({ id: rowData?.id, userId }))
+    dispatch(deleteService({ id: rowData?.id, userId }))
       .then((resp) => {
         if (resp.meta.requestStatus === "fulfilled") {
           showToast({
@@ -120,7 +124,7 @@ const Services = () => {
             description: "Category has been deleted successfully !.",
             status: "success",
           });
-          dispatch(getServiceListBySubCategoryId(subcategoryId));
+          dispatch(getAllServices(subcategoryId));
         } else {
           showToast({
             title: resp?.payload?.status,
@@ -152,32 +156,70 @@ const Services = () => {
       metaDescription: item?.metaDescription,
       displayStatus: item?.displayStatus,
       showHomeStatus: item?.showHomeStatus,
-       displayOrder:
-      item?.displayOrder === 0 || item?.displayOrder == null
-        ? ""
-        : item.displayOrder,
     });
     setRowData(item);
     setOpenModal(true);
   };
 
- const onSubmit = (data) => {
-  if (!validateForm()) return;
-
-  const payload = {
-    ...data,
-    displayOrder:
-      data.displayOrder === "" ? null : Number(data.displayOrder),
+  const onSubmit = (data) => {
+    if (!validateForm()) return;
+    if (rowData) {
+      dispatch(updateService({ id: rowData?.id, userId, data }))
+        .then((resp) => {
+          if (resp.meta.requestStatus === "fulfilled") {
+            showToast({
+              title: "Success!",
+              description: "Service has been updated successfully !.",
+              status: "success",
+            });
+            setOpenModal(false);
+            setRowData(null);
+            setFormData(initialData);
+            dispatch(getServiceListBySubCategoryId(subcategoryId));
+          } else {
+            showToast({
+              title: resp?.payload?.status,
+              description: resp?.payload?.message,
+              status: "error",
+            });
+          }
+        })
+        .catch(() => {
+          showToast({
+            title: "Something went wrong !.",
+            description: "Failed to update service.",
+            status: "error",
+          });
+        });
+    } else {
+      dispatch(addService({ userId, data }))
+        .then((resp) => {
+          if (resp.meta.requestStatus === "fulfilled") {
+            showToast({
+              title: "Success!",
+              description: "Service has been added successfully.",
+              status: "success",
+            });
+            setOpenModal(false);
+            setFormData(initialData);
+            dispatch(getServiceListBySubCategoryId(subcategoryId));
+          } else {
+            showToast({
+              title: resp?.payload?.status,
+              description: resp?.payload?.message,
+              status: "error",
+            });
+          }
+        })
+        .catch(() => {
+          showToast({
+            title: "Something went wrong !.",
+            description: "Failed to add service.",
+            status: "error",
+          });
+        });
+    }
   };
-
-  if (rowData) {
-    dispatch(updateService({ id: rowData.id, userId, data: payload }))
-    
-  } else {
-    dispatch(addService({ userId, data: payload }))
-  
-  }
-};
 
   const dummyColumns = [
     {
@@ -263,7 +305,14 @@ const Services = () => {
           onChange={(e) => setSearch(e.target.value)}
           wrapperClassName="w-80"
         />
-        <Button onClick={() => setOpenModal(true)}>Add service</Button>
+        <Button
+          onClick={() => {
+            setOpenModal(true);
+            setFormData(initialData);
+          }}
+        >
+          Add service
+        </Button>
       </div>
     );
   }, [search]);
@@ -433,21 +482,6 @@ const Services = () => {
                 onChange={(value) => handleChange("displayStatus", value)}
               />
             </div>
-            {/* Display Order */}
-<div className="flex flex-col">
-  <label className="mb-1">Display Order</label>
-  <Input
-    type="text"                 //  arrows gone
-    inputMode="numeric"         //  numeric keypad
-    pattern="[0-9]*"
-    placeholder="Enter display order (e.g. 1, 2, 10)"
-    value={formData.displayOrder}
-    onChange={(e) => {
-      const value = e.target.value.replace(/\D/g, ""); // only numbers
-      handleChange("displayOrder", value);
-    }}
-  />
-</div>
 
             {/* Show Home Status */}
             <div className="flex flex-col">

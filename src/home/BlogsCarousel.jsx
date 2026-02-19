@@ -54,31 +54,33 @@ const BlogsCarousel = () => {
               <div
                 key={index}
                 className="
-            w-[360px] h-[260px] bg-white rounded-2xl shrink-0
+            w-[270px] h-[290px] bg-white rounded-2xl shrink-0
             shadow-sm hover:shadow-xl transition-all duration-300
             flex flex-col overflow-hidden group
           "
               >
                 {/* Image */}
-                <div className="relative h-[130px] overflow-hidden">
-                  <img
-                    src={blog?.image}
-                    alt=""
-                    className="
-    w-full h-full
-    object-cover object-center
-    transition-transform duration-500
-    group-hover:scale-105
-  "
-                  />
+                <Link to={`/blog/${blog.slug}`}>
+                  <div className="relative h-[150px] overflow-hidden">
+                    <img
+                      src={blog?.image}
+                      alt={blog?.title}
+                      className="
+                        w-full h-full
+                        object-contain object-center
+                        transition-transform duration-500
+                        group-hover:scale-105
+                      "
+                    />
 
-                  <span className="absolute top-3 right-3 bg-white/90 backdrop-blur text-gray-800 text-xs px-3 py-1 rounded-full shadow">
-                    {dayjs(blog?.postDate).format("MMM D, YYYY")}
-                  </span>
-                </div>
+                    <span className="absolute top-3 right-3 bg-white/90 backdrop-blur text-gray-800 text-xs px-3 py-1 rounded-full shadow">
+                      {dayjs(blog?.postDate).format("MMM D, YYYY")}
+                    </span>
+                  </div>
+                </Link>
 
                 {/* Content */}
-                <div className="p-5 flex flex-col flex-1">
+                <div className="p-2 flex flex-col flex-1">
                   <p className="text-green-600 text-xs font-semibold uppercase tracking-wide truncate">
                     {blog?.categoryName} • {blog.author}
                   </p>
@@ -97,6 +99,8 @@ const BlogsCarousel = () => {
                 text-green-600 font-medium text-sm
                 hover:text-green-700 transition cursor-pointer
               "
+                    key={blog.id}
+                    to={`/blog/${blog.slug}`}
                   >
                     Read More →
                   </Link>
@@ -117,7 +121,7 @@ const BlogsCarousel = () => {
         .auto-slider:hover {
           animation-play-state: paused;
         }
-
+ 
         @keyframes smoothScroll {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }

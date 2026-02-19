@@ -5,15 +5,18 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "./toolkit/store.js";
 import { ToastProvider } from "./components/ToastProvider.jsx";
+import { HelmetProvider } from "react-helmet-async";
 
 createRoot(document.getElementById("root")).render(
   <div className="overflow-x-hidden md:overflow-x-visible">
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <ToastProvider>
-          <App />
-        </ToastProvider>
-      </PersistGate>
-    </Provider>
+    <HelmetProvider>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <ToastProvider>
+            <App />
+          </ToastProvider>
+        </PersistGate>
+      </Provider>
+    </HelmetProvider>
   </div>
 );

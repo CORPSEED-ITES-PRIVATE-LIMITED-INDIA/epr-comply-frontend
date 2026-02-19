@@ -10,6 +10,7 @@ import mouthshut from "../assets/moutshutlogoIcon.png";
 import { useParams } from "react-router-dom";
 import ServiceFAQS from "./ServiceFAQS";
 import Rating45 from "../components/Rating45";
+import { Helmet } from "react-helmet-async";
 
 const Service = () => {
   const { serviceSlug } = useParams();
@@ -23,22 +24,62 @@ const Service = () => {
     dispatch(getClientServiceDetailBySlug(serviceSlug));
   }, [dispatch, serviceSlug]);
 
-  // Add this inside your Service component
-  useEffect(() => {
-    if (serviceDetail?.metaTitle) {
-      document.title = serviceDetail.metaTitle;
-    } else if (serviceDetail?.title) {
-      document.title = serviceDetail.title;
-    }
-
-    // Optional: Reset title when leaving the page
-    return () => {
-      document.title = "EPR Comply";
-    };
-  }, [serviceDetail]);
-
   return (
     <>
+      <Helmet>
+        <title>
+          {serviceDetail?.metaTitle || serviceDetail?.title || "EPR Comply"}
+        </title>
+
+        <meta
+          name="description"
+          content={
+            serviceDetail?.metaDescription ||
+            serviceDetail?.shortDescription ||
+            "Get complete CPCB EPR registration and compliance support with EPR Comply."
+          }
+        />
+
+        {serviceDetail?.metaKeywords && (
+          <meta name="keywords" content={serviceDetail.metaKeywords} />
+        )}
+
+        {/* Canonical (IMPORTANT) */}
+        <link
+          rel="canonical"
+          href={`https://www.eprcomply.com/service/${serviceSlug}`}
+        />
+
+        {/* Open Graph */}
+        <meta
+          property="og:title"
+          content={
+            serviceDetail?.ogTitle ||
+            serviceDetail?.metaTitle ||
+            serviceDetail?.title
+          }
+        />
+
+        <meta
+          property="og:description"
+          content={
+            serviceDetail?.ogDescription ||
+            serviceDetail?.metaDescription ||
+            serviceDetail?.shortDescription
+          }
+        />
+
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:url"
+          content={`https://www.eprcomply.com/service/${serviceSlug}`}
+        />
+
+        {serviceDetail?.ogImage && (
+          <meta property="og:image" content={serviceDetail.ogImage} />
+        )}
+      </Helmet>
+
       <section className="bg-linear-to-br from-[#0E1F3A] via-[#1B3A6B] to-[#0E1F3A]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10">

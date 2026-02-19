@@ -13,12 +13,20 @@ import { groupServicesByCategory } from "../navData";
 
 const Footer = () => {
   const serviceList = useSelector((state) => state.service.clientServiceList);
+   const blogList = useSelector((state) => state.blogs.clientBlogList);
   const [servicesByCategory, setServicesByCategory] = React.useState({});
+  const [blogsByCategory, setBlogsByCategory] = React.useState({});
 
   React.useEffect(() => {
     const groupedServices = groupServicesByCategory(serviceList);
     setServicesByCategory(groupedServices);
   }, [serviceList]);
+
+
+  React.useEffect(() => {
+    const groupedServices = groupServicesByCategory(blogList);
+    setBlogsByCategory(groupedServices);
+  }, [blogList]);
 
   return (
     <footer className="bg-[#0e0e0e] text-white pt-16 pb-10">
@@ -58,6 +66,27 @@ const Footer = () => {
             </li>
           </ul>
         </div>
+
+        {Object.values(blogsByCategory)?.map(
+          (category, catIdx) => (
+            <div key={catIdx}>
+              <h3 className="text-lg font-semibold mb-4 text-white">
+                {category?.categoryName}
+              </h3>
+
+              <ul className="space-y-2 text-gray-400">
+                {category?.services?.slice(0,5)?.map((service) => (
+                  <li
+                    key={service?.id}
+                    className="hover:text-white cursor-pointer"
+                  >
+                    <Link to={`blog/${service?.slug}`}>{service?.title}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        )}
 
         {/* Services */}
         {Object.values(servicesByCategory)?.map(

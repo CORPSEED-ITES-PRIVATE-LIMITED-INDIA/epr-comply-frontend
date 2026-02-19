@@ -3,49 +3,50 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getClientServiceTableContentList } from "../toolkit/slices/serviceSlice";
-
+ 
 const ServiceTableOfContent = () => {
   const dispatch = useDispatch();
   const { serviceSlug } = useParams();
-
+ 
   const services = useSelector(
     (state) => state.service.clientServiceTableOfContentList
   );
-
+ 
   const [activeId, setActiveId] = useState(null);
-
+ 
   // 🔹 API CALL
   useEffect(() => {
     dispatch(getClientServiceTableContentList(serviceSlug));
   }, [dispatch, serviceSlug]);
-
-
+ 
+// console.log("services",services)
+ 
   // 🔹 SORT BY displayOrder (SAFE)
   const sortedServices = useMemo(() => {
     if (!Array.isArray(services)) return [];
-
+ 
     return [...services].sort((a, b) => {
       const aOrder =
         a.displayOrder === null || a.displayOrder === 0
           ? Number.MAX_SAFE_INTEGER
           : Number(a.displayOrder);
-
+ 
       const bOrder =
         b.displayOrder === null || b.displayOrder === 0
           ? Number.MAX_SAFE_INTEGER
           : Number(b.displayOrder);
-
+ 
       return aOrder - bOrder;
     });
   }, [services]);
-
+ 
   // 🔹 SET FIRST ACTIVE
   useEffect(() => {
     if (sortedServices.length > 0) {
       setActiveId(sortedServices[0].id);
     }
   }, [sortedServices]);
-
+ 
   const scrollToSection = (id) => {
     const element = document.getElementById(`section-${id}`);
     if (element) {
@@ -56,14 +57,14 @@ const ServiceTableOfContent = () => {
       setActiveId(id);
     }
   };
-
+ 
   if (!sortedServices.length) return null;
-
+console.log("sortedServices", sortedServices)
   return (
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          
+         
           {/* LEFT SIDE – TABLE OF CONTENT */}
           <div className="lg:block">
             <div className="bg-green-100 rounded-xl p-8 shadow-sm sticky top-24 h-fit">
@@ -92,7 +93,7 @@ const ServiceTableOfContent = () => {
               </div>
             </div>
           </div>
-
+ 
           {/* RIGHT SIDE – CONTENT */}
           <div className="lg:col-span-2 space-y-0">
             {sortedServices.map((item, index) => (
@@ -104,15 +105,28 @@ const ServiceTableOfContent = () => {
                   <h2 className="text-3xl font-bold mb-4 text-gray-900">
                     {item.title}
                   </h2>
+ 
+                   <div
+                      className="
+                        prose max-w-none
+                        [&_h2]:text-3xl
+                        [&_h2]:font-bold
+                        [&_h2]:mt-6
+                        [&_h2]:mb-3
+                        [&_ul[data-type=taskList]]:list-none
+                        [&_li[data-type=taskItem]]:flex
+                        [&_li[data-type=taskItem]]:gap-2
+                        [&_input[type=checkbox]]:hidden
+                        [&_li[data-type=taskItem]::before]:content-['👉']
+                        [&_li[data-type=taskItem]::before]:mr-2
+                      "
+                      dangerouslySetInnerHTML={{ __html: item.description }}
+                    />
 
-                  <div
-                    className="tiptap-render prose max-w-none text-gray-800 leading-relaxed
-                      prose-headings:text-green-800
-                      prose-a:text-blue-600"
-                    dangerouslySetInnerHTML={{ __html: item.description }}
-                  />
+
+
                 </section>
-
+ 
                 {index !== sortedServices.length - 1 && (
                   <div className="w-full">
                     <div className="h-px w-full bg-gray-200" />
@@ -121,11 +135,11 @@ const ServiceTableOfContent = () => {
               </React.Fragment>
             ))}
           </div>
-
+ 
         </div>
       </div>
     </section>
   );
 };
-
+ 
 export default ServiceTableOfContent;

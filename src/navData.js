@@ -14,7 +14,7 @@ export const megaMenu = {
           "Producer Company Registration",
         ],
       },
-
+ 
       {
         title: "Government Registration",
         items: [
@@ -25,12 +25,12 @@ export const megaMenu = {
           "Nidhi Company Registration",
         ],
       },
-
+ 
       {
         title: "FSSAI Registration",
         items: ["FSSAI Basic", "FSSAI State", "FSSAI Central"],
       },
-
+ 
       {
         title: "Trade License",
         items: ["Trade License Apply", "Renew Trade License"],
@@ -50,66 +50,67 @@ export const megaMenu = {
     ],
   },
 };
-
-export function formatMegaMenu(servicesData, blogsData) {
-  const serviceGroup = {};
-  const blogGroup = {};
-
-  // ----------- SERVICES API -----------
-  servicesData?.length > 0 &&
-    servicesData?.forEach((item) => {
-      const category = item.categoryName;
-      const serviceName = item.title;
-      const serviceSlug = item?.slug;
-      const type = "service";
-      const id = item?.id;
-
-      if (!serviceGroup[category]) {
-        serviceGroup[category] = [];
+ 
+export function formatMegaMenu(servicesData = [], blogsData = []) {
+  const groupByCategory = (list = [], type) => {
+    const map = {};
+ 
+    list.forEach((item) => {
+      const categoryId = item.categoryId ?? item.category_id ?? item.categorySlug ?? item.categoryName;
+      const categoryName = item.categoryName ?? "Others";
+      const categoryDisplayOrder =
+        item.categoryDisplayOrder ??
+        item.categoryOrder ??
+        item.category?.displayOrder ??
+        item.displayOrderCategory ??
+        0;
+ 
+      const itemDisplayOrder = item.displayOrder ?? 0;
+ 
+      if (!map[categoryId]) {
+        map[categoryId] = {
+          id: categoryId,
+          title: categoryName,
+          displayOrder: categoryDisplayOrder,
+          items: [],
+        };
       }
-
-      serviceGroup[category].push({
-        name: serviceName,
-        slug: serviceSlug,
+ 
+      map[categoryId].items.push({
+        id: item.id,
+        name: item.title,
+        slug: item.slug,
         type,
-        id,
+        displayOrder: itemDisplayOrder,
       });
     });
-
-  // ----------- BLOGS API -----------
-  blogsData?.length > 0 &&
-    blogsData?.forEach((item) => {
-      const category = item.categoryName;
-      const blogTitle = item.title;
-      const blogSlug = item?.slug;
-      const type = "blog";
-      const id = item?.id;
-
-      if (!blogGroup[category]) {
-        blogGroup[category] = [];
-      }
-
-      blogGroup[category].push({ name: blogTitle, slug: blogSlug, type, id });
-    });
-
-  // ----------- Build Final Structure -----------
+ 
+    // sort items inside each category
+    const categories = Object.values(map).map((cat) => ({
+      title: cat.title,
+      displayOrder: cat.displayOrder ?? 0,
+      items: [...cat.items].sort(
+        (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0),
+      ),
+    }));
+ 
+    // sort categories
+    categories.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+ 
+    // remove displayOrder field if you don’t want it in final output
+    return categories.map(({ displayOrder, ...rest }) => rest);
+  };
+ 
   return {
     Blogs: {
-      categories: Object?.keys(blogGroup)?.map((category) => ({
-        title: category,
-        items: blogGroup[category],
-      })),
+      categories: groupByCategory(blogsData, "blog"),
     },
-
     Services: {
-      categories: Object?.keys(serviceGroup)?.map((category) => ({
-        title: category,
-        items: serviceGroup[category],
-      })),
+      categories: groupByCategory(servicesData, "service"),
     },
   };
 }
-
+ 
 export const groupServicesByCategory = (data = []) => {
   return data.reduce((acc, item) => {
     if (!acc[item.categoryId]) {
@@ -119,13 +120,13 @@ export const groupServicesByCategory = (data = []) => {
         services: [],
       };
     }
-
+ 
     acc[item.categoryId].services.push({
       id: item.id,
       title: item.title,
       slug: item.slug,
     });
-
+ 
     return acc;
   }, {});
 };
@@ -153,7 +154,7 @@ export const cards = [
     text: "Our certified solar engineers design reliable systems for all.",
   },
 ];
-
+ 
 export const generateSlug = (text) => {
   return text
     .toLowerCase()
