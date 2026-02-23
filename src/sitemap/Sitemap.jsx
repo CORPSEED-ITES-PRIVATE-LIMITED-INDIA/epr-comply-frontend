@@ -46,8 +46,6 @@ const Sitemap = () => {
         </div>
       </div>
     </div>
-
-    
   );
 };
 
