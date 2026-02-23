@@ -158,7 +158,7 @@ const Footer = () => {
             <span className="hover:text-white cursor-pointer">
               Privacy Policy
             </span>
-            <span className="hover:text-white cursor-pointer">Sitemap</span>
+            <Link to="/sitemap"><span className="hover:text-white cursor-pointer">Sitemap</span></Link>
           </div>
 
           {/* Copyright */}
