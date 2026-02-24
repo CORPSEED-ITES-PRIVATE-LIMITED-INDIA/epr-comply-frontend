@@ -147,7 +147,7 @@ const HomePage = () => {
 
   // Filter logic
   const filteredServices = serviceList?.filter((service) =>
-    service.title.toLowerCase().includes(searchTerm.toLowerCase())
+    service.title.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   useEffect(() => {
@@ -156,6 +156,47 @@ const HomePage = () => {
 
   return (
     <>
+      <Helmet>
+        <title>{"EPR Registration & CPCB Compliance Services in India"}</title>
+
+        <meta
+          name="description"
+          content={
+            "Get hassle-free EPR Registration with CPCB approval. Expert consultants for Plastic, Battery & E-Waste EPR compliance across India. Apply today."
+          }
+        />
+
+        {/* <meta name="keywords" content={serviceDetail.metaKeywords} /> */}
+
+        {/* Canonical (IMPORTANT) */}
+        <link rel="canonical" href={`https://www.eprcomply.com`} />
+
+        {/* Open Graph */}
+        {/* <meta
+              property="og:title"
+              content={
+                serviceDetail?.ogTitle ||
+                serviceDetail?.metaTitle ||
+                serviceDetail?.title
+              }
+            /> */}
+
+        {/* <meta
+              property="og:description"
+              content={
+                serviceDetail?.ogDescription ||
+                serviceDetail?.metaDescription ||
+                serviceDetail?.shortDescription
+              }
+            /> */}
+
+        {/* <meta property="og:type" content="website" /> */}
+        {/* <meta
+              property="og:url"
+              content={`https://www.eprcomply.com`}
+            /> */}
+        {/* <meta property="og:image" content={serviceDetail.ogImage} /> */}
+      </Helmet>
       <section className="relative w-full py-14 md:py-16 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -169,7 +210,8 @@ const HomePage = () => {
         <div className="absolute inset-0 bg-[#0A3558]/50"></div>
         <div className="relative z-10 max-w-7xl mx-auto text-center text-white px-5">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 leading-snug md:leading-tight">
-            Revolutionize Sustainability Confidently with Reliable EPR Solutions{" "}
+            Revolutionize Sustainability Confidently with Reliable EPR
+            Solutions{" "}
           </h2>
 
           <p className="text-base md:text-lg text-gray-200 max-w-6xl mx-auto mb-10">
@@ -373,7 +415,7 @@ const HomePage = () => {
             <div className="flex flex-col">
               <div className="max-w-2xl">
                 <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-                  Our Comprehensive EPR and Waste Management Solutions
+                  EPR Registration & CPCB Compliance Services in India
                 </h2>
               </div>
 
