@@ -158,12 +158,12 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>{"EPR Registration & CPCB Compliance Services in India"}</title>
+        <title>{" #1 EPR Compliance & Registration Consultant in India "}</title>
 
         <meta
           name="description"
           content={
-            "Get hassle-free EPR Registration with CPCB approval. Expert consultants for Plastic, Battery & E-Waste EPR compliance across India. Apply today."
+            " Get fast and hassle-free EPR registration for Plastic, E-Waste & Battery Waste. Trusted CPCB EPR consultants in India. Apply today"
           }
         />
 
