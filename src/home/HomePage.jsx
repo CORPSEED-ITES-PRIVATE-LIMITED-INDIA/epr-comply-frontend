@@ -17,6 +17,7 @@ import { BsShieldCheck } from "react-icons/bs";
 import Rating45 from "../components/Rating45";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 const images = [frontImage, img1, img2, img3];
 
