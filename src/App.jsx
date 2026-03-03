@@ -2,6 +2,7 @@ import { Suspense, lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Layout from "./Layout";
 import ProtectedRoute from "./ProtectedRoute";
+import Loader from "./components/Loader";
 
 const HomePage = lazy(() => import("./home/HomePage"));
 const Service = lazy(() => import("./services/Service"));
@@ -27,9 +28,10 @@ const Enquiry = lazy(() => import("./admin/enquiry/Enquiry"));
 const Reviews = lazy(() => import("./admin/reviews/Reviews"));
 
 const App = () => {
+  
   return (
     <BrowserRouter>
-      <Suspense fallback={<div className="py-10 text-center">Loading...</div>}>
+      <Suspense fallback={""}>
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />

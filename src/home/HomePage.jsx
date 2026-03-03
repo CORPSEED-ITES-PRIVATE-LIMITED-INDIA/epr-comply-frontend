@@ -1,135 +1,150 @@
-import React, { useEffect, useRef, useState } from "react";
-import frontImage from "../assets/front_page.jpg";
-import img1 from "../assets/nature1.jfif";
-import img2 from "../assets/nature2.webp";
-import img3 from "../assets/nature3.jpg";
-import solarImg from "../assets/section1.jpg";
-import businessImg from "../assets/business.webp";
-import { FiArrowRight, FiCheck } from "react-icons/fi";
-import bgImg from "../assets/serviceimg.jpg";
-import LogoInfiniteScroller from "./LogoInfiniteScroll";
-import ReviewSection from "./ReviewSection";
-import BlogsCarousel from "./BlogsCarousel";
-import google from "../assets/googleIcon.png";
-import glassdoor from "../assets/glassdoorIcon.png";
-import mouthshut from "../assets/moutshutlogoIcon.png";
+import  { useEffect, useRef, useState } from "react";
+import React, { Suspense } from "react";
+import secondSection from "../assets/optimized/secondSection.webp";
+import { getAllReviews } from "../toolkit/slices/settingSlice";
 import { BsShieldCheck } from "react-icons/bs";
 import Rating45 from "../components/Rating45";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+const LogoInfiniteScroller = React.lazy(() => import("./LogoInfiniteScroll"));
+const BlogsCarousel = React.lazy(() => import("./BlogsCarousel"));
+const ReviewSection = React.lazy(() => import("./ReviewSection"));
+import { useDispatch } from "react-redux";
+import { getClientServiceList } from "../toolkit/slices/serviceSlice";
+import { getClientBlogList } from "../toolkit/slices/blogSlice";
 
-const images = [frontImage, img1, img2, img3];
+
+
 
 const HomePage = () => {
-  const scrollRef = useRef(null);
+  // const scrollRef = useRef(null);
   const serviceList = useSelector((state) => state.service.clientServiceList);
   const [index, setIndex] = useState(0);
-  const [isDown, setIsDown] = useState(false);
-  const startXRef = useRef(0);
-  const startScrollRef = useRef(0);
-  const rafIdRef = useRef(null);
-  const runningRef = useRef(false);
-  const pausedRef = useRef(false);
-  const speedRef = useRef(1.2);
-
-  const nextImage = () => {
-    setIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
-  const step = () => {
-    const container = scrollRef.current;
-    if (!container) {
-      rafIdRef.current = null;
-      runningRef.current = false;
-      return;
-    }
-
-    if (!pausedRef.current && !isDown) {
-      container.scrollLeft += speedRef.current;
-      const half = container.scrollWidth / 2;
-      if (container.scrollLeft >= half) {
-        container.scrollLeft -= half;
-      }
-    }
-
-    rafIdRef.current = requestAnimationFrame(step);
-  };
-
-  const startAuto = () => {
-    pausedRef.current = false;
-    if (!runningRef.current) {
-      runningRef.current = true;
-      rafIdRef.current = requestAnimationFrame(step);
-    }
-  };
-
-  const stopAuto = () => {
-    pausedRef.current = true;
-    if (rafIdRef.current) {
-      cancelAnimationFrame(rafIdRef.current);
-      rafIdRef.current = null;
-    }
-    runningRef.current = false;
-  };
+  // const [isDown, setIsDown] = useState(false);
+  // const startXRef = useRef(0);
+  // const startScrollRef = useRef(0);
+  // const rafIdRef = useRef(null);
+  // const runningRef = useRef(false);
+  // const pausedRef = useRef(false);
+  // const speedRef = useRef(1.2);
+  
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    startAuto();
-    return () => {
-      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
-    };
-  }, []);
+    dispatch(getAllReviews());
+  }, [dispatch]);
 
-  const onMouseDown = (e) => {
-    stopAuto();
-    setIsDown(true);
-    const container = scrollRef.current;
-    startXRef.current = e.pageX - container.offsetLeft;
-    startScrollRef.current = container.scrollLeft;
-  };
+  // const nextImage = () => {
+  //   setIndex((prev) => (prev + 1) % images.length);
+  // };
 
-  const onMouseMove = (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const container = scrollRef.current;
-    const x = e.pageX - container.offsetLeft;
-    const walk = x - startXRef.current;
-    container.scrollLeft = startScrollRef.current - walk;
-  };
+  // const prevImage = () => {
+  //   setIndex((prev) => (prev - 1 + images.length) % images.length);
+  // };
+  
+useEffect(() => {
+  dispatch(getClientServiceList()); // hero needs this
 
-  const onMouseUp = () => {
-    setIsDown(false);
-    setTimeout(() => {
-      if (!pausedRef.current) startAuto();
-    }, 30);
-  };
+  const idle =
+    window.requestIdleCallback ||
+    ((cb) => setTimeout(cb, 1000));
 
-  const onMouseLeave = () => {
-    if (isDown) {
-      setIsDown(false);
-      setTimeout(() => {
-        if (!pausedRef.current) startAuto();
-      }, 30);
-    }
-  };
+  idle(() => {
+    dispatch(getClientBlogList());
+  });
+}, [dispatch]);
 
-  const handleMouseEnter = () => {
-    pausedRef.current = true;
-    if (rafIdRef.current) {
-      cancelAnimationFrame(rafIdRef.current);
-      rafIdRef.current = null;
-      runningRef.current = false;
-    }
-  };
 
-  const handleMouseLeave = () => {
-    pausedRef.current = false;
-    if (!isDown) startAuto();
-  };
+  // const step = () => {
+  //   const container = scrollRef.current;
+  //   if (!container) {
+  //     rafIdRef.current = null;
+  //     runningRef.current = false;
+  //     return;
+  //   }
+
+  //   if (!pausedRef.current && !isDown) {
+  //     container.scrollLeft += speedRef.current;
+  //     const half = container.scrollWidth / 2;
+  //     if (container.scrollLeft >= half) {
+  //       container.scrollLeft -= half;
+  //     }
+  //   }
+
+  //   rafIdRef.current = requestAnimationFrame(step);
+  // };
+
+  // const startAuto = () => {
+  //   pausedRef.current = false;
+  //   if (!runningRef.current) {
+  //     runningRef.current = true;
+  //     rafIdRef.current = requestAnimationFrame(step);
+  //   }
+  // };
+
+  // const stopAuto = () => {
+  //   pausedRef.current = true;
+  //   if (rafIdRef.current) {
+  //     cancelAnimationFrame(rafIdRef.current);
+  //     rafIdRef.current = null;
+  //   }
+  //   runningRef.current = false;
+  // };
+
+  // useEffect(() => {
+  //   startAuto();
+  //   return () => {
+  //     if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
+  //   };
+  // }, []);
+
+  // const onMouseDown = (e) => {
+  //   stopAuto();
+  //   setIsDown(true);
+  //   const container = scrollRef.current;
+  //   startXRef.current = e.pageX - container.offsetLeft;
+  //   startScrollRef.current = container.scrollLeft;
+  // };
+
+  // const onMouseMove = (e) => {
+  //   if (!isDown) return;
+  //   e.preventDefault();
+  //   const container = scrollRef.current;
+  //   const x = e.pageX - container.offsetLeft;
+  //   const walk = x - startXRef.current;
+  //   container.scrollLeft = startScrollRef.current - walk;
+  // };
+
+  // const onMouseUp = () => {
+  //   setIsDown(false);
+  //   setTimeout(() => {
+  //     if (!pausedRef.current) startAuto();
+  //   }, 30);
+  // };
+
+  // const onMouseLeave = () => {
+  //   if (isDown) {
+  //     setIsDown(false);
+  //     setTimeout(() => {
+  //       if (!pausedRef.current) startAuto();
+  //     }, 30);
+  //   }
+  // };
+
+  // const handleMouseEnter = () => {
+  //   pausedRef.current = true;
+  //   if (rafIdRef.current) {
+  //     cancelAnimationFrame(rafIdRef.current);
+  //     rafIdRef.current = null;
+  //     runningRef.current = false;
+  //   }
+  // };
+
+  // const handleMouseLeave = () => {
+  //   pausedRef.current = false;
+  //   if (!isDown) startAuto();
+  // };
 
   const [searchTerm, setSearchTerm] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
@@ -199,15 +214,26 @@ const HomePage = () => {
         {/* <meta property="og:image" content={serviceDetail.ogImage} /> */}
       </Helmet>
       <section className="relative w-full py-14 md:py-16 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${images[index]})`,
-            filter: "blur(8px)",
-            transform: "scale(1.1)",
-            backgroundAttachment: "fixed",
-          }}
-        ></div>
+       {/* <img
+        src={"https://eprcomply.s3.ap-south-1.amazonaws.com/455ca58f-1411-4f84-9c24-f8f0c8e59ffd.webp"}
+        alt="Hero Background"
+        className="absolute inset-0 w-full h-full object-cover"
+        fetchpriority={index === 0 ? "high" : "auto"}
+        loading={index === 0 ? "eager" : "lazy"}
+        decoding="async"
+        width="1920"
+        height="800"
+      /> */}
+      <img
+        src="https://eprcomply.s3.ap-south-1.amazonaws.com/455ca58f-1411-4f84-9c24-f8f0c8e59ffd.webp"
+        alt="Hero Background"
+        className="absolute inset-0 w-full h-full object-cover blur-sm scale-105"
+        fetchpriority={index === 0 ? "high" : "auto"}
+        loading={index === 0 ? "eager" : "lazy"}
+        decoding="async"
+        width="1920"
+        height="800"
+      />
         <div className="absolute inset-0 bg-[#0A3558]/50"></div>
         <div className="relative z-10 max-w-7xl mx-auto text-center text-white px-5">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 leading-snug md:leading-tight">
@@ -283,7 +309,8 @@ const HomePage = () => {
           <div className="flex flex-wrap justify-center gap-10 mb-12">
             <div className="flex flex-col items-center justify-center">
               <div className="flex items-center gap-1.5">
-                <img src={google} className="h-6 mb-1" alt="Google" />
+                {/* <img src={google} className="h-6 mb-1" alt="Google" /> */}
+                <img src={"https://eprcomply.s3.ap-south-1.amazonaws.com/c01236b8-27a5-440f-a9e0-bb21cc6997ec.webp"} alt="Google" className="h-6 mb-1" width={24} height={24} loading="lazy" decoding="async" />
                 <p className="text-yellow-400 font-semibold">4.5 Out of 5</p>
               </div>
               <div className="flex items-center gap-1.5">
@@ -294,7 +321,7 @@ const HomePage = () => {
 
             <div className="flex flex-col items-center justify-center">
               <div className="flex items-center gap-1.5">
-                <img src={glassdoor} className="h-6 mb-1" alt="Glassdoor" />
+                <img src={"https://eprcomply.s3.ap-south-1.amazonaws.com/37df5364-6cf1-49c3-9f9b-cf82e23d14c3.webp"} className="h-6 mb-1" alt="Glassdoor" />
                 <p className="text-yellow-400 font-semibold">4.5 Out of 5</p>
               </div>
               <div className="flex items-center gap-1.5">
@@ -305,7 +332,7 @@ const HomePage = () => {
 
             <div className="flex flex-col items-center justify-center">
               <div className="flex items-center gap-1.5">
-                <img src={mouthshut} className="h-6 mb-1" alt="Trustpilot" />
+                <img src={"https://eprcomply.s3.ap-south-1.amazonaws.com/1b464288-1332-41a1-bbe6-d1a11fbc0eb1.webp"} className="h-6 mb-1" alt="Trustpilot" />
                 <p className="text-yellow-400 font-semibold">4.5 Out of 5</p>
               </div>
               <div className="flex items-center gap-1.5">
@@ -359,14 +386,20 @@ const HomePage = () => {
         </div>
       </section>
 
-      <LogoInfiniteScroller />
+      <Suspense fallback={<div style={{ height: 120 }} />}>
+  <LogoInfiniteScroller />
+</Suspense>
       <section className="w-full py-16 bg-white">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 px-4 sm:px-6 lg:px-8 items-center">
           <div className="relative">
             <img
-              src={solarImg}
+              src={secondSection}
               alt="Solar Panels"
-              className="w-full h-auto rounded-xl shadow-lg"
+              loading="lazy"
+              decoding="async"
+              width="600"
+              height="400"
+              className="rounded-lg shadow-lg"
             />
             {/* <div className="hidden md:block absolute right-10 -bottom-8 bg-green-600 text-white p-6 rounded-xl max-w-xs shadow-xl">
               <h3 className="text-xl font-semibold mb-2">
@@ -433,50 +466,68 @@ const HomePage = () => {
               </button> */}
             </div>
             <div className="flex justify-end">
-              <img src={businessImg} alt="business" className="rounded" />
+              {/* <img src={businessImg} alt="business" className="rounded" /> */}
+              <img
+                src={"https://eprcomply.s3.ap-south-1.amazonaws.com/8d6aed74-eebf-4308-99cc-fc00378f8385.webp"}
+                alt="business"
+                className="rounded"
+                loading="lazy"
+                decoding="async"
+                width="600"
+                height="400"
+              />
             </div>
           </div>
 
+         {/* <div className="mt-14 flex gap-6 overflow-x-auto snap-x snap-mandatory py-4">
+          {serviceList?.map((item, index) => (
+            <Link key={index} to={`${item.slug}`} className="snap-start shrink-0">
+              <div className="w-[280px] h-[200px] bg-white text-black rounded-xl p-6 shadow flex flex-col">
+                <img src={item.img} className="w-12 mb-3" alt="" loading="lazy" decoding="async" />
+                <h3 className="font-semibold text-lg mb-2 line-clamp-2">{item.title}</h3>
+                <div
+                  className="tiptap-render line-clamp-3 prose max-w-none text-sm flex-1 overflow-hidden"
+                  dangerouslySetInnerHTML={{ __html: item.metaDescription }}
+                />
+                <div className="mt-4 text-green-600">
+                  <FiArrowRight />
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div> */}
+        <div className="mt-14 overflow-hidden relative">
+          <div className="flex gap-6 animate-scrol">
+            {[...serviceList, ...serviceList].map((item, index) => (
+      <Link key={index} to={`${item.slug}`} className="shrink-0">
+        <div className="w-[280px] h-[200px] bg-white text-black rounded-xl p-6 shadow flex flex-col">
+          <img src={item.img} className="w-12 mb-3" alt="" loading="lazy" />
+          <h3 className="font-semibold text-lg mb-2 line-clamp-2">
+            {item.title}
+          </h3>
+
           <div
-            ref={scrollRef}
-            onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
-            onMouseMove={onMouseMove}
-            onMouseLeave={(e) => {
-              onMouseLeave(e);
-              handleMouseLeave();
-            }}
-            onMouseEnter={handleMouseEnter}
-            onMouseOver={handleMouseEnter}
-            className="
-              mt-14 flex gap-6 overflow-x-auto 
-              cursor-grab active:cursor-grabbing
-              select-none py-4 custom-scroll-hide
-            "
-            style={{ touchAction: "pan-y" }}
-          >
-            {serviceList?.length > 0 &&
-              serviceList?.map((item, index) => (
-                <Link key={index} to={`${item?.slug}`}>
-                  <div className="min-w-[280px] h-[200px] bg-white text-black rounded-xl p-6 shadow flex flex-col">
-                    <img src={item.img} className="w-12 mb-3" alt="" />
+            className="tiptap-render line-clamp-3 prose max-w-none text-sm flex-1 overflow-hidden"
+            dangerouslySetInnerHTML={{ __html: item.metaDescription }}
+          />
 
-                    <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                      {item.title}
-                    </h3>
-
-                    <div
-                      className="tiptap-render line-clamp-3 prose max-w-none text-sm flex-1 overflow-hidden"
-                      dangerouslySetInnerHTML={{ __html: item.metaDescription }}
-                    />
-
-                    <div className="mt-4 text-green-600">
-                      <FiArrowRight />
-                    </div>
-                  </div>
-                </Link>
-              ))}
+          <div className="mt-4 text-green-600">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
           </div>
+        </div>
+      </Link>
+            ))}
+          </div>
+        </div>
+          
         </div>
         <div className="bg-black text-white pt-20 pb-40">
           <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
@@ -529,17 +580,22 @@ const HomePage = () => {
 
             <div className="w-full md:absolute md:-top-36 md:right-10 md:w-2xl order-1 md:order-2">
               <img
-                src={bgImg}
+                src={"https://eprcomply.s3.ap-south-1.amazonaws.com/48a38340-6b83-4900-a876-571c2a35c1f0.webp"}
                 className="rounded-xl shadow-xl w-full h-[390px] object-cover z-10"
-                alt=""
+                alt="service illustration"
               />
             </div>
           </div>
         </div>
       </section>
 
-      <BlogsCarousel />
-      <ReviewSection />
+      <Suspense fallback={null}>
+        <BlogsCarousel />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <ReviewSection />
+      </Suspense>
     </>
   );
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logo1.webp";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useToast } from "../../components/ToastProvider";

@@ -68,27 +68,44 @@ body {
   padding-left: 1.5rem;
 }
 
-.tiptap-render ol {
-  list-style: decimal;
-  padding-left: 1.5rem;
-}
-
-/* Finger pointer list */
-.tiptap-render ul[data-type="taskList"] {
-  list-style: none;
-  padding-left: 1.5rem;
-}
-
-.tiptap-render ul[data-type="taskList"] li {
+.loader-outer {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
   display: flex;
-  align-items: start;
+  align-items: center;
+  justify-content: center;
+  border: 6px solid #e5e7eb; /* static light gray ring */
+  position: relative;
+  box-sizing: border-box;
+ 
 }
 
-.tiptap-render ul[data-type="taskList"] li::before {
-  content: "👉";
-  margin-right: 8px;
-  margin-top: 6px;
+/* spinning ring sits on top of the outer circle but is independent
+   so the inner logo doesn't rotate */
+/* .loader-outer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 6px solid transparent;
+ 
+  pointer-events: none;
+  box-sizing: border-box;
+} */
+
+.loader-inner {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  box-sizing: border-box;
+ 
 }
+
 
 .tiptap-render ul[data-type="taskList"] input[type="checkbox"] {
   display: none;
@@ -199,3 +216,53 @@ body {
   white-space: pre-wrap;
 }
 
+/* Global Loader Styles */
+.global-loader {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.65);
+  z-index: 20000;
+}
+.loader {
+  border: 5px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 5px solid #3498db;
+  width: 50px;
+  height: 50px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* utility class for loader arc animation */
+.loader-spin {
+  animation: loader-spin 1s linear infinite;
+  transform-origin: center center;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+
+ .animate-scrol {
+  width: max-content;
+  animation: scroll 120s linear infinite;
+  
+} 

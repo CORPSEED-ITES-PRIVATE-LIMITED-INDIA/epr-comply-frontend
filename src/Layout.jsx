@@ -2,20 +2,18 @@ import React, { useEffect } from "react";
 import Header from "./header/Header";
 import { Outlet, useLocation } from "react-router-dom";
 import Footer from "./footer/Footer";
-import { useDispatch } from "react-redux";
-import { getClientServiceList } from "./toolkit/slices/serviceSlice";
-import { getClientBlogList } from "./toolkit/slices/blogSlice";
+import NavigationLoader from "./components/NavigationLoader";
+
 import { Helmet } from "react-helmet-async";
 
 const Layout = () => {
-  const dispatch = useDispatch();
+ 
   const location = useLocation();
   const canonicalUrl = `https://www.eprcomply.com${location.pathname}`;
 
-  useEffect(() => {
-    dispatch(getClientServiceList());
-    dispatch(getClientBlogList());
-  }, [dispatch]);
+
+
+
 
   return (
     <>
@@ -45,6 +43,7 @@ const Layout = () => {
         />
       </Helmet>
       <div className="flex flex-col min-h-screen">
+        {/* <NavigationLoader /> */}
         <Header />
         <Outlet />
         <Footer />

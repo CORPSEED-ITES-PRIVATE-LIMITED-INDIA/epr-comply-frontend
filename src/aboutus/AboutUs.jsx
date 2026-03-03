@@ -1,6 +1,5 @@
 import React from "react";
-
-
+import aboutus from "../assets/optimized/aboutus.webp";
 
 const AboutUs = () => {
   return (
@@ -40,7 +39,7 @@ const AboutUs = () => {
 
         <div>
           <img
-            src="https://images.unsplash.com/photo-1503387762-592deb58ef4e"
+            src={aboutus}
             className="rounded-xl shadow-lg w-full object-cover h-80"
           />
         </div>

@@ -1,81 +1,74 @@
 import React, { useRef, useEffect, useState } from "react";
-import logo1 from "../assets/barbeque.png";
-import logo2 from "../assets/capital.png";
-import logo3 from "../assets/dynamic.jfif";
-import logo4 from "../assets/finance.png";
-import logo5 from "../assets/google.png";
-import logo6 from "../assets/indian_oil.png";
-import logo7 from "../assets/lic.jfif";
-import logo8 from "../assets/netflix.png";
- 
-const LogoInfiniteScroller = ({ speed = 40 }) => {
+
+import logo1 from "../assets/optimized/barbeque1.webp";
+import logo2 from "../assets/optimized/capital1.webp";
+import logo3 from "../assets/optimized/dynamic1.webp";
+import logo4 from "../assets/optimized/finance1.webp";
+import logo5 from "../assets/optimized/google1.webp";
+import logo6 from "../assets/optimized/indian_oil1.webp";
+import logo7 from "../assets/optimized/lic1.webp";
+import logo8 from "../assets/optimized/netflix1.webp";
+
+const LogoInfiniteScroller = () => {
   const images = [logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8];
- 
+
   const trackRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
- 
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    setStartX(e.clientX);
-    setScrollLeft(trackRef.current.offsetLeft);
-  };
- 
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    const x = e.clientX - startX;
-    trackRef.current.style.transform = "translateX(calc(${scrollLeft}px + ${x}px))";
-  };
- 
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
- 
+  const containerRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  // ✅ Intersection Observer (start only when visible)
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.2 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div
+      ref={containerRef}
       className="w-full overflow-hidden relative pt-8 select-none"
-      onMouseLeave={handleMouseUp}
-      onMouseUp={handleMouseUp}
     >
       <div
         ref={trackRef}
-        className="flex gap-16 animate-scroll hover:[animation-play-state:paused] active:[animation-play-state:paused] cursor-grab active:cursor-grabbing"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
+        className={`flex gap-16 ${
+          isVisible ? "animate-scroll" : ""
+        }`}
       >
-        {/* REAL LIST */}
-        {[...images,...images]?.map((src, i) => (
-          <img key={i} src={src} className="h-16 w-16 object-contain" />
-        ))}
- 
-        {/* DUPLICATED LIST for seamless loop */}
-        {[...images,...images]?.map((src, i) => (
+        {[...images, ...images].map((src, i) => (
           <img
-            key={`dup-${i}`}
+            key={i}
             src={src}
             className="h-16 w-16 object-contain"
+            loading="lazy"
+            decoding="async"
+            width="64"
+            height="64"
+            alt="client logo"
           />
         ))}
       </div>
- 
-      {/* CSS KEYFRAMES */}
+
       <style>{`
         .animate-scroll {
           animation: scroll 40s linear infinite;
         }
- 
+
         @keyframes scroll {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-50%);
-          }
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
         }
       `}</style>
     </div>
   );
 };
- 
+
 export default LogoInfiniteScroller;

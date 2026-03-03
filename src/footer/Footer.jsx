@@ -64,10 +64,13 @@ const Footer = () => {
             <li className="hover:text-white cursor-pointer">
               <Link to={"contactus"}>Contact Us</Link>
             </li>
+             <li className="hover:text-white cursor-pointer">
+              <Link to={""}>Blog</Link>
+            </li>
           </ul>
         </div>
 
-        {Object.values(blogsByCategory)?.map(
+        {/* {Object.values(blogsByCategory)?.map(
           (category, catIdx) => (
             <div key={catIdx}>
               <h3 className="text-lg font-semibold mb-4 text-white">
@@ -86,7 +89,7 @@ const Footer = () => {
               </ul>
             </div>
           )
-        )}
+        )} */}
 
         {/* Services */}
         {Object.values(servicesByCategory)?.map(

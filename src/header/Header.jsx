@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
-import logo from "../assets/logo.png";
+import logo from "../assets/logo1.webp";
 import { formatMegaMenu } from "../navData";
 import { FiSearch } from "react-icons/fi";
 import { Link } from "react-router-dom";

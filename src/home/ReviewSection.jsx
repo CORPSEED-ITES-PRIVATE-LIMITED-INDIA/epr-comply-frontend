@@ -1,15 +1,13 @@
 import React, { use, useEffect } from "react";
 import { FaQuoteLeft, FaStar } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllReviews } from "../toolkit/slices/settingSlice";
+
 
 const ReviewSection = () => {
   const dispatch = useDispatch();
   const reviews = useSelector((state) => state.setting.reviewList);
 
-  useEffect(() => {
-    dispatch(getAllReviews());
-  }, [dispatch]);
+
 
   return (
     <section className="max-w-7xl mx-auto px-4 pb-8">
@@ -45,7 +43,11 @@ const ReviewSection = () => {
               <img
                 src={review.customerPhoto}
                 alt="user"
-                className="w-14 h-14 rounded-full object-cover border"
+                className="w-14 h-14 rounded-full"
+                loading="lazy"
+                decoding="async"
+                width="56"
+                height="56"
               />
               <div>
                 <h4 className="text-lg font-semibold">{review.customerName}</h4>
