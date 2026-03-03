@@ -497,7 +497,7 @@ useEffect(() => {
           ))}
         </div> */}
         <div className="mt-14 overflow-hidden relative">
-          <div className="flex gap-6 animate-scrol">
+          <div className="flex gap-6 animate-scroll">
             {[...serviceList, ...serviceList].map((item, index) => (
       <Link key={index} to={`${item.slug}`} className="shrink-0">
         <div className="w-[280px] h-[200px] bg-white text-black rounded-xl p-6 shadow flex flex-col">

@@ -263,6 +263,6 @@ body {
 
  .animate-scrol {
   width: max-content;
-  animation: scroll 120s linear infinite;
+  animation: scroll 150s linear infinite;
   
 } 

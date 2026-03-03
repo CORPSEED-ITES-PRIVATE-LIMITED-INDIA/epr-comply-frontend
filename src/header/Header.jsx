@@ -151,7 +151,7 @@ const Header = () => {
   return (
     <>
       <header
-        className={`w-full bg-white sticky top-0 z-[10000] transition-all duration-200 ${
+        className={`w-full bg-white sticky top-0 z-10000 transition-all duration-200 ${
           scrolled ? "border-b border-gray-200" : ""
         }`}
       >
@@ -239,7 +239,7 @@ const Header = () => {
         {/* ✅ Desktop Mega Menu (NOW depends on openMenu: Services OR Blogs) */}
         {openMenu && (
           <div
-            className="hidden lg:flex fixed top-[88px] left-1/2 -translate-x-1/2 w-[75vw] h-[400px] bg-white border border-gray-200 rounded-2xl shadow-xl z-[9999]"
+            className="hidden lg:flex fixed top-[88px] left-1/2 -translate-x-1/2 w-[75vw] h-[400px] bg-white border border-gray-200 rounded-2xl shadow-xl z-9999"
             onMouseEnter={() => setOpenMenu(openMenu)}
             onMouseLeave={() => setOpenMenu(null)}
           >
@@ -261,7 +261,7 @@ const Header = () => {
             </div>
 
             {/* RIGHT - ITEMS */}
-            <div className="w-3/4 grid [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))] gap-x-6 gap-y-7 p-3 content-start overflow-y-auto">
+            <div className="w-3/4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-x-6 gap-y-7 p-3 content-start overflow-y-auto">
               {(activeCategories[activeCategoryIndex]?.items || []).map((x) => (
                 <Link
                   key={x.id}
@@ -331,7 +331,7 @@ const Header = () => {
             with your existing drawer, and only use the computed
             mobileServicesCategories/mobileBlogsCategories. */}
       {drawerOpen && (
-        <div className="lg:hidden fixed inset-0 z-[10001]">
+        <div className="lg:hidden fixed inset-0 z-10001">
           {/* overlay */}
           <div
             className="absolute inset-0 bg-black/40"

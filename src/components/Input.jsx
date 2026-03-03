@@ -1,6 +1,7 @@
+import { forwardRef } from "react";
 import { Search } from "lucide-react";
 
-const Input = ({
+const Input = forwardRef(function Input({
   label,
   icon = <Search size={18} />,
   showIcon = false,
@@ -8,7 +9,7 @@ const Input = ({
   wrapperClassName = "",
   className = "",
   ...props
-}) => {
+}, ref) {
   return (
     <div className={`flex flex-col gap-1 ${wrapperClassName}`}>
       {label && (
@@ -31,6 +32,7 @@ const Input = ({
         )}
 
         <input
+          ref={ref}
           {...props}
           className={`
             w-full
@@ -51,9 +53,9 @@ const Input = ({
         )}
       </div>
     </div>
-
-    
   );
-};
+});
+
+Input.displayName = "Input";
 
 export default Input;
