@@ -1,4 +1,4 @@
-import  { useEffect, useRef, useState } from "react";
+import  { useEffect, useRef, useState,useMemo } from "react";
 import React, { Suspense } from "react";
 import secondSection from "../assets/optimized/secondSection.webp";
 import { getAllReviews } from "../toolkit/slices/settingSlice";
@@ -13,6 +13,8 @@ const ReviewSection = React.lazy(() => import("./ReviewSection"));
 import { useDispatch } from "react-redux";
 import { getClientServiceList } from "../toolkit/slices/serviceSlice";
 import { getClientBlogList } from "../toolkit/slices/blogSlice";
+
+
 
 
 
@@ -44,15 +46,12 @@ const HomePage = () => {
   // };
   
 useEffect(() => {
-  dispatch(getClientServiceList()); // hero needs this
-
   const idle =
     window.requestIdleCallback ||
-    ((cb) => setTimeout(cb, 1000));
+    ((cb) => setTimeout(cb, 800));
 
-  idle(() => {
-    dispatch(getClientBlogList());
-  });
+  idle(() => dispatch(getClientServiceList()));
+  idle(() => dispatch(getClientBlogList()));
 }, [dispatch]);
 
 
@@ -162,9 +161,12 @@ useEffect(() => {
   }, []);
 
   // Filter logic
-  const filteredServices = serviceList?.filter((service) =>
-    service.title.toLowerCase().includes(searchTerm.toLowerCase()),
+const filteredServices = useMemo(() => {
+  if (!serviceList?.length) return [];
+  return serviceList.filter((service) =>
+    service.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+}, [serviceList, searchTerm]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

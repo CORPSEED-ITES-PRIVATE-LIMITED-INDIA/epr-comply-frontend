@@ -295,7 +295,7 @@ const Blogs = () => {
   }, [search]);
 
   return (
-    <>
+    <div className="p-4 bg-white rounded-md shadow">
       {!openModal ? (
         <>
           <h2 className="text-lg font-semibold">Blogs list</h2>
@@ -308,7 +308,7 @@ const Blogs = () => {
         </>
       ) : (
         <>
-          <div className="flex items-center gap-2">
+          <div className="flex  bg-white text-black items-center gap-2">
             <Button
               icon={<ArrowLeft className="h-4 w-4 text-gray-800 font-medium" />}
               variant="text"
@@ -545,7 +545,7 @@ const Blogs = () => {
           ></div>
         </div>
       </Modal>
-    </>
+    </div>
   );
 };
 

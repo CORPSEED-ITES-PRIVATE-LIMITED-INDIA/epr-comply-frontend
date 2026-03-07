@@ -74,7 +74,7 @@ const BlogDetail = () => {
         )}
       </Helmet>
 
-      <div className="w-full bg-gray-50 dark:bg-gray-950">
+      <div className="w-full bg-gray-50 dark:bg-gray-50">
         {/* ---------------- TOP BANNER ---------------- */}
         <div
           className="w-full h-[120px] flex flex-col justify-center px-8 text-white bg-gray-600"
@@ -103,7 +103,7 @@ const BlogDetail = () => {
             </div>
 
             {/* Right Enquiry Form */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm rounded-2xl p-6">
+            <div className="bg-white dark:bg-white border border-gray-200 dark:border-gray-200 shadow-sm rounded-2xl p-6">
               <EnquiryForm />
             </div>
           </div>
@@ -141,9 +141,9 @@ const BlogDetail = () => {
               rounded-2xl
               border
               border-gray-200
-              dark:border-gray-800
+              dark:border-gray-200
               bg-white
-              dark:bg-gray-900
+              dark:bg-white
               p-6
               shadow-sm
             "
