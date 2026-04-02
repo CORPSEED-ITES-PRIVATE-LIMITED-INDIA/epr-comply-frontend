@@ -20,6 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Dropdown from "../../components/Dropdown";
 import PopConfirm from "../../components/PopConfirm";
 import { EllipsisVertical } from "lucide-react";
+import { generateSlug } from "../../common";
 
 /* =====================
    VALIDATION SCHEMA
@@ -73,13 +74,12 @@ const Category = () => {
           Object.values(item)
             .join(" ")
             .toLowerCase()
-            .includes(search.toLowerCase())
+            .includes(search.toLowerCase()),
         )
       : data;
 
     return [...(base || [])].sort(
-      (a, b) =>
-        (a.displayOrder ?? 0) - (b.displayOrder ?? 0)
+      (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0),
     );
   }, [search, data]);
 
@@ -118,9 +118,9 @@ const Category = () => {
       displayStatus: row.displayStatus,
       showHomeStatus: row.showHomeStatus,
       displayOrder:
-      row.displayOrder === 0 || row.displayOrder == null
-        ? ""
-        : row.displayOrder,
+        row.displayOrder === 0 || row.displayOrder == null
+          ? ""
+          : row.displayOrder,
       metaTitle: row.metaTitle,
       metaKeyword: row.metaKeyword,
       metaDescription: row.metaDescription,
@@ -149,6 +149,7 @@ const Category = () => {
       : addCategories({ userId, data: formData });
 
     dispatch(action).then((resp) => {
+      console.log("Response:", resp);
       if (resp.meta.requestStatus === "fulfilled") {
         showToast({
           title: "Success",
@@ -161,6 +162,12 @@ const Category = () => {
         setRowData(null);
         setOpenModal(false);
         dispatch(getAllCategories());
+      } else {
+        showToast({
+          title: "Error",
+          description: resp.payload || "An error occurred",
+          status: "error",
+        });
       }
     });
   };
@@ -173,10 +180,7 @@ const Category = () => {
       title: "Name",
       dataIndex: "name",
       render: (v, r) => (
-        <Link
-          to={`${r.id}/subcategory`}
-          className="font-medium text-blue-600"
-        >
+        <Link to={`${r.id}/subcategory`} className="font-medium text-blue-600">
           {v}
         </Link>
       ),
@@ -258,15 +262,30 @@ const Category = () => {
         <form className="grid grid-cols-2 gap-6 max-h-[60vh] overflow-auto px-2 py-2.5">
           {/* Name */}
           <div>
-            <label>Name</label>
+            <label>
+              Name <span className="text-red-500">*</span>
+            </label>
             <Controller
               name="name"
               control={control}
-              render={({ field }) => <Input {...field} />}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    field.onChange(value);
+                    setTimeout(() => {
+                      const slug = generateSlug(value);
+                      reset((prev) => ({
+                        ...prev,
+                        slug,
+                      }));
+                    }, 0);
+                  }}
+                />
+              )}
             />
-            {errors.name && (
-              <p className="text-red-600 text-sm">Required</p>
-            )}
+            {errors.name && <p className="text-red-600 text-sm">Required</p>}
           </div>
 
           {/* Slug */}
@@ -291,7 +310,9 @@ const Category = () => {
 
           {/* Display Order – NO ARROWS */}
           <div>
-            <label>Display Order</label>
+            <label>
+              Display Order <span className="text-red-500">*</span>
+            </label>
             <Controller
               name="displayOrder"
               control={control}

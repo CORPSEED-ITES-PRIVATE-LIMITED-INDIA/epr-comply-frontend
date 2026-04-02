@@ -163,8 +163,8 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
       let html = editor.getHTML();
 
       // Preserve empty lines EXACTLY
-      html = html.replace(/<p><\/p>/g, "<p>&nbsp;</p>");
-      html = html.replace(/<p><br><\/p>/g, "<p>&nbsp;</p>");
+      html = html.replace(/<p><\/p>/g, "<p><br></p>");
+      html = html.replace(/<p>(&nbsp;|\s)*<\/p>/g, "<p><br></p>");
 
       onChange(html);
     },
@@ -282,16 +282,16 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
             editor.isActive("heading", { level: 1 })
               ? 1
               : editor.isActive("heading", { level: 2 })
-              ? 2
-              : editor.isActive("heading", { level: 3 })
-              ? 3
-              : editor.isActive("heading", { level: 4 })
-              ? 4
-              : editor.isActive("heading", { level: 5 })
-              ? 5
-              : editor.isActive("heading", { level: 6 })
-              ? 6
-              : 0
+                ? 2
+                : editor.isActive("heading", { level: 3 })
+                  ? 3
+                  : editor.isActive("heading", { level: 4 })
+                    ? 4
+                    : editor.isActive("heading", { level: 5 })
+                      ? 5
+                      : editor.isActive("heading", { level: 6 })
+                        ? 6
+                        : 0
           }
           onChange={(e) => {
             const level = Number(e.target.value);

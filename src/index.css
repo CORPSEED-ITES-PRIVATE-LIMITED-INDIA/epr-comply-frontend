@@ -22,7 +22,6 @@ input[type="text"]::-webkit-clear-button {
 html,
 body {
   max-width: 100%;
- 
 }
 
 /* @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap"); */
@@ -58,12 +57,6 @@ body {
   font-size: 1em;
 }
 
-.tiptap-render p {
-  margin: 0.5em 0;
-  min-height: 1em;
-  white-space: pre-wrap;
-}
-
 .tiptap-render ul {
   list-style: disc;
   padding-left: 1.5rem;
@@ -79,7 +72,6 @@ body {
   border: 6px solid #e5e7eb; /* static light gray ring */
   position: relative;
   box-sizing: border-box;
- 
 }
 
 /* spinning ring sits on top of the outer circle but is independent
@@ -104,9 +96,7 @@ body {
   justify-content: center;
   background: transparent;
   box-sizing: border-box;
- 
 }
-
 
 .tiptap-render ul[data-type="taskList"] input[type="checkbox"] {
   display: none;
@@ -152,7 +142,6 @@ body {
   overflow-y: auto;
 }
 
-
 .tiptap-render {
   display: flow-root; /* prevents margin collapse */
 }
@@ -175,11 +164,6 @@ body {
 
 .ProseMirror:focus {
   outline: none;
-}
-
-.editor-content p {
-  margin: 0.5em 0;
-  min-height: 1em;
 }
 
 .editor-content a {
@@ -214,7 +198,7 @@ body {
 
 .ProseMirror {
   overflow-wrap: break-word;
-  white-space: pre-wrap;
+  white-space: normal;
 }
 
 /* Global Loader Styles */
@@ -224,7 +208,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.65);
+  background: rgba(255, 255, 255, 0.65);
   z-index: 20000;
 }
 .loader {
@@ -261,9 +245,12 @@ body {
   }
 }
 
-
- .animate-scrol {
+.animate-scrol {
   width: max-content;
   animation: scroll 150s linear infinite;
-  
-} 
+}
+.ProseMirror br {
+  display: block;
+  content: "";
+  margin: 4px 0;
+}

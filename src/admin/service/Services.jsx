@@ -99,6 +99,10 @@ const Services = () => {
       newErrors.title = "Title is required";
     }
 
+    if (!formData.slug.trim()) {
+      newErrors.slug = "Slug is required";
+    }
+
     if (!formData.categoryId) {
       newErrors.categoryId = "Category is required";
     }
@@ -178,8 +182,8 @@ const Services = () => {
             dispatch(getServiceListBySubCategoryId(subcategoryId));
           } else {
             showToast({
-              title: resp?.payload?.status,
-              description: resp?.payload?.message,
+              title: "Rejected",
+              description: resp?.payload,
               status: "error",
             });
           }
@@ -194,6 +198,7 @@ const Services = () => {
     } else {
       dispatch(addService({ userId, data }))
         .then((resp) => {
+          console.log("Add service response:", resp);
           if (resp.meta.requestStatus === "fulfilled") {
             showToast({
               title: "Success!",
@@ -205,8 +210,8 @@ const Services = () => {
             dispatch(getServiceListBySubCategoryId(subcategoryId));
           } else {
             showToast({
-              title: resp?.payload?.status,
-              description: resp?.payload?.message,
+              title: "Rejected",
+              description: resp?.payload,
               status: "error",
             });
           }
@@ -351,7 +356,9 @@ const Services = () => {
           >
             {/* Title */}
             <div className="flex flex-col">
-              <label className="mb-1">Title</label>
+              <label className="mb-1">
+                Title <span className="text-red-500">*</span>
+              </label>
               <Input
                 value={formData.title}
                 placeholder="Enter title"
@@ -366,17 +373,24 @@ const Services = () => {
 
             {/* Slug */}
             <div className="flex flex-col">
-              <label className="mb-1">Slug</label>
+              <label className="mb-1">
+                Slug <span className="text-red-500">*</span>
+              </label>
               <Input
                 value={formData.slug}
                 placeholder="Enter slug"
                 onChange={(e) => handleChange("slug", e.target.value)}
               />
+              {errors.slug && (
+                <span className="text-red-500 text-sm mt-1">{errors.slug}</span>
+              )}
             </div>
 
             {/* Category */}
             <div className="flex flex-col">
-              <label className="mb-1">Category</label>
+              <label className="mb-1">
+                Category <span className="text-red-500">*</span>
+              </label>
               <Select
                 value={formData.categoryId}
                 options={categoryList?.map((item) => ({
@@ -398,7 +412,9 @@ const Services = () => {
 
             {/* Subcategory */}
             <div className="flex flex-col">
-              <label className="mb-1">Subcategory</label>
+              <label className="mb-1">
+                Subcategory <span className="text-red-500">*</span>
+              </label>
               <Select
                 value={formData.subcategoryId}
                 options={subcategoryList?.map((item) => ({
@@ -428,7 +444,9 @@ const Services = () => {
 
             {/* Full Description */}
             <div className="flex flex-col col-span-2">
-              <label className="mb-1">Full Description</label>
+              <label className="mb-1">
+                Full Description <span className="text-red-500">*</span>
+              </label>
               <TextEditor
                 data={formData.fullDescription}
                 onChange={(editorData) => {

@@ -20,6 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Dropdown from "../../components/Dropdown";
 import PopConfirm from "../../components/PopConfirm";
 import { EllipsisVertical } from "lucide-react";
+import { generateSlug } from "../../common";
 
 const formSchema = z.object({
   name: z.string().nonempty("Name is required"),
@@ -48,7 +49,10 @@ const Category = () => {
   const filteredData = useMemo(() => {
     if (!search) return data;
     return data?.filter((item) =>
-      Object.values(item).join(" ").toLowerCase().includes(search.toLowerCase())
+      Object.values(item)
+        .join(" ")
+        .toLowerCase()
+        .includes(search.toLowerCase()),
     );
   }, [search, data]);
 
@@ -122,14 +126,14 @@ const Category = () => {
               description: "Subcategory has been updated successfully !.",
               status: "success",
             });
-            reset()
+            reset();
             setOpenModal(false);
             setRowData(null);
             dispatch(getAllSubCategoriesByCategoryId(categoryId));
           } else {
             showToast({
-              title: resp?.payload?.status,
-              description: resp?.payload?.message,
+              title: "Rejected",
+              description: resp?.payload,
               status: "error",
             });
           }
@@ -144,19 +148,20 @@ const Category = () => {
     } else {
       dispatch(addSubCategory({ userId, data }))
         .then((resp) => {
+          console.log("Response:", resp); // Debug log
           if (resp.meta.requestStatus === "fulfilled") {
             showToast({
               title: "Success!",
               description: "Subcategory has been added successfully.",
               status: "success",
             });
-            reset()
+            reset();
             setOpenModal(false);
             dispatch(getAllSubCategoriesByCategoryId(categoryId));
           } else {
             showToast({
-              title: resp?.payload?.status,
-              description: resp?.payload?.message,
+              title: "Rejected",
+              description: resp?.payload,
               status: "error",
             });
           }
@@ -175,9 +180,7 @@ const Category = () => {
     {
       title: "Name",
       dataIndex: "name",
-      render: (value, record) => (
-        <p className="text-wrap">{value}</p>
-      ),
+      render: (value, record) => <p className="text-wrap">{value}</p>,
     },
     {
       title: "Meta title",
@@ -275,13 +278,29 @@ const Category = () => {
         <form className="grid grid-cols-2 gap-6 max-h-[60vh] overflow-auto px-2 py-2.5">
           {/* Name */}
           <div className="flex flex-col">
-            <label className="mb-1">Name</label>
+            <label className="mb-1">
+              Name<span className="text-red-500">*</span>{" "}
+            </label>
             <Controller
               name="name"
               control={control}
               rules={{ required: true }}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter name" />
+                <Input
+                  {...field}
+                  placeholder="Enter name"
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    field.onChange(value);
+                    setTimeout(() => {
+                      const slug = generateSlug(value);
+                      reset((prev) => ({
+                        ...prev,
+                        slug,
+                      }));
+                    }, 0);
+                  }}
+                />
               )}
             />
             {errors.name && <p className="text-red-600 text-sm">Required</p>}
@@ -289,7 +308,9 @@ const Category = () => {
 
           {/* Slug */}
           <div className="flex flex-col">
-            <label className="mb-1">Slug</label>
+            <label className="mb-1">
+              Slug <span className="text-red-500">*</span>
+            </label>
             <Controller
               name="slug"
               control={control}
@@ -303,7 +324,9 @@ const Category = () => {
 
           {/* Display Status */}
           <div className="flex flex-col">
-            <label className="mb-1 font-medium">Display Status</label>
+            <label className="mb-1 font-medium">
+              Display Status <span className="text-red-500">*</span>
+            </label>
             <Controller
               name="displayStatus"
               control={control}
@@ -318,11 +341,16 @@ const Category = () => {
                 />
               )}
             />
+            {errors.displayStatus && (
+              <p className="text-red-600 text-sm">Required</p>
+            )}
           </div>
 
           {/* Show on Home */}
           <div className="flex flex-col">
-            <label className="mb-1">Show on Home</label>
+            <label className="mb-1">
+              Show on Home <span className="text-red-500">*</span>
+            </label>
             <Controller
               name="showHomeStatus"
               control={control}
@@ -338,6 +366,9 @@ const Category = () => {
                 />
               )}
             />
+            {errors.showHomeStatus && (
+              <p className="text-red-600 text-sm">Required</p>
+            )}
           </div>
 
           {/* Meta Title */}

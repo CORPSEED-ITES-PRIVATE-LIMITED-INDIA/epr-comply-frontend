@@ -70,7 +70,10 @@ const Blogs = () => {
   const filteredData = useMemo(() => {
     if (!search) return data;
     return data?.filter((item) =>
-      Object.values(item).join(" ").toLowerCase().includes(search.toLowerCase())
+      Object.values(item)
+        .join(" ")
+        .toLowerCase()
+        .includes(search.toLowerCase()),
     );
   }, [search, data]);
 
@@ -159,7 +162,7 @@ const Blogs = () => {
           if (resp.meta.requestStatus === "fulfilled") {
             showToast({
               title: "Success!",
-              description: "Service has been updated successfully !.",
+              description: "Blog has been updated successfully !.",
               status: "success",
             });
             setFormData(initialForm);
@@ -168,8 +171,8 @@ const Blogs = () => {
             dispatch(getBlogList(userId));
           } else {
             showToast({
-              title: resp?.payload?.status,
-              description: resp?.payload?.message,
+              title: "Rejected",
+              description: resp?.payload,
               status: "error",
             });
           }
@@ -195,8 +198,8 @@ const Blogs = () => {
             dispatch(getBlogList(userId));
           } else {
             showToast({
-              title: resp?.payload?.status,
-              description: resp?.payload?.message,
+              title: "Rejected",
+              description: resp?.payload,
               status: "error",
             });
           }
@@ -321,7 +324,10 @@ const Blogs = () => {
           </div>
           <form
             className="grid grid-cols-2 gap-6 max-h-[80vh] overflow-auto px-2 py-2.5"
-            onSubmit={() => onSubmit(formData)}
+            onSubmit={(e) => {
+              e.preventDefault(); // 🚀 IMPORTANT
+              onSubmit(formData);
+            }}
           >
             {/* Title */}
             <div className="flex flex-col">
@@ -413,9 +419,7 @@ const Blogs = () => {
 
             {/* Subcategory ID */}
             <div className="flex flex-col">
-              <label className="mb-1">
-                Subcategory
-              </label>
+              <label className="mb-1">Subcategory</label>
               <Select
                 value={formData.subcategoryId}
                 options={subCategoryList?.map((sc) => ({
@@ -509,6 +513,7 @@ const Blogs = () => {
             {/* Submit */}
             <div className="col-span-2 flex justify-between">
               <button
+                type="button"
                 className="px-6 py-2 rounded-md cursor-pointer"
                 onClick={() => {
                   setOpenModal(false);
