@@ -53,7 +53,11 @@ const EnquiryForm = () => {
     setLoading(true);
 
     if (!navigator.geolocation) {
-      alert("Geolocation not supported");
+      showToast({
+        title: "Error",
+        description: "Geolocation not supported",
+        status: "error",
+      });
       setLoading(false);
       return;
     }
@@ -87,13 +91,21 @@ const EnquiryForm = () => {
           setValue("city", city);
         } catch (err) {
           console.error(err);
-          alert("Unable to fetch location details");
+          showToast({
+            title:"Error",
+            description:"Unable to fetch location details",
+            status:"error"
+          })
         } finally {
           setLoading(false);
         }
       },
       () => {
-        alert("Location permission denied");
+        showToast({
+          title:"Error",
+          description:"Location permission denied",
+          status:"error"
+        })
         setLoading(false);
       },
       { enableHighAccuracy: true }

@@ -8,37 +8,51 @@ const BlogsCarousel = () => {
   const blogList = useSelector((state) => state.blogs.clientBlogList);
 
   useEffect(() => {
-    const slider = scrollRef.current;
+  const slider = scrollRef.current;
+  if (!slider) return;
 
-    let isDown = false;
-    let startX;
-    let scrollLeft;
+  let isDown = false;
+  let startX = 0;
+  let scrollLeft = 0;
 
-    slider.addEventListener("mousedown", (e) => {
-      isDown = true;
-      slider.classList.add("active");
-      startX = e.pageX - slider.offsetLeft;
-      scrollLeft = slider.scrollLeft;
-    });
+  const handleMouseDown = (e) => {
+    isDown = true;
+    slider.classList.add("active");
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+  };
 
-    slider.addEventListener("mouseleave", () => {
-      isDown = false;
-      slider.classList.remove("active");
-    });
+  const handleMouseLeave = () => {
+    isDown = false;
+    slider.classList.remove("active");
+  };
 
-    slider.addEventListener("mouseup", () => {
-      isDown = false;
-      slider.classList.remove("active");
-    });
+  const handleMouseUp = () => {
+    isDown = false;
+    slider.classList.remove("active");
+  };
 
-    slider.addEventListener("mousemove", (e) => {
-      if (!isDown) return;
-      e.preventDefault();
-      const x = e.pageX - slider.offsetLeft;
-      const walk = (x - startX) * 1.5; // drag speed
-      slider.scrollLeft = scrollLeft - walk;
-    });
-  }, []);
+  const handleMouseMove = (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    slider.scrollLeft = scrollLeft - walk;
+  };
+
+  slider.addEventListener("mousedown", handleMouseDown);
+  slider.addEventListener("mouseleave", handleMouseLeave);
+  slider.addEventListener("mouseup", handleMouseUp);
+  slider.addEventListener("mousemove", handleMouseMove);
+
+  return () => {
+    slider.removeEventListener("mousedown", handleMouseDown);
+    slider.removeEventListener("mouseleave", handleMouseLeave);
+    slider.removeEventListener("mouseup", handleMouseUp);
+    slider.removeEventListener("mousemove", handleMouseMove);
+  };
+}, []);
+
 
   return (
     <section className="py-8 max-w-7xl mx-auto px-6">
@@ -52,7 +66,7 @@ const BlogsCarousel = () => {
           {blogList?.length > 0 &&
             [...blogList, ...blogList, ...blogList]?.map((blog, index) => (
               <div
-                key={index}
+                key={`${blog.id}-${index}`}
                 className="
             w-[270px] h-[290px] bg-white rounded-2xl shrink-0
             shadow-sm hover:shadow-xl transition-all duration-300
@@ -65,6 +79,7 @@ const BlogsCarousel = () => {
                     <img
                       src={blog?.image}
                       alt={blog?.title}
+                      loading="lazy"
                       className="
                         w-full h-full
                         object-contain object-center

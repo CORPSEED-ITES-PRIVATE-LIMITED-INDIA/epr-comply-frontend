@@ -1,22 +1,27 @@
-import React, { useEffect, useRef, useState } from "react";
-import frontImage from "../assets/front_page.jpg";
+import React, { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import frontImage from "../assets/front_page.webp";
 import img1 from "../assets/nature1.jfif";
 import img2 from "../assets/nature2.webp";
 import img3 from "../assets/nature3.jpg";
-import solarImg from "../assets/section1.jpg";
+import solarImg from "../assets/section1.webp";
 import businessImg from "../assets/business.webp";
 import { FiArrowRight, FiCheck } from "react-icons/fi";
 import bgImg from "../assets/serviceimg.jpg";
-import LogoInfiniteScroller from "./LogoInfiniteScroll";
-import ReviewSection from "./ReviewSection";
-import BlogsCarousel from "./BlogsCarousel";
 import google from "../assets/googleIcon.png";
-import glassdoor from "../assets/glassdoorIcon.png";
+import glassdoor from "../assets/glassdoorIcon.webp";
 import mouthshut from "../assets/moutshutlogoIcon.png";
 import { BsShieldCheck } from "react-icons/bs";
 import Rating45 from "../components/Rating45";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+
+import LogoInfiniteScroller from "./LogoInfiniteScroll";
+
+// import ReviewSection from "./ReviewSection";
+// import BlogsCarousel from "./BlogsCarousel";
+
+const ReviewSection = lazy(()=>import("./ReviewSection"));
+const BlogsCarousel = lazy(()=>import("./BlogsCarousel"));
 
 const images = [frontImage, img1, img2, img3];
 
@@ -146,9 +151,15 @@ const HomePage = () => {
   }, []);
 
   // Filter logic
-  const filteredServices = serviceList?.filter((service) =>
+  // const filteredServices = serviceList?.filter((service) =>
+  //   service.title.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
+
+  const filteredServices = useMemo(()=>{
+     return serviceList?.filter((service)=>
     service.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    )
+  },[serviceList,searchTerm]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -157,15 +168,13 @@ const HomePage = () => {
   return (
     <>
       <section className="relative w-full py-14 md:py-16 overflow-hidden">
-        <div
+        <img
           className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${images[index]})`,
-            filter: "blur(8px)",
-            transform: "scale(1.1)",
-            backgroundAttachment: "fixed",
-          }}
-        ></div>
+          src={images[index]}
+          fetchPriority="high"
+          loading="eager"
+
+        />
         <div className="absolute inset-0 bg-[#0A3558]/50"></div>
         <div className="relative z-10 max-w-7xl mx-auto text-center text-white px-5">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 leading-snug md:leading-tight">
@@ -240,7 +249,7 @@ const HomePage = () => {
           <div className="flex flex-wrap justify-center gap-10 mb-12">
             <div className="flex flex-col items-center justify-center">
               <div className="flex items-center gap-1.5">
-                <img src={google} className="h-6 mb-1" alt="Google" />
+                <img src={google} className="h-6 mb-1" alt="Google" loading="lazy"/>
                 <p className="text-yellow-400 font-semibold">4.5 Out of 5</p>
               </div>
               <div className="flex items-center gap-1.5">
@@ -251,7 +260,7 @@ const HomePage = () => {
 
             <div className="flex flex-col items-center justify-center">
               <div className="flex items-center gap-1.5">
-                <img src={glassdoor} className="h-6 mb-1" alt="Glassdoor" />
+                <img src={glassdoor} className="h-6 mb-1" alt="Glassdoor"  loading="lazy"/>
                 <p className="text-yellow-400 font-semibold">4.5 Out of 5</p>
               </div>
               <div className="flex items-center gap-1.5">
@@ -262,7 +271,7 @@ const HomePage = () => {
 
             <div className="flex flex-col items-center justify-center">
               <div className="flex items-center gap-1.5">
-                <img src={mouthshut} className="h-6 mb-1" alt="Trustpilot" />
+                <img src={mouthshut} className="h-6 mb-1" alt="Trustpilot"  loading="lazy"/>
                 <p className="text-yellow-400 font-semibold">4.5 Out of 5</p>
               </div>
               <div className="flex items-center gap-1.5">
@@ -324,6 +333,7 @@ const HomePage = () => {
               src={solarImg}
               alt="Solar Panels"
               className="w-full h-auto rounded-xl shadow-lg"
+               loading="lazy"
             />
             {/* <div className="hidden md:block absolute right-10 -bottom-8 bg-green-600 text-white p-6 rounded-xl max-w-xs shadow-xl">
               <h3 className="text-xl font-semibold mb-2">
@@ -390,7 +400,7 @@ const HomePage = () => {
               </button> */}
             </div>
             <div className="flex justify-end">
-              <img src={businessImg} alt="business" className="rounded" />
+              <img src={businessImg} alt="business" className="rounded"  loading="lazy"/>
             </div>
           </div>
 
@@ -403,7 +413,6 @@ const HomePage = () => {
               onMouseLeave(e);
               handleMouseLeave();
             }}
-            onMouseEnter={handleMouseEnter}
             onMouseOver={handleMouseEnter}
             className="
               mt-14 flex gap-6 overflow-x-auto 
@@ -416,7 +425,7 @@ const HomePage = () => {
               serviceList?.map((item, index) => (
                 <Link key={index} to={`${item?.slug}`}>
                   <div className="min-w-[280px] h-[200px] bg-white text-black rounded-xl p-6 shadow flex flex-col">
-                    <img src={item.img} className="w-12 mb-3" alt="" />
+                    <img src={item.img} className="w-12 mb-3" alt=""  loading="lazy"/>
 
                     <h3 className="font-semibold text-lg mb-2 line-clamp-2">
                       {item.title}
@@ -489,14 +498,18 @@ const HomePage = () => {
                 src={bgImg}
                 className="rounded-xl shadow-xl w-full h-[390px] object-cover z-10"
                 alt=""
+                loading="lazy"
               />
             </div>
           </div>
         </div>
       </section>
-
-      <BlogsCarousel />
-      <ReviewSection />
+        <Suspense fallback={<div className="w-full text-center py-20">Loading...</div>}>
+          <BlogsCarousel />
+        </Suspense>
+        <Suspense  fallback={<div className="w-full text-center py-20">Loading...</div>}>
+          <ReviewSection />
+        </Suspense>
     </>
   );
 };

@@ -1,16 +1,14 @@
 import { BsShieldCheck } from "react-icons/bs";
-import { useEffect } from "react";
-import ServiceTableOfContent from "./ServiceTableOfContent";
+import { lazy, Suspense, useEffect } from "react";
 import EnquiryForm from "../components/EnquiryForm";
 import { useDispatch, useSelector } from "react-redux";
 import { getClientServiceDetailBySlug } from "../toolkit/slices/serviceSlice";
-import google from "../assets/googleIcon.png";
-import glassdoor from "../assets/glassdoorIcon.png";
-import mouthshut from "../assets/moutshutlogoIcon.png";
+
 import { useParams } from "react-router-dom";
-import ServiceFAQS from "./ServiceFAQS";
-import Rating45 from "../components/Rating45";
 import { Helmet } from "react-helmet-async";
+
+const ServiceTableOfContent = lazy(() => import("./ServiceTableOfContent"));
+const ServiceFAQS = lazy(()=>import("./ServiceFAQS"))
 
 const Service = () => {
   const { serviceSlug } = useParams();
@@ -214,8 +212,12 @@ const Service = () => {
           dangerouslySetInnerHTML={{ __html: serviceDetail?.fullDescription }}
         />
       </section>
-      <ServiceTableOfContent />
-      <ServiceFAQS />
+      <Suspense fallback={<div className="text-center font-bold mb-3">Loading Table of Content..</div>}>
+          <ServiceTableOfContent />
+      </Suspense>
+      <Suspense fallback={<div className="text-center font-bold">Loading FAQs..</div>}>
+          <ServiceFAQS />
+      </Suspense>
     </>
   );
 };

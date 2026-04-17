@@ -154,16 +154,41 @@ export const getClientBlogFAQSList = createAsyncThunk(
 );
 
 
+export const getBlogs = createAsyncThunk(
+  "getBlogs",
+  async (pageNum = 0, { rejectWithValue }) => {
+    try {
+      const response = await api.get(
+        `/api/blogs/getAllBlogs?page=${pageNum}&size=5&sortBy=postDate&direction=desc`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error?.response?.data?.message || "Failed to fetch blogs"
+      );
+    }
+  }
+);
+
+
 const blogSlice = createSlice({
   name: "blogs",
   initialState: {
-    loading: "",
-    blogList: [],
-    blogDetail: {},
-    clientBlogList: [],
-    clientBlogDetail: {},
-    blogFaqList: [],
-    clientBlogFAQList: []
+  loading: "",
+  blogList: [],
+  blogDetail: {},
+  clientBlogList: [],
+  clientBlogDetail: {},
+  blogFaqList: [],
+  clientBlogFAQList: [],
+  blogsList: [],
+  currPage: 0,
+  totalPage: 0,
+  totalElements: 0,
+  first: true,
+  last: false,
+  error: null,
+  
   },
   extraReducers: (builder) => {
     builder.addCase(getBlogList.pending, (state) => {
@@ -209,7 +234,7 @@ const blogSlice = createSlice({
     builder.addCase(getClientBlogDetailBySlug.rejected, (state) => {
       state.loading = "error";
     });
-
+   
     builder.addCase(getBlogFaqsList.pending, (state) => {
       state.loading = "pending";
     });
@@ -231,6 +256,23 @@ const blogSlice = createSlice({
     builder.addCase(getClientBlogFAQSList.rejected, (state) => {
       state.loading = "error";
     });
+    
+    builder.addCase(getBlogs.pending, (state) => {
+      state.loading = "pending";
+    });
+    builder.addCase(getBlogs.fulfilled, (state, action) => {
+      state.loading = "success";
+      state.blogsList = action.payload.content || [];
+      state.currPage = action.payload.number || 0;
+      state.totalPage = action.payload.totalPages || 0;
+      state.totalElements = action.payload.totalElements || 0;
+      state.first = action.payload.first ?? true;
+      state.last = action.payload.last ?? false;
+    });
+    builder.addCase(getBlogs.rejected, (state) => {
+      state.loading = "error";
+    });
+
   },
 });
 

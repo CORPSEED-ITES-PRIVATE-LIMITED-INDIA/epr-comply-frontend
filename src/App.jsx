@@ -19,6 +19,7 @@ import ServiceTableOfContentss from "./admin/service/ServiceTableOfContentss";
 import ServiceFAQS from "./admin/service/ServiceFAQS";
 import BlogFAQS from "./admin/blogs/BlogFAQS";
 import Reviews from "./admin/reviews/Reviews";
+import ClientBlogs from "./blog/ClientBlogs";
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="/:serviceSlug" element={<Service />} />
+          <Route path="/blog" element={<ClientBlogs />} />
           <Route path="/blog/:blogSlug" element={<BlogDetail />} />
           <Route path="aboutus" element={<AboutUs />} />
           <Route path="contactus" element={<ContactUs />} />

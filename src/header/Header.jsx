@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
-import logo from "../assets/logo.png";
+import logo from "../assets/logo.svg";
 import { formatMegaMenu } from "../navData";
 import { FiSearch } from "react-icons/fi";
 import { Link } from "react-router-dom";
@@ -7,7 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { globalSearch } from "../toolkit/slices/settingSlice";
 import { getClientMegaMenu } from "../toolkit/slices/serviceSlice";
 
-const DROPDOWN_NAV_ITEMS = ["Services", "Blogs"];
+const DROPDOWN_NAV_ITEMS = ["Services"];
+// const DROPDOWN_NAV_ITEMS = ["Services", "Blogs"];
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -151,14 +152,20 @@ const Header = () => {
   return (
     <>
       <header
-        className={`w-full bg-white sticky top-0 z-[10000] transition-all duration-200 ${
+        className={`w-full bg-white sticky border-b border-gray-800/10 top-0 z-[10000] transition-all duration-200 ${
           scrolled ? "border-b border-gray-200" : ""
         }`}
       >
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between py-4">
             <Link to="/">
-              <img src={logo} alt="logo" className="h-10" />
+              <img
+                src={logo}
+                alt="EPR-Logo"
+                height="40"
+                width="51"
+                className="h-10"
+              />
             </Link>
 
             {/* Desktop nav */}
@@ -173,6 +180,13 @@ const Header = () => {
                 </span>
               ))}
 
+              <Link
+                to="/blog"
+                onMouseEnter={() => setOpenMenu(null)}
+                className="font-semibold hover:text-green-600"
+              >
+                Blogs
+              </Link>
               <Link
                 to="/aboutus"
                 onMouseEnter={() => setOpenMenu(null)}
@@ -198,7 +212,7 @@ const Header = () => {
                 //   open ? "max-w-[180px]" : "max-w-[36px]"
                 // }`}
 
-                     className={`flex items-center border border-gray-200 rounded-full px-3 py-1 transition-all duration-300 max-w-[180px]`}
+                className={`flex items-center border border-gray-200 rounded-full px-3 py-1 transition-all duration-300 max-w-[180px]`}
               >
                 <FiSearch
                   size={18}
@@ -213,7 +227,7 @@ const Header = () => {
                   // className={`ml-2 bg-transparent outline-none text-sm transition-all duration-300 ${
                   //   open ? "w-full opacity-100" : "w-0 opacity-0"
                   // }`}
-                     className={`ml-2 bg-transparent outline-none text-sm transition-all duration-300 w-full opacity-100
+                  className={`ml-2 bg-transparent outline-none text-sm transition-all duration-300 w-full opacity-100
 `}
                   value={query}
                   onChange={(e) => {
@@ -265,7 +279,7 @@ const Header = () => {
               {(activeCategories[activeCategoryIndex]?.items || []).map((x) => (
                 <Link
                   key={x.id}
-                  to={x.type === "blog" ? `/blog/${x.slug}` : `/${x.slug}`}
+                  to={x.type === "blog" ? `/blogs/${x.slug}` : `/${x.slug}`}
                   className="text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-gray-100 p-3 rounded-md cursor-pointer"
                 >
                   {x.name}
