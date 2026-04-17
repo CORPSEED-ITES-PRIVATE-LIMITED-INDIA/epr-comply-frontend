@@ -32,8 +32,8 @@ const ContactUs = () => {
               <h2 className="text-xl font-semibold mb-3">📍 Offices</h2>
               <p className="text-gray-700 font-medium">Head Office</p>
               <p className="text-gray-500 text-sm">
-                2nd Floor, A-154A, A Block, Sector 63, Noida, Uttar Pradesh
-                201309
+                3rd Floor, A-5, Grovy Optiva, Block A, Sector 68, Noida, Basi
+                Bahuddin Nagar, Uttar Pradesh - 201316
               </p>
 
               {/* <p className="text-gray-700 font-medium mt-3">Branch Office</p>
