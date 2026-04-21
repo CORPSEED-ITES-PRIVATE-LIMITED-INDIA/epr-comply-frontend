@@ -42,6 +42,7 @@ const Blogs = () => {
   const [descModal, setDescModal] = useState(false);
   const [openDropdowns, setOpenDropdowns] = useState({});
   const [rowData, setRowData] = useState(null);
+  const [isEditorFull, setIsEditorFull] = useState(false);
   const initialForm = {
     title: "",
     slug: "",
@@ -70,7 +71,10 @@ const Blogs = () => {
   const filteredData = useMemo(() => {
     if (!search) return data;
     return data?.filter((item) =>
-      Object.values(item).join(" ").toLowerCase().includes(search.toLowerCase())
+      Object.values(item)
+        .join(" ")
+        .toLowerCase()
+        .includes(search.toLowerCase()),
     );
   }, [search, data]);
 
@@ -375,7 +379,7 @@ const Blogs = () => {
             </div>
 
             {/* Description */}
-            <div className="flex flex-col col-span-2">
+            <div className="flex flex-col col-span-2 overflow-hidden">
               <label className="mb-1">
                 Description <Required />
               </label>
@@ -413,9 +417,7 @@ const Blogs = () => {
 
             {/* Subcategory ID */}
             <div className="flex flex-col">
-              <label className="mb-1">
-                Subcategory
-              </label>
+              <label className="mb-1">Subcategory</label>
               <Select
                 value={formData.subcategoryId}
                 options={subCategoryList?.map((sc) => ({

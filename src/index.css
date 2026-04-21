@@ -1,5 +1,4 @@
 @import "tailwindcss";
-
 .custom-scroll-hide::-webkit-scrollbar {
   display: none;
 }
@@ -199,3 +198,72 @@ body {
   white-space: pre-wrap;
 }
 
+.tiptap-render {
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+.tiptap-render h1 { font-size: 2.2em;}
+.tiptap-render h2 { font-size: 1.9em; }
+.tiptap-render h3 { font-size: 1.6em; }
+
+.tiptap-render p {
+  margin: 0.5em 0;
+}
+
+.tiptap-render table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tiptap-render td,
+.tiptap-render th {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+/* 🔥 THIS enables your indent extension */
+.tiptap-render [style*="margin-left"] {
+  display: block;
+}
+
+.ProseMirror {
+  outline: none;
+  min-height: 100%;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: "Inter", sans-serif;
+}
+
+.ProseMirror h1 { font-size: 2.2rem; font-weight: 900; }
+.ProseMirror h2 { font-size: 1.8rem; font-weight: 800; }
+.ProseMirror h3 { font-size: 1.5rem; font-weight: 700; }
+
+.ProseMirror ul { list-style: disc; padding-left: 1.5rem; }
+.ProseMirror ol { list-style: decimal; padding-left: 1.5rem; }
+
+.ProseMirror table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ProseMirror td,
+.ProseMirror th {
+  border: 2px solid black;
+  padding: 8px;
+}
+
+/* Base heading weight */
+.ProseMirror h1 { font-weight: 600; }
+.ProseMirror h2 { font-weight: 600; }
+.ProseMirror h3 { font-weight: 600; }
+
+/* When BOLD is applied on headings */
+.ProseMirror h1 strong,
+.ProseMirror h2 strong,
+.ProseMirror h3 strong,
+.ProseMirror h1 b,
+.ProseMirror h2 b,
+.ProseMirror h3 b {
+  font-weight: bold; 
+}

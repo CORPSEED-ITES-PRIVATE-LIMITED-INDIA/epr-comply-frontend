@@ -74,7 +74,7 @@ const BlogDetail = () => {
         )}
       </Helmet>
 
-      <div className="w-full bg-gray-50 dark:bg-gray-950">
+      <div className="w-full bg-gray-50 dark:bg-slate-100 text-gray-900 dark:text-black">
         {/* ---------------- TOP BANNER ---------------- */}
         <div
           className="w-full h-[120px] flex flex-col justify-center px-8 text-white bg-gray-600"
@@ -115,19 +115,21 @@ const BlogDetail = () => {
             {/* LEFT: Blog Content */}
             <div
               className="
-              prose max-w-none
+              tiptap-render 
+              
+              // max-w-none
                        
-                        [&_h2]:text-3xl
-                        [&_h2]:font-bold
-                        [&_h2]:mt-6
-                        [&_h2]:mb-3
-                        [&_ul[data-type=taskList]]:list-none
-                        [&_li[data-type=taskItem]]:flex
-                        [&_li[data-type=taskItem]]:gap-2
-                        [&_input[type=checkbox]]:hidden
-                        [&_li[data-type=taskItem]::before]:content-['👉']
-                        [&_li[data-type=taskItem]::before]:mr-2
-                        [&_li[data-type=taskItem]::before]:mb-2
+                        // [&_h2]:text-3xl
+                        // [&_h2]:font-bold
+                        // [&_h2]:mt-6
+                        // [&_h2]:mb-3
+                        // [&_ul[data-type=taskList]]:list-none
+                        // [&_li[data-type=taskItem]]:flex
+                        // [&_li[data-type=taskItem]]:gap-2
+                        // [&_input[type=checkbox]]:hidden
+                        // [&_li[data-type=taskItem]::before]:content-['👉']
+                        // [&_li[data-type=taskItem]::before]:mr-2
+                        // [&_li[data-type=taskItem]::before]:mb-2
             "
               dangerouslySetInnerHTML={{ __html: blog?.description }}
             />
