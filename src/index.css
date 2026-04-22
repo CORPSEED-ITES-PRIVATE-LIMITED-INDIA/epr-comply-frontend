@@ -39,6 +39,7 @@ body {
 
 .tiptap-render h1 {
   font-size: 2.2em;
+  text-decoration: none;
 }
 .tiptap-render h2 {
   font-size: 1.9em;
@@ -57,9 +58,10 @@ body {
 }
 
 .tiptap-render p {
-  margin: 0.5em 0;
   min-height: 1em;
+  line-height: 1.5em;
   white-space: pre-wrap;
+  margin-bottom: 1em !important;
 }
 
 .tiptap-render ul {
@@ -235,13 +237,16 @@ body {
   font-family: "Inter", sans-serif;
 }
 
-.ProseMirror h1 { font-size: 2.2rem; font-weight: 900; }
+.ProseMirror h1 { border:none; text-decoration: none !important; font-size: 2.2rem; font-weight: 900; }
 .ProseMirror h2 { font-size: 1.8rem; font-weight: 800; }
 .ProseMirror h3 { font-size: 1.5rem; font-weight: 700; }
 
 .ProseMirror ul { list-style: disc; padding-left: 1.5rem; }
 .ProseMirror ol { list-style: decimal; padding-left: 1.5rem; }
 
+.ProseMirror-trailingBreak {
+  border:none;
+}
 .ProseMirror table {
   width: 100%;
   border-collapse: collapse;
@@ -267,3 +272,20 @@ body {
 .ProseMirror h3 b {
   font-weight: bold; 
 }
+
+.ProseMirror h1 a,
+.ProseMirror h2 a,
+.ProseMirror h3 a,
+.tiptap-render h1 a,
+.tiptap-render h2 a,
+.tiptap-render h3 a {
+  text-decoration: none !important;
+  color: inherit;
+}
+
+.ProseMirror h1,
+.tiptap-render h1 {
+  border-bottom: none;
+  text-decoration: none !important;
+}
+

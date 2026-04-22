@@ -918,25 +918,29 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           max-width: 100%;
           box-sizing: border-box;
         }
-
         .ProseMirror {
           min-height: 100%;
           width: 100%;
           max-width: 100%;
           outline: none;
           font-size: 15px;
-          line-height: 1.6;
+          line-height: 1.3;
           box-sizing: border-box;
           white-space: pre-wrap;
           word-break: break-word;
           overflow-wrap: anywhere;
         }
 
+        .ProseMirror p {
+          margin: 1px 0;
+          line-height:1.1;
+        }
+
         .ProseMirror h1 {
           font-size: 2.4rem;
           font-weight: 400;
-          border-bottom: 2px solid #000;
           padding-bottom: 4px;
+          text-decoration:none
         }
 
         .ProseMirror h2 {
