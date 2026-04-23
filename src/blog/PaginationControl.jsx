@@ -1,6 +1,6 @@
 import React from "react";
 
-function PaginationControl({ currPage = 0, totalPage = 2, onPageChange }) {
+function PaginationControl({ currPage = 0, totalPage = 1, onPageChange }) {
   if (totalPage <= 1) return null;
 
   const getAllPages = () => {

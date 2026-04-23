@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useEditor, EditorContent, useEditorState } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Table } from "@tiptap/extension-table";
 import { TableRow } from "@tiptap/extension-table-row";
@@ -34,9 +34,8 @@ import {
   ListChecks,
   Link as LinkIcon,
   Unlink,
-  Maximize2,
-  Minimize2,
   Expand,
+  Minimize2,
 } from "lucide-react";
 
 /* ---------- FONT SIZE EXTENSION ---------- */
@@ -120,20 +119,9 @@ const WordImage = Image.extend({
       ...this.parent?.(),
       align: {
         default: "center",
-        renderHTML: (attrs) => {
-          if (attrs.align === "left") {
-            return { style: "float:left;margin:0 16px 16px 0;" };
-          }
-          if (attrs.align === "right") {
-            return { style: "float:right;margin:0 0 16px 16px;" };
-          }
-          return { style: "display:block;margin:16px auto;" };
-        },
       },
       width: {
         default: "auto",
-        renderHTML: (attrs) =>
-          attrs.width ? { style: `width:${attrs.width}` } : {},
       },
     };
   },
@@ -142,24 +130,38 @@ const WordImage = Image.extend({
     return ({ node, editor, getPos }) => {
       const container = document.createElement("div");
       container.className = "image-node";
+      container.setAttribute("draggable", "true");
 
       const img = document.createElement("img");
       img.src = node.attrs.src;
       img.alt = node.attrs.alt || "Inserted image";
+      img.draggable = false;
 
-      if (node.attrs.width !== "auto") {
-        img.style.width = node.attrs.width;
-      }
+      const applyAttrs = (attrs) => {
+        img.style.width =
+          attrs.width && attrs.width !== "auto" ? attrs.width : "auto";
+        img.style.maxWidth = "100%";
+        img.style.height = "auto";
 
+        container.classList.remove("align-left", "align-center", "align-right");
+        container.classList.add(`align-${attrs.align || "center"}`);
+      };
+
+      applyAttrs(node.attrs);
       container.appendChild(img);
 
-      // ❌ DELETE BUTTON (unchanged)
+      const dragBadge = document.createElement("div");
+      dragBadge.className = "img-drag-badge";
+      dragBadge.innerText = "⋮⋮";
+      container.appendChild(dragBadge);
+
       const deleteBtn = document.createElement("button");
       deleteBtn.innerText = "×";
       deleteBtn.className = "img-delete";
       deleteBtn.type = "button";
 
       deleteBtn.onclick = (e) => {
+        e.preventDefault();
         e.stopPropagation();
 
         const pos = getPos?.();
@@ -169,31 +171,31 @@ const WordImage = Image.extend({
             .focus()
             .deleteRange({ from: pos, to: pos + 1 })
             .run();
-        } else {
-          editor.chain().focus().deleteNode("image").run();
         }
       };
 
       container.appendChild(deleteBtn);
 
-      // ✅ RESIZE HANDLE
       const handle = document.createElement("div");
       handle.className = "resize-handle";
       container.appendChild(handle);
 
-      let startX;
-      let startWidth;
-      let frame;
+      let startX = 0;
+      let startWidth = 0;
+      let frame = null;
 
       handle.onmousedown = (e) => {
         e.preventDefault();
         e.stopPropagation();
 
+        const pos = getPos?.();
+        if (typeof pos !== "number") return;
+
         startX = e.clientX;
         startWidth = img.offsetWidth;
 
         const onMove = (moveEvent) => {
-          cancelAnimationFrame(frame);
+          if (frame) cancelAnimationFrame(frame);
 
           frame = requestAnimationFrame(() => {
             const newWidth = Math.max(
@@ -201,24 +203,25 @@ const WordImage = Image.extend({
               startWidth + (moveEvent.clientX - startX),
             );
 
-            const pos = getPos?.();
-            if (typeof pos === "number") {
-              editor
-                .chain()
-                .focus()
-                .command(({ tr }) => {
-                  tr.setNodeMarkup(pos, undefined, {
-                    ...node.attrs,
-                    width: `${newWidth}px`,
-                  });
-                  return true;
-                })
-                .run();
-            }
+            editor
+              .chain()
+              .focus()
+              .command(({ tr }) => {
+                const currentNode = editor.state.doc.nodeAt(pos);
+                if (!currentNode) return false;
+
+                tr.setNodeMarkup(pos, undefined, {
+                  ...currentNode.attrs,
+                  width: `${newWidth}px`,
+                });
+                return true;
+              })
+              .run();
           });
         };
 
         const onUp = () => {
+          if (frame) cancelAnimationFrame(frame);
           document.removeEventListener("mousemove", onMove);
           document.removeEventListener("mouseup", onUp);
         };
@@ -227,17 +230,35 @@ const WordImage = Image.extend({
         document.addEventListener("mouseup", onUp);
       };
 
+      container.onclick = (e) => {
+        e.stopPropagation();
+        const pos = getPos?.();
+        if (typeof pos === "number") {
+          editor.chain().focus().setNodeSelection(pos).run();
+        }
+      };
+
+      container.ondragstart = (e) => {
+        const pos = getPos?.();
+        if (typeof pos !== "number") return;
+
+        container.classList.add("dragging-image");
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("application/x-image-pos", String(pos));
+        e.dataTransfer.setData("text/plain", "image");
+      };
+
+      container.ondragend = () => {
+        container.classList.remove("dragging-image");
+      };
+
       return {
         dom: container,
-
-        // ✅ CRITICAL FIX → keeps DOM in sync with state
         update: (updatedNode) => {
           if (updatedNode.type.name !== node.type.name) return false;
-
-          if (updatedNode.attrs.width) {
-            img.style.width = updatedNode.attrs.width;
-          }
-
+          img.src = updatedNode.attrs.src;
+          img.alt = updatedNode.attrs.alt || "Inserted image";
+          applyAttrs(updatedNode.attrs);
           return true;
         },
       };
@@ -260,9 +281,11 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
         openOnClick: false,
         autolink: true,
         linkOnPaste: true,
+        protocols: ["http", "https", "mailto", "tel"],
         HTMLAttributes: {
           rel: "noopener noreferrer",
           target: "_blank",
+          class: "editor-link",
         },
       }),
       Underline,
@@ -284,6 +307,71 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
+    editorProps: {
+      handleDrop(view, event) {
+        const draggedPos = event.dataTransfer?.getData(
+          "application/x-image-pos",
+        );
+        if (!draggedPos) return false;
+
+        event.preventDefault();
+
+        const from = Number(draggedPos);
+        if (Number.isNaN(from)) return false;
+
+        const imageNode = view.state.doc.nodeAt(from);
+        if (!imageNode || imageNode.type.name !== "image") return false;
+
+        const coords = view.posAtCoords({
+          left: event.clientX,
+          top: event.clientY,
+        });
+
+        if (!coords?.pos) return false;
+
+        const tr = view.state.tr;
+        tr.delete(from, from + 1);
+
+        let insertPos = coords.pos;
+        if (coords.pos > from) {
+          insertPos = Math.max(1, coords.pos - 1);
+        }
+
+        tr.insert(insertPos, imageNode);
+        view.dispatch(tr);
+        return true;
+      },
+    },
+  });
+
+  const editorState = useEditorState({
+    editor,
+    selector: ({ editor }) => ({
+      isBold: editor.isActive("bold"),
+      isItalic: editor.isActive("italic"),
+      isUnderline: editor.isActive("underline"),
+      isBulletList: editor.isActive("bulletList"),
+      isOrderedList: editor.isActive("orderedList"),
+      isTaskList: editor.isActive("taskList"),
+      isAlignLeft: editor.isActive({ textAlign: "left" }),
+      isAlignCenter: editor.isActive({ textAlign: "center" }),
+      isAlignRight: editor.isActive({ textAlign: "right" }),
+      isAlignJustify: editor.isActive({ textAlign: "justify" }),
+      isLink: editor.isActive("link"),
+      headingLevel: editor.isActive("heading", { level: 1 })
+        ? 1
+        : editor.isActive("heading", { level: 2 })
+          ? 2
+          : editor.isActive("heading", { level: 3 })
+            ? 3
+            : editor.isActive("heading", { level: 4 })
+              ? 4
+              : editor.isActive("heading", { level: 5 })
+                ? 5
+                : editor.isActive("heading", { level: 6 })
+                  ? 6
+                  : 0,
+    }),
   });
 
   useEffect(() => {
@@ -297,6 +385,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
     const handleEsc = (e) => {
       if (e.key === "Escape") {
         setIsExpanded(false);
+        setMenu(null);
       }
     };
 
@@ -313,12 +402,6 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
     };
   }, [isExpanded]);
 
-  // useEffect(() => {
-  //   if (editor && editor.isEmpty) {
-  //     editor.commands.setContent("<p></p>", false);
-  //   }
-  // }, [editor]);
-
   useEffect(() => {
     if (!editor) return;
 
@@ -329,9 +412,15 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
       if (!img) return;
 
       e.preventDefault();
+      e.stopPropagation();
+
+      const pos = editor.view.posAtDOM(img, 0);
+      editor.chain().focus().setNodeSelection(pos).run();
+
       setMenu({
         x: e.clientX,
         y: e.clientY,
+        pos,
       });
     };
 
@@ -339,14 +428,29 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
 
     el.addEventListener("contextmenu", onContextMenu);
     document.addEventListener("click", closeMenu);
+    window.addEventListener("resize", closeMenu);
+    document.addEventListener("scroll", closeMenu, true);
 
     return () => {
       el.removeEventListener("contextmenu", onContextMenu);
       document.removeEventListener("click", closeMenu);
+      window.removeEventListener("resize", closeMenu);
+      document.removeEventListener("scroll", closeMenu, true);
     };
   }, [editor]);
 
   if (!editor) return null;
+
+  const normalizeUrl = (rawUrl) => {
+    const trimmed = rawUrl.trim();
+    if (!trimmed) return "";
+
+    if (/^(https?:\/\/|mailto:|tel:)/i.test(trimmed)) {
+      return trimmed;
+    }
+
+    return `https://${trimmed}`;
+  };
 
   const addLocalImage = () => {
     const input = document.createElement("input");
@@ -359,7 +463,11 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
 
       const reader = new FileReader();
       reader.onload = () => {
-        editor.chain().focus().setImage({ src: reader.result }).run();
+        editor
+          .chain()
+          .focus()
+          .setImage({ src: reader.result, align: "center", width: "auto" })
+          .run();
       };
       reader.readAsDataURL(file);
     };
@@ -367,8 +475,36 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
     input.click();
   };
 
-  const updateImage = (attrs) => {
-    editor.chain().focus().updateAttributes("image", attrs).run();
+  const updateImageByPos = (attrs) => {
+    if (!menu?.pos && menu?.pos !== 0) return;
+
+    const currentNode = editor.state.doc.nodeAt(menu.pos);
+    if (!currentNode || currentNode.type.name !== "image") return;
+
+    editor
+      .chain()
+      .focus()
+      .command(({ tr }) => {
+        tr.setNodeMarkup(menu.pos, undefined, {
+          ...currentNode.attrs,
+          ...attrs,
+        });
+        return true;
+      })
+      .run();
+
+    setMenu(null);
+  };
+
+  const deleteImageByPos = () => {
+    if (!menu?.pos && menu?.pos !== 0) return;
+
+    editor
+      .chain()
+      .focus()
+      .deleteRange({ from: menu.pos, to: menu.pos + 1 })
+      .run();
+
     setMenu(null);
   };
 
@@ -395,13 +531,30 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
   };
 
   const addOrEditLink = () => {
-    const previousUrl = editor.getAttributes("link").href;
-    const url = window.prompt("Enter URL", previousUrl || "");
+    if (!editor) return;
+
+    const { from, to, empty } = editor.state.selection;
+    const previousUrl = editor.getAttributes("link")?.href || "";
+    const url = window.prompt("Enter URL", previousUrl);
 
     if (url === null) return;
 
+    editor.chain().focus().setTextSelection({ from, to }).run();
+
     if (url.trim() === "") {
-      editor.chain().focus().unsetLink().run();
+      editor.chain().focus().extendMarkRange("link").unsetLink().run();
+      return;
+    }
+
+    const normalizedUrl = normalizeUrl(url);
+
+    if (empty && !editor.isActive("link")) {
+      const linkText = normalizedUrl;
+      editor
+        .chain()
+        .focus()
+        .insertContent(`<a href="${normalizedUrl}">${linkText}</a>`)
+        .run();
       return;
     }
 
@@ -409,196 +562,217 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
       .chain()
       .focus()
       .extendMarkRange("link")
-      .setLink({ href: url.trim() })
+      .setLink({ href: normalizedUrl })
       .run();
+  };
+
+  const removeLink = () => {
+    if (!editor) return;
+
+    const attrs = editor.getAttributes("link");
+    const currentHref = attrs?.href;
+
+    if (!currentHref && !editor.isActive("link")) return;
+
+    editor.chain().focus().extendMarkRange("link").unsetLink().run();
   };
 
   return (
     <div className={`editor-container ${isExpanded ? "expanded" : ""}`}>
       <div className="toolbar">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().toggleBold().run();
-          }}
-          className={editor.isActive("bold") ? "is-active" : ""}
-          title="Bold"
-        >
-          <Bold size={16} />
-        </button>
+        <div className="toolbar-group">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              editor.chain().focus().toggleBold().run();
+            }}
+            className={editorState.isBold ? "is-active" : ""}
+            title="Bold"
+          >
+            <Bold size={16} />
+          </button>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().toggleItalic().run();
-          }}
-          className={editor.isActive("italic") ? "is-active" : ""}
-          title="Italic"
-        >
-          <Italic size={16} />
-        </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              editor.chain().focus().toggleItalic().run();
+            }}
+            className={editorState.isItalic ? "is-active" : ""}
+            title="Italic"
+          >
+            <Italic size={16} />
+          </button>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().toggleUnderline().run();
-          }}
-          className={editor.isActive("underline") ? "is-active" : ""}
-          title="Underline"
-        >
-          <UnderlineIcon size={16} />
-        </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              editor.chain().focus().toggleUnderline().run();
+            }}
+            className={editorState.isUnderline ? "is-active" : ""}
+            title="Underline"
+          >
+            <UnderlineIcon size={16} />
+          </button>
+        </div>
 
-        <select
-          value={
-            editor.isActive("heading", { level: 1 })
-              ? 1
-              : editor.isActive("heading", { level: 2 })
-                ? 2
-                : editor.isActive("heading", { level: 3 })
-                  ? 3
-                  : editor.isActive("heading", { level: 4 })
-                    ? 4
-                    : editor.isActive("heading", { level: 5 })
-                      ? 5
-                      : editor.isActive("heading", { level: 6 })
-                        ? 6
-                        : 0
-          }
-          onChange={(e) => {
-            const level = Number(e.target.value);
+        <div className="toolbar-group">
+          <select
+            value={editorState.headingLevel}
+            onChange={(e) => {
+              const level = Number(e.target.value);
 
-            if (level === 0) {
-              editor.chain().focus().setParagraph().run();
-            } else {
-              editor.chain().focus().setHeading({ level }).run();
+              if (level === 0) {
+                editor.chain().focus().setParagraph().run();
+              } else {
+                editor.chain().focus().setHeading({ level }).run();
+              }
+            }}
+          >
+            <option value="0">Text</option>
+            <option value="1">Heading 1</option>
+            <option value="2">Heading 2</option>
+            <option value="3">Heading 3</option>
+            <option value="4">Heading 4</option>
+            <option value="5">Heading 5</option>
+            <option value="6">Heading 6</option>
+          </select>
+
+          <select
+            defaultValue="16px"
+            onChange={(e) =>
+              editor
+                .chain()
+                .focus()
+                .setMark("textStyle", { fontSize: e.target.value })
+                .run()
             }
-          }}
-        >
-          <option value="0">Text</option>
-          <option value="1">Heading 1</option>
-          <option value="2">Heading 2</option>
-          <option value="3">Heading 3</option>
-          <option value="4">Heading 4</option>
-          <option value="5">Heading 5</option>
-          <option value="6">Heading 6</option>
-        </select>
+          >
+            {[...Array(13)].map((_, i) => {
+              const size = 8 + i * 2;
+              return (
+                <option key={size} value={`${size}px`}>
+                  {size}px
+                </option>
+              );
+            })}
+          </select>
+        </div>
 
-        <select
-          defaultValue="16px"
-          onChange={(e) =>
-            editor
-              .chain()
-              .focus()
-              .setMark("textStyle", { fontSize: e.target.value })
-              .run()
-          }
-        >
-          {[...Array(13)].map((_, i) => {
-            const size = 8 + i * 2;
-            return (
-              <option key={size} value={`${size}px`}>
-                {size}px
-              </option>
-            );
-          })}
-        </select>
+        <div className="toolbar-group">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              editor.chain().focus().setTextAlign("left").run();
+            }}
+            className={editorState.isAlignLeft ? "is-active" : ""}
+            title="Align Left"
+          >
+            <AlignLeft size={16} />
+          </button>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().setTextAlign("left").run();
-          }}
-          title="Align Left"
-        >
-          <AlignLeft size={16} />
-        </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              editor.chain().focus().setTextAlign("center").run();
+            }}
+            className={editorState.isAlignCenter ? "is-active" : ""}
+            title="Align Center"
+          >
+            <AlignCenter size={16} />
+          </button>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().setTextAlign("center").run();
-          }}
-          title="Align Center"
-        >
-          <AlignCenter size={16} />
-        </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              editor.chain().focus().setTextAlign("right").run();
+            }}
+            className={editorState.isAlignRight ? "is-active" : ""}
+            title="Align Right"
+          >
+            <AlignRight size={16} />
+          </button>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().setTextAlign("right").run();
-          }}
-          title="Align Right"
-        >
-          <AlignRight size={16} />
-        </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              editor.chain().focus().setTextAlign("justify").run();
+            }}
+            className={editorState.isAlignJustify ? "is-active" : ""}
+            title="Justify"
+          >
+            <AlignJustify size={16} />
+          </button>
+        </div>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().setTextAlign("justify").run();
-          }}
-          title="Justify"
-        >
-          <AlignJustify size={16} />
-        </button>
+        <div className="toolbar-group">
+          <input
+            type="color"
+            title="Text Color"
+            onInput={(e) =>
+              editor.chain().focus().setColor(e.target.value).run()
+            }
+          />
 
-        <input
-          type="color"
-          title="Text Color"
-          onInput={(e) => editor.chain().focus().setColor(e.target.value).run()}
-        />
+          <input
+            type="color"
+            title="Highlight Color"
+            defaultValue="#ffff00"
+            onInput={(e) =>
+              editor
+                .chain()
+                .focus()
+                .setHighlight({ color: e.target.value })
+                .run()
+            }
+          />
+        </div>
 
-        <input
-          type="color"
-          title="Highlight Color"
-          defaultValue="#ffff00"
-          onInput={(e) =>
-            editor.chain().focus().setHighlight({ color: e.target.value }).run()
-          }
-        />
+        <div className="toolbar-group">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              editor.chain().focus().toggleBulletList().run();
+            }}
+            className={editorState.isBulletList ? "is-active" : ""}
+            title="Bullet List"
+          >
+            <List size={16} />
+          </button>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().toggleBulletList().run();
-          }}
-          title="Bullet List"
-        >
-          <List size={16} />
-        </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              editor.chain().focus().toggleOrderedList().run();
+            }}
+            className={editorState.isOrderedList ? "is-active" : ""}
+            title="Ordered List"
+          >
+            <ListOrdered size={16} />
+          </button>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().toggleOrderedList().run();
-          }}
-          title="Ordered List"
-        >
-          <ListOrdered size={16} />
-        </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              editor.chain().focus().toggleTaskList().run();
+            }}
+            className={editorState.isTaskList ? "is-active" : ""}
+            title="Task List"
+          >
+            <ListChecks size={16} />
+          </button>
+        </div>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().toggleTaskList().run();
-          }}
-          title="Task List"
-        >
-          <ListChecks size={16} />
-        </button>
-        <div className="">
+        <div className="toolbar-group">
           <button
             type="button"
             onClick={(e) => {
@@ -666,71 +840,78 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           </button>
         </div>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            addLocalImage();
-          }}
-          title="Insert Image"
-        >
-          <ImageIcon size={16} />
-        </button>
+        <div className="toolbar-group">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              addLocalImage();
+            }}
+            title="Insert Image"
+          >
+            <ImageIcon size={16} />
+          </button>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().indent().run();
-          }}
-          title="Indent"
-        >
-          ➡️
-        </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              editor.chain().focus().indent().run();
+            }}
+            title="Indent"
+          >
+            ➡️
+          </button>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().outdent().run();
-          }}
-          title="Outdent"
-        >
-          ⬅️
-        </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              editor.chain().focus().outdent().run();
+            }}
+            title="Outdent"
+          >
+            ⬅️
+          </button>
+        </div>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            addOrEditLink();
-          }}
-          title="Add Link"
-        >
-          <LinkIcon size={16} />
-        </button>
+        <div className="toolbar-group">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              addOrEditLink();
+            }}
+            className={editorState.isLink ? "is-active" : ""}
+            title="Add Link"
+          >
+            <LinkIcon size={16} />
+          </button>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().unsetLink().run();
-          }}
-          title="Remove Link"
-        >
-          <Unlink size={16} />
-        </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              removeLink();
+            }}
+            title="Remove Link"
+          >
+            <Unlink size={16} />
+          </button>
+        </div>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            setIsExpanded((prev) => !prev);
-          }}
-          title={isExpanded ? "Exit Full Screen" : "Expand Editor"}
-        >
-          {isExpanded ? <Minimize2 size={16} /> : <Expand size={16} />}
-        </button>
+        <div className="toolbar-group">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsExpanded((prev) => !prev);
+            }}
+            title={isExpanded ? "Exit Full Screen" : "Expand Editor"}
+          >
+            {isExpanded ? <Minimize2 size={16} /> : <Expand size={16} />}
+          </button>
+        </div>
       </div>
 
       <div
@@ -754,7 +935,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
             type="button"
             onClick={(e) => {
               e.preventDefault();
-              updateImage({ align: "left" });
+              updateImageByPos({ align: "left" });
             }}
           >
             Align Left
@@ -764,7 +945,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
             type="button"
             onClick={(e) => {
               e.preventDefault();
-              updateImage({ align: "center" });
+              updateImageByPos({ align: "center" });
             }}
           >
             Align Center
@@ -774,7 +955,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
             type="button"
             onClick={(e) => {
               e.preventDefault();
-              updateImage({ align: "right" });
+              updateImageByPos({ align: "right" });
             }}
           >
             Align Right
@@ -786,7 +967,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
             type="button"
             onClick={(e) => {
               e.preventDefault();
-              updateImage({ width: "200px" });
+              updateImageByPos({ width: "200px" });
             }}
           >
             Small
@@ -796,7 +977,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
             type="button"
             onClick={(e) => {
               e.preventDefault();
-              updateImage({ width: "400px" });
+              updateImageByPos({ width: "400px" });
             }}
           >
             Medium
@@ -806,8 +987,19 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
             type="button"
             onClick={(e) => {
               e.preventDefault();
-              editor.chain().focus().deleteNode("image").run();
-              setMenu(null);
+              updateImageByPos({ width: "600px" });
+            }}
+          >
+            Large
+          </button>
+
+          <hr />
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              deleteImageByPos();
             }}
           >
             Delete
@@ -818,18 +1010,21 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
       <style>{`
         :root {
           --bg: #ffffff;
-          --ink: #000000;
-          --muted: #d9d9d9;
-          --accent: #000000;
+          --ink: #111111;
+          --muted: #e5e7eb;
+          --accent: #111111;
         }
 
         .editor-container {
-          border: 3px solid black;
+          border: 1px solid #d1d5db;
           background: #fff;
           font-family: "Inter", "Helvetica Neue", sans-serif;
           box-sizing: border-box;
           width: 100%;
           max-width: 100%;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
         }
 
         .editor-container.expanded {
@@ -840,6 +1035,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           height: 100vh;
           margin: 0;
           border: none;
+          border-radius: 0;
           background: #fff;
           display: flex;
           flex-direction: column;
@@ -848,12 +1044,15 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
         }
 
         .toolbar {
+          position: sticky;
+          top: 0;
+          z-index: 10;
           display: flex;
           flex-wrap: wrap;
-          gap: 6px;
+          gap: 8px;
           padding: 10px;
-          border-bottom: 3px solid black;
-          background: #f5f5f5;
+          border-bottom: 1px solid #e5e7eb;
+          background: #f8fafc;
           box-sizing: border-box;
         }
 
@@ -862,20 +1061,31 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           overflow-y: auto;
         }
 
+        .toolbar-group {
+          display: flex;
+          gap: 4px;
+          padding: 4px;
+          border: 1px solid #d1d5db;
+          background: #fff;
+          border-radius: 10px;
+        }
+
         .toolbar button,
         .toolbar select,
         .toolbar input[type="color"] {
-          border: 2px solid black;
+          border: 1px solid #d1d5db;
           background: white;
-          padding: 6px 8px;
+          padding: 7px 9px;
           cursor: pointer;
-          transition: all 0.1s ease;
+          transition: all 0.15s ease;
+          border-radius: 8px;
         }
 
         .toolbar button:hover,
         .toolbar select:hover {
           background: black;
           color: white;
+          border-color: black;
         }
 
         .toolbar button:active {
@@ -885,6 +1095,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
         .toolbar button.is-active {
           background: black;
           color: white;
+          border-color: black;
         }
 
         .toolbar select {
@@ -904,7 +1115,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
 
         .editor-container.expanded .editor-workspace {
           flex: 1;
-          min-height: 0;
+          min-height: 90%;
           overflow-y: auto;
           overflow-x: hidden;
           box-sizing: border-box;
@@ -918,13 +1129,14 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           max-width: 100%;
           box-sizing: border-box;
         }
+
         .ProseMirror {
           min-height: 100%;
           width: 100%;
           max-width: 100%;
           outline: none;
           font-size: 15px;
-          line-height: 1.3;
+          line-height: 1.45;
           box-sizing: border-box;
           white-space: pre-wrap;
           word-break: break-word;
@@ -932,29 +1144,24 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
         }
 
         .ProseMirror p {
-          margin: 1px 0;
-          line-height:1.1;
+          margin: 8px 0;
+          line-height: 1.45;
         }
 
         .ProseMirror h1 {
-          font-size: 2.4rem;
+          font-size: 2.2rem;
           font-weight: 400;
           padding-bottom: 4px;
-          text-decoration:none
         }
 
         .ProseMirror h2 {
-          font-size: 2rem;
+          font-size: 1.8rem;
           font-weight: 400;
         }
 
         .ProseMirror h3 {
-          font-size: 1.6rem;
+          font-size: 1.5rem;
           font-weight: 400;
-        }
-
-        .ProseMirror p {
-          margin: 8px 0;
         }
 
         .ProseMirror ul {
@@ -992,19 +1199,36 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           max-width: 100%;
           border-collapse: collapse;
           table-layout: fixed;
-          margin: 10px 0;
+          margin: 12px 0;
+          overflow: hidden;
+          border-radius: 8px;
         }
 
         .ProseMirror td,
         .ProseMirror th {
-          border: 2px solid #000;
+          border: 1px solid #cbd5e1;
           padding: 8px;
         }
 
         .ProseMirror th {
-          background: #000;
-          color: #fff;
+          background: #e5e7eb;
+          color: #111827;
           font-weight: 700;
+        }
+
+        .ProseMirror tbody tr:nth-child(odd) td {
+          background: #ffffff;
+        }
+
+        .ProseMirror tbody tr:nth-child(even) td {
+          background: #f3f4f6;
+        }
+
+        .editor-link,
+        .ProseMirror a {
+          color: #2563eb;
+          text-decoration: underline;
+          cursor: pointer;
         }
 
         .image-node {
@@ -1012,6 +1236,23 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           display: inline-block;
           margin: 12px 0;
           max-width: 100%;
+          border-radius: 10px;
+        }
+
+        .image-node.align-left {
+          float: left;
+          margin: 0 16px 16px 0;
+        }
+
+        .image-node.align-right {
+          float: right;
+          margin: 0 0 16px 16px;
+        }
+
+        .image-node.align-center {
+          display: block;
+          width: fit-content;
+          margin: 16px auto;
         }
 
         .image-node img {
@@ -1019,11 +1260,36 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           width: auto;
           height: auto;
           display: block;
+          transition: width 0.05s linear, box-shadow 0.15s ease;
+          border-radius: 10px;
+          border: 1px solid #d1d5db;
+          background: white;
         }
 
-        .ProseMirror img {
-          max-width: 100%;
-          height: auto;
+        .ProseMirror-selectednode img {
+          box-shadow: 0 0 0 2px #2563eb;
+        }
+
+        .dragging-image {
+          opacity: 0.65;
+        }
+
+        .img-drag-badge {
+          position: absolute;
+          top: 8px;
+          left: 8px;
+          min-width: 24px;
+          height: 24px;
+          padding: 0 6px;
+          border-radius: 999px;
+          background: rgba(17, 24, 39, 0.8);
+          color: white;
+          font-size: 12px;
+          line-height: 24px;
+          text-align: center;
+          cursor: grab;
+          user-select: none;
+          z-index: 2;
         }
 
         .img-delete {
@@ -1033,61 +1299,88 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           width: 24px;
           height: 24px;
           border-radius: 50%;
-          border: 2px solid #000;
+          border: 1px solid #111827;
           background: #fff;
-          color: #000;
+          color: #111827;
           font-weight: bold;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
           z-index: 2;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
         }
 
         .img-delete:hover {
-          background: #000;
+          background: #111827;
           color: #fff;
         }
 
         .resize-handle {
           position: absolute;
-          right: -6px;
-          bottom: -6px;
-          width: 14px;
-          height: 14px;
-          background: #000;
+          right: -8px;
+          bottom: -8px;
+          width: 18px;
+          height: 18px;
+          background: white;
+          border: 1px solid #111827;
+          border-radius: 6px;
           cursor: nwse-resize;
-          z-index: 2;
+          z-index: 3;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.15s ease;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+        }
+
+        .resize-handle::after {
+          content: "";
+          width: 10px;
+          height: 10px;
+          background: #111827;
+          clip-path: polygon(100% 0, 0 100%, 100% 100%);
+        }
+
+        .resize-handle:hover {
+          background: #111827;
+        }
+
+        .resize-handle:hover::after {
+          background: white;
         }
 
         .context-menu {
           position: fixed;
           background: white;
-          border: 2px solid black;
+          border: 1px solid #d1d5db;
           z-index: 9999;
-          min-width: 160px;
+          min-width: 180px;
           box-sizing: border-box;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 10px 25px rgba(15, 23, 42, 0.16);
         }
 
         .context-menu button {
           width: 100%;
-          padding: 8px 10px;
+          padding: 10px 12px;
           text-align: left;
           border: none;
           background: white;
           cursor: pointer;
-          border-bottom: 1px solid black;
+          border-bottom: 1px solid #eef2f7;
         }
 
         .context-menu button:hover {
-          background: black;
+          background: #111827;
           color: white;
         }
 
         .context-menu hr {
           border: none;
-          border-top: 2px solid black;
-          margin: 4px 0;
+          border-top: 1px solid #e5e7eb;
+          margin: 0;
         }
 
         .editor-workspace::-webkit-scrollbar {
@@ -1095,58 +1388,13 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
         }
 
         .editor-workspace::-webkit-scrollbar-thumb {
-          background: black;
+          background: #9ca3af;
+          border-radius: 999px;
         }
 
         .editor-workspace::-webkit-scrollbar-track {
-          background: #e5e5e5;
+          background: #f3f4f6;
         }
-          .resize-handle {
-  position: absolute;
-  right: -8px;
-  bottom: -8px;
-  width: 18px;
-  height: 18px;
-  background: white;
-  border: 2px solid black;
-  border-radius: 4px;
-  cursor: nwse-resize;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s ease;
-}
-
-.resize-handle::after {
-  content: "";
-  width: 10px;
-  height: 10px;
-  background: black;
-  clip-path: polygon(100% 0, 0 100%, 100% 100%);
-}
-
-.resize-handle:hover {
-  background: black;
-}
-
-.resize-handle:hover::after {
-  background: white;
-}
-
-.image-node img {
-  transition: width 0.05s linear;
-}
-
-.toolbar-group {
-  display: flex;
-  gap: 4px;
-  padding: 4px;
-  border: 2px solid black;
-  background: #fff;
-}
-
-
       `}</style>
     </div>
   );
