@@ -103,7 +103,7 @@ const BlogDetail = () => {
             </div>
 
             {/* Right Enquiry Form */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm rounded-2xl p-6">
+            <div className="bg-white  border border-gray-200  shadow-sm rounded-2xl p-6">
               <EnquiryForm />
             </div>
           </div>
@@ -143,14 +143,12 @@ const BlogDetail = () => {
               rounded-2xl
               border
               border-gray-200
-              dark:border-gray-800
               bg-white
-              dark:bg-gray-900
               p-6
               shadow-sm
             "
             >
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500  mb-4">
                 Latest Blogs
               </h3>
 
@@ -165,9 +163,7 @@ const BlogDetail = () => {
                       leading-snug
                       font-medium
                       text-gray-800
-                      dark:text-gray-200
                       hover:text-green-600
-                      dark:hover:text-green-400
                       transition-colors
                       cursor-pointer
                     "

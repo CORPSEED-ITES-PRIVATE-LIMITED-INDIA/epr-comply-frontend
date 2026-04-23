@@ -38,7 +38,6 @@ import {
   Minimize2,
 } from "lucide-react";
 
-/* ---------- FONT SIZE EXTENSION ---------- */
 const FontSize = TextStyle.extend({
   addAttributes() {
     return {
@@ -130,7 +129,8 @@ const WordImage = Image.extend({
     return ({ node, editor, getPos }) => {
       const container = document.createElement("div");
       container.className = "image-node";
-      container.setAttribute("draggable", "true");
+      container.setAttribute("draggable", "false");
+      container.setAttribute("contenteditable", "false");
 
       const img = document.createElement("img");
       img.src = node.attrs.src;
@@ -145,6 +145,26 @@ const WordImage = Image.extend({
 
         container.classList.remove("align-left", "align-center", "align-right");
         container.classList.add(`align-${attrs.align || "center"}`);
+      };
+
+      const setAttrsAtPos = (attrs) => {
+        const pos = getPos?.();
+        if (typeof pos !== "number") return;
+
+        editor
+          .chain()
+          .focus()
+          .command(({ tr }) => {
+            const currentNode = editor.state.doc.nodeAt(pos);
+            if (!currentNode) return false;
+
+            tr.setNodeMarkup(pos, undefined, {
+              ...currentNode.attrs,
+              ...attrs,
+            });
+            return true;
+          })
+          .run();
       };
 
       applyAttrs(node.attrs);
@@ -184,12 +204,9 @@ const WordImage = Image.extend({
       let startWidth = 0;
       let frame = null;
 
-      handle.onmousedown = (e) => {
+      handle.onpointerdown = (e) => {
         e.preventDefault();
         e.stopPropagation();
-
-        const pos = getPos?.();
-        if (typeof pos !== "number") return;
 
         startX = e.clientX;
         startWidth = img.offsetWidth;
@@ -203,31 +220,18 @@ const WordImage = Image.extend({
               startWidth + (moveEvent.clientX - startX),
             );
 
-            editor
-              .chain()
-              .focus()
-              .command(({ tr }) => {
-                const currentNode = editor.state.doc.nodeAt(pos);
-                if (!currentNode) return false;
-
-                tr.setNodeMarkup(pos, undefined, {
-                  ...currentNode.attrs,
-                  width: `${newWidth}px`,
-                });
-                return true;
-              })
-              .run();
+            setAttrsAtPos({ width: `${newWidth}px` });
           });
         };
 
         const onUp = () => {
           if (frame) cancelAnimationFrame(frame);
-          document.removeEventListener("mousemove", onMove);
-          document.removeEventListener("mouseup", onUp);
+          window.removeEventListener("pointermove", onMove);
+          window.removeEventListener("pointerup", onUp);
         };
 
-        document.addEventListener("mousemove", onMove);
-        document.addEventListener("mouseup", onUp);
+        window.addEventListener("pointermove", onMove);
+        window.addEventListener("pointerup", onUp);
       };
 
       container.onclick = (e) => {
@@ -238,18 +242,48 @@ const WordImage = Image.extend({
         }
       };
 
-      container.ondragstart = (e) => {
-        const pos = getPos?.();
-        if (typeof pos !== "number") return;
+      dragBadge.onpointerdown = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
 
         container.classList.add("dragging-image");
-        e.dataTransfer.effectAllowed = "move";
-        e.dataTransfer.setData("application/x-image-pos", String(pos));
-        e.dataTransfer.setData("text/plain", "image");
-      };
 
-      container.ondragend = () => {
-        container.classList.remove("dragging-image");
+        const editorRect =
+          editor.view.dom
+            .closest(".editor-container")
+            ?.getBoundingClientRect() ||
+          editor.view.dom.getBoundingClientRect();
+
+        const onMove = (moveEvent) => {
+          const relativeX = moveEvent.clientX - editorRect.left;
+          const zone = editorRect.width / 3;
+
+          if (relativeX < zone) {
+            applyAttrs({ ...node.attrs, align: "left" });
+          } else if (relativeX < zone * 2) {
+            applyAttrs({ ...node.attrs, align: "center" });
+          } else {
+            applyAttrs({ ...node.attrs, align: "right" });
+          }
+        };
+
+        const onUp = (upEvent) => {
+          const relativeX = upEvent.clientX - editorRect.left;
+          const zone = editorRect.width / 3;
+
+          let align = "center";
+          if (relativeX < zone) align = "left";
+          else if (relativeX >= zone * 2) align = "right";
+
+          setAttrsAtPos({ align });
+
+          container.classList.remove("dragging-image");
+          window.removeEventListener("pointermove", onMove);
+          window.removeEventListener("pointerup", onUp);
+        };
+
+        window.addEventListener("pointermove", onMove);
+        window.addEventListener("pointerup", onUp);
       };
 
       return {
@@ -260,6 +294,18 @@ const WordImage = Image.extend({
           img.alt = updatedNode.attrs.alt || "Inserted image";
           applyAttrs(updatedNode.attrs);
           return true;
+        },
+        ignoreMutation: () => true,
+        stopEvent: (event) => {
+          const target = event.target;
+          return (
+            target === handle ||
+            target === dragBadge ||
+            target === deleteBtn ||
+            handle.contains(target) ||
+            dragBadge.contains(target) ||
+            deleteBtn.contains(target)
+          );
         },
       };
     };
@@ -307,41 +353,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
-    editorProps: {
-      handleDrop(view, event) {
-        const draggedPos = event.dataTransfer?.getData(
-          "application/x-image-pos",
-        );
-        if (!draggedPos) return false;
-
-        event.preventDefault();
-
-        const from = Number(draggedPos);
-        if (Number.isNaN(from)) return false;
-
-        const imageNode = view.state.doc.nodeAt(from);
-        if (!imageNode || imageNode.type.name !== "image") return false;
-
-        const coords = view.posAtCoords({
-          left: event.clientX,
-          top: event.clientY,
-        });
-
-        if (!coords?.pos) return false;
-
-        const tr = view.state.tr;
-        tr.delete(from, from + 1);
-
-        let insertPos = coords.pos;
-        if (coords.pos > from) {
-          insertPos = Math.max(1, coords.pos - 1);
-        }
-
-        tr.insert(insertPos, imageNode);
-        view.dispatch(tr);
-        return true;
-      },
-    },
+    editorProps: {},
   });
 
   const editorState = useEditorState({
@@ -1054,6 +1066,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           border-bottom: 1px solid #e5e7eb;
           background: #f8fafc;
           box-sizing: border-box;
+          backdrop-filter: blur(6px);
         }
 
         .editor-container.expanded .toolbar {
@@ -1068,6 +1081,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           border: 1px solid #d1d5db;
           background: #fff;
           border-radius: 10px;
+          box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
         }
 
         .toolbar button,
@@ -1077,7 +1091,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           background: white;
           padding: 7px 9px;
           cursor: pointer;
-          transition: all 0.15s ease;
+          transition: all 0.18s ease;
           border-radius: 8px;
         }
 
@@ -1086,10 +1100,11 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           background: black;
           color: white;
           border-color: black;
+          transform: translateY(-1px);
         }
 
         .toolbar button:active {
-          transform: translateY(1px);
+          transform: translateY(0);
         }
 
         .toolbar button.is-active {
@@ -1111,6 +1126,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           box-sizing: border-box;
           width: 100%;
           max-width: 100%;
+          scroll-behavior: smooth;
         }
 
         .editor-container.expanded .editor-workspace {
@@ -1236,7 +1252,8 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           display: inline-block;
           margin: 12px 0;
           max-width: 100%;
-          border-radius: 10px;
+          border-radius: 12px;
+          transition: all 0.18s ease;
         }
 
         .image-node.align-left {
@@ -1260,44 +1277,61 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           width: auto;
           height: auto;
           display: block;
-          transition: width 0.05s linear, box-shadow 0.15s ease;
-          border-radius: 10px;
+          transition: width 0.12s ease, box-shadow 0.18s ease, transform 0.18s ease;
+          border-radius: 12px;
           border: 1px solid #d1d5db;
           background: white;
+          box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+        }
+
+        .image-node:hover img {
+          box-shadow: 0 6px 20px rgba(15, 23, 42, 0.1);
         }
 
         .ProseMirror-selectednode img {
-          box-shadow: 0 0 0 2px #2563eb;
+          box-shadow: 0 0 0 2px #2563eb, 0 8px 24px rgba(37, 99, 235, 0.14);
         }
 
         .dragging-image {
-          opacity: 0.65;
+          opacity: 0.78;
+          transform: scale(1.01);
         }
 
         .img-drag-badge {
           position: absolute;
           top: 8px;
           left: 8px;
-          min-width: 24px;
-          height: 24px;
-          padding: 0 6px;
+          min-width: 26px;
+          height: 26px;
+          padding: 0 7px;
           border-radius: 999px;
-          background: rgba(17, 24, 39, 0.8);
+          background: rgba(17, 24, 39, 0.82);
           color: white;
           font-size: 12px;
-          line-height: 24px;
+          line-height: 26px;
           text-align: center;
           cursor: grab;
           user-select: none;
           z-index: 2;
+          transition: all 0.15s ease;
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+        }
+
+        .img-drag-badge:hover {
+          transform: translateY(-1px);
+          background: rgba(17, 24, 39, 0.92);
+        }
+
+        .img-drag-badge:active {
+          cursor: grabbing;
         }
 
         .img-delete {
           position: absolute;
           top: -10px;
           right: -10px;
-          width: 24px;
-          height: 24px;
+          width: 26px;
+          height: 26px;
           border-radius: 50%;
           border: 1px solid #111827;
           background: #fff;
@@ -1308,12 +1342,14 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           align-items: center;
           justify-content: center;
           z-index: 2;
-          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.14);
+          transition: all 0.15s ease;
         }
 
         .img-delete:hover {
           background: #111827;
           color: #fff;
+          transform: scale(1.05);
         }
 
         .resize-handle {
@@ -1331,7 +1367,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           align-items: center;
           justify-content: center;
           transition: all 0.15s ease;
-          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.14);
         }
 
         .resize-handle::after {
@@ -1344,6 +1380,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
 
         .resize-handle:hover {
           background: #111827;
+          transform: scale(1.05);
         }
 
         .resize-handle:hover::after {
@@ -1360,6 +1397,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           border-radius: 12px;
           overflow: hidden;
           box-shadow: 0 10px 25px rgba(15, 23, 42, 0.16);
+          animation: fadeInMenu 0.14s ease;
         }
 
         .context-menu button {
@@ -1370,6 +1408,7 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
           background: white;
           cursor: pointer;
           border-bottom: 1px solid #eef2f7;
+          transition: all 0.15s ease;
         }
 
         .context-menu button:hover {
@@ -1394,6 +1433,17 @@ const TextEditor = ({ data = "<p></p>", onChange = () => {} }) => {
 
         .editor-workspace::-webkit-scrollbar-track {
           background: #f3f4f6;
+        }
+
+        @keyframes fadeInMenu {
+          from {
+            opacity: 0;
+            transform: translateY(4px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
       `}</style>
     </div>

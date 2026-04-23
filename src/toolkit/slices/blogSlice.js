@@ -159,7 +159,7 @@ export const getBlogs = createAsyncThunk(
   async (pageNum = 0, { rejectWithValue }) => {
     try {
       const response = await api.get(
-        `/api/blogs/getAllBlogs?page=${pageNum}&size=5&sortBy=postDate&direction=desc`
+        `/api/blogs/getAllBlogs?page=${pageNum}&size=6&sortBy=postDate&direction=desc`
       );
       return response.data;
     } catch (error) {

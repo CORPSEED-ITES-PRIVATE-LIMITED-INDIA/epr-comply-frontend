@@ -47,7 +47,10 @@ const ServiceFAQS = () => {
   const filteredData = useMemo(() => {
     if (!search) return data;
     return data?.filter((item) =>
-      Object.values(item).join(" ").toLowerCase().includes(search.toLowerCase())
+      Object.values(item)
+        .join(" ")
+        .toLowerCase()
+        .includes(search.toLowerCase()),
     );
   }, [search, data]);
 
@@ -102,7 +105,7 @@ const ServiceFAQS = () => {
       displayOrder: Number(item.displayOrder || 0),
       displayStatus: Number(item.displayStatus || 1),
     });
-    setOpenModal(true)
+    setOpenModal(true);
   };
 
   const handleSubmit = (e) => {
@@ -241,16 +244,16 @@ const ServiceFAQS = () => {
   return (
     <>
       {!openModal ? (
-        <>
+        <div className="max-w-6xl">
           <h2 className="text-lg font-semibold">Service FAQ</h2>
           <Table
             columns={dummyColumns}
             dataSource={filteredData}
             topContent={topContent}
-            className="w-full"
+            className="max-w-full"
             scroll={{ y: "80vh", x: 1300 }}
           />
-        </>
+        </div>
       ) : (
         <>
           <div className="flex items-center gap-2">
@@ -269,7 +272,7 @@ const ServiceFAQS = () => {
             className="grid grid-cols-2 gap-6 mb-6 px-4 py-4"
           >
             {/* Question */}
-            <div className="col-span-2">
+            <div className="col-span-1">
               <label>
                 Question <span className="text-red-500">*</span>
               </label>
@@ -289,9 +292,7 @@ const ServiceFAQS = () => {
               </label>
               <TextEditor
                 data={formData.answer}
-                onChange={(editorData) =>
-                  handleChange("answer", editorData)
-                }
+                onChange={(editorData) => handleChange("answer", editorData)}
               />
               {errors.answer && (
                 <p className="text-red-600 text-sm">{errors.answer}</p>

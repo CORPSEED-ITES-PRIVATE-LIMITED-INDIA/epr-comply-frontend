@@ -28,12 +28,7 @@ export default function Table({
             maxHeight: y,
           }}
         >
-          <div
-            className="overflow-auto"
-            style={{
-              minWidth: typeof x === "number" ? `${x}px` : x,
-            }}
-          >
+          <div className="overflow-auto">
             <table className="border-collapse w-full text-left">
               {/* HEADER */}
               <thead className="bg-gray-100 sticky top-0 z-20 border-b border-gray-200">

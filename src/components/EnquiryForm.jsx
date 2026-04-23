@@ -68,7 +68,7 @@ const EnquiryForm = () => {
 
         try {
           const res = await fetch(
-            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
           );
 
           if (!res.ok) throw new Error("Failed");
@@ -92,23 +92,23 @@ const EnquiryForm = () => {
         } catch (err) {
           console.error(err);
           showToast({
-            title:"Error",
-            description:"Unable to fetch location details",
-            status:"error"
-          })
+            title: "Error",
+            description: "Unable to fetch location details",
+            status: "error",
+          });
         } finally {
           setLoading(false);
         }
       },
       () => {
         showToast({
-          title:"Error",
-          description:"Location permission denied",
-          status:"error"
-        })
+          title: "Error",
+          description: "Location permission denied",
+          status: "error",
+        });
         setLoading(false);
       },
-      { enableHighAccuracy: true }
+      { enableHighAccuracy: true },
     );
   };
 
