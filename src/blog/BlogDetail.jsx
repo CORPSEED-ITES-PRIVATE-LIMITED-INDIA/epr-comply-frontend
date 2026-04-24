@@ -91,7 +91,7 @@ const BlogDetail = () => {
         </div>
 
         {/* ---------------- IMAGE + FORM SECTION ---------------- */}
-        <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="max-w-7xl mx-auto px-6 pt-6 pb-2">
           <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-8 items-start">
             {/* Left Image */}
             <div className="h-[450px] overflow-hidden rounded-2xl shadow-md">
@@ -178,9 +178,9 @@ const BlogDetail = () => {
         </div>
 
         {/* ---------------- FAQ SECTION ---------------- */}
-        <div className="max-w-7xl mx-auto px-6 pb-20">
+        {/* <div className="max-w-7xl mx-auto px-6 pb-20">
           <BlogFAQS />
-        </div>
+        </div> */}
       </div>
     </>
   );

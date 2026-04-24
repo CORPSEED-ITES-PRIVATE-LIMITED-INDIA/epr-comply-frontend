@@ -20,6 +20,7 @@ import ServiceFAQS from "./admin/service/ServiceFAQS";
 import BlogFAQS from "./admin/blogs/BlogFAQS";
 import Reviews from "./admin/reviews/Reviews";
 import ClientBlogs from "./blog/ClientBlogs";
+import NotFound from "./components/NotFound";
 
 const App = () => {
   return (
@@ -131,6 +132,8 @@ const App = () => {
             }
           />
         </Route>
+        <Route path="/404" element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

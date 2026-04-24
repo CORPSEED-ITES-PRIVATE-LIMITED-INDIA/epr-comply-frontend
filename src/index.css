@@ -279,7 +279,7 @@ body {
 .tiptap-render h1 a,
 .tiptap-render h2 a,
 .tiptap-render h3 a {
-  text-decoration: none !important;
+  /* text-decoration: none !important; */
   color: inherit;
 }
 
@@ -289,3 +289,6 @@ body {
   text-decoration: none !important;
 }
 
+.editor-link {
+  text-decoration: underline
+}

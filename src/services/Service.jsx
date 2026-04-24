@@ -8,13 +8,13 @@ import { useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 
 const ServiceTableOfContent = lazy(() => import("./ServiceTableOfContent"));
-const ServiceFAQS = lazy(()=>import("./ServiceFAQS"))
+const ServiceFAQS = lazy(() => import("./ServiceFAQS"));
 
 const Service = () => {
   const { serviceSlug } = useParams();
   const dispatch = useDispatch();
   const serviceDetail = useSelector(
-    (state) => state.service.clientServiceDetail
+    (state) => state.service.clientServiceDetail,
   );
 
   useEffect(() => {
@@ -212,11 +212,19 @@ const Service = () => {
           dangerouslySetInnerHTML={{ __html: serviceDetail?.fullDescription }}
         />
       </section>
-      <Suspense fallback={<div className="text-center font-bold mb-3">Loading Table of Content..</div>}>
-          <ServiceTableOfContent />
+      <Suspense
+        fallback={
+          <div className="text-center font-bold mb-3">
+            Loading Table of Content..
+          </div>
+        }
+      >
+        <ServiceTableOfContent />
       </Suspense>
-      <Suspense fallback={<div className="text-center font-bold">Loading FAQs..</div>}>
-          <ServiceFAQS />
+      <Suspense
+        fallback={<div className="text-center font-bold">Loading FAQs..</div>}
+      >
+        <ServiceFAQS />
       </Suspense>
     </>
   );
