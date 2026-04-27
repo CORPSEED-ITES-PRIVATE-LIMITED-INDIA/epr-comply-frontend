@@ -105,18 +105,14 @@ const ServiceTableOfContent = () => {
 
                   <div
                     className="
-                        prose max-w-none
-                        [&_h2]:text-3xl
-                        [&_h2]:font-bold
-                        [&_h2]:mt-6
-                        [&_h2]:mb-3
-                        [&_ul[data-type=taskList]]:list-none
-                        [&_li[data-type=taskItem]]:flex
-                        [&_li[data-type=taskItem]]:gap-2
-                        [&_input[type=checkbox]]:hidden
-                        [&_li[data-type=taskItem]::before]:content-['👉']
-                        [&_li[data-type=taskItem]::before]:mr-2
-                      "
+    tiptap-render max-w-none
+    [&_ul[data-type=taskList]]:list-none
+    [&_li[data-type=taskItem]]:flex
+    [&_li[data-type=taskItem]]:gap-2
+    [&_input[type=checkbox]]:hidden
+    [&_li[data-type=taskItem]::before]:content-['👉']
+    [&_li[data-type=taskItem]::before]:mr-2
+  "
                     dangerouslySetInnerHTML={{ __html: item.description }}
                   />
                 </section>
