@@ -86,7 +86,7 @@ body {
 }
 
 .tiptap-render ul[data-type="taskList"] li::before {
-  content: "👉";
+  content: "➔";
   margin-right: 8px;
   margin-top: 6px;
 }

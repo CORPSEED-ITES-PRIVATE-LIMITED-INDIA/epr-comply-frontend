@@ -8,7 +8,7 @@ import { ToastProvider } from "./components/ToastProvider.jsx";
 import { HelmetProvider } from "react-helmet-async";
 
 createRoot(document.getElementById("root")).render(
-  <div className="overflow-x-hidden md:overflow-x-visible">
+  <div className="overflow-x-hidden">
     <HelmetProvider>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
@@ -18,5 +18,5 @@ createRoot(document.getElementById("root")).render(
         </PersistGate>
       </Provider>
     </HelmetProvider>
-  </div>
+  </div>,
 );

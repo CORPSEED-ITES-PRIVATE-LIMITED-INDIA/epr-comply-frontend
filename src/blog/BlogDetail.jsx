@@ -9,6 +9,7 @@ import { Helmet } from "react-helmet-async";
 const BlogDetail = () => {
   const { blogSlug } = useParams();
   const dispatch = useDispatch();
+
   const blog = useSelector((state) => state.blogs.clientBlogDetail);
   const blogList = useSelector((state) => state.blogs.clientBlogList);
 
@@ -20,10 +21,8 @@ const BlogDetail = () => {
   return (
     <>
       <Helmet>
-        {/* Title */}
         <title>{blog?.metaTitle || blog?.title || "EPR Comply Blog"}</title>
 
-        {/* Meta Description */}
         <meta
           name="description"
           content={
@@ -33,7 +32,6 @@ const BlogDetail = () => {
           }
         />
 
-        {/* Meta Keywords */}
         {blog?.metaKeywords && (
           <meta
             name="keywords"
@@ -45,7 +43,6 @@ const BlogDetail = () => {
           />
         )}
 
-        {/* Open Graph */}
         <meta
           property="og:title"
           content={blog?.ogTitle || blog?.metaTitle || blog?.title}
@@ -63,12 +60,10 @@ const BlogDetail = () => {
         <meta property="og:type" content="article" />
         <meta property="og:url" content={window.location.href} />
 
-        {/* OG Image */}
         {(blog?.ogImage || blog?.image) && (
           <meta property="og:image" content={blog?.ogImage || blog?.image} />
         )}
 
-        {/* Optional: Article meta */}
         {blog?.publishedAt && (
           <meta property="article:published_time" content={blog.publishedAt} />
         )}
@@ -77,110 +72,117 @@ const BlogDetail = () => {
       <div className="w-full bg-gray-50 dark:bg-slate-100 text-gray-900 dark:text-black">
         {/* ---------------- TOP BANNER ---------------- */}
         <div
-          className="w-full h-[120px] flex flex-col justify-center px-8 text-white bg-gray-600"
+          className="w-full min-h-[160px] flex flex-col justify-center px-6 md:px-8 text-white bg-gray-600"
           style={{
-            backgroundImage: `url(${blog?.bannerImage})`,
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url(${blog?.bannerImage})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         >
-          <h1 className="text-3xl font-bold drop-shadow-lg">{blog?.title}</h1>
-          <p className="text-lg opacity-90 drop-shadow-md mt-1.5">
-            {blog?.metaDescription}
-          </p>
-        </div>
+          <div className="max-w-7xl mx-auto w-full">
+            <h1 className="text-2xl md:text-3xl font-bold drop-shadow-lg">
+              {blog?.title}
+            </h1>
 
-        {/* ---------------- IMAGE + FORM SECTION ---------------- */}
-        <div className="max-w-7xl mx-auto px-6 pt-6 pb-2">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-8 items-start">
-            {/* Left Image */}
-            <div className="h-[450px] overflow-hidden rounded-2xl shadow-md">
-              <img
-                src={blog?.image}
-                alt="blog visual"
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Right Enquiry Form */}
-            <div className="bg-white  border border-gray-200  shadow-sm rounded-2xl p-6">
-              <EnquiryForm />
-            </div>
+            {blog?.metaDescription && (
+              <p className="text-base md:text-lg opacity-90 drop-shadow-md mt-2 max-w-4xl">
+                {blog?.metaDescription}
+              </p>
+            )}
           </div>
         </div>
 
-        {/* ---------------- RICH TEXT + LATEST BLOGS ---------------- */}
-        <div className="max-w-7xl mx-auto px-6 pb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-10 items-start">
-            {/* LEFT: Blog Content */}
-            <div
-              className="
-              tiptap-render 
-              
-              // max-w-none
-                       
-                        // [&_h2]:text-3xl
-                        // [&_h2]:font-bold
-                        // [&_h2]:mt-6
-                        // [&_h2]:mb-3
-                        // [&_ul[data-type=taskList]]:list-none
-                        // [&_li[data-type=taskItem]]:flex
-                        // [&_li[data-type=taskItem]]:gap-2
-                        // [&_input[type=checkbox]]:hidden
-                        // [&_li[data-type=taskItem]::before]:content-['👉']
-                        // [&_li[data-type=taskItem]::before]:mr-2
-                        // [&_li[data-type=taskItem]::before]:mb-2
-            "
-              dangerouslySetInnerHTML={{ __html: blog?.description }}
-            />
+        {/* ---------------- MAIN CONTENT SECTION ---------------- */}
+        <div className="max-w-7xl mx-auto px-6 py-8 md:py-10">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8 lg:gap-10 items-start">
+            {/* ---------------- LEFT COLUMN: IMAGE + BLOG CONTENT ---------------- */}
+            <main className="min-w-0">
+              {/* Blog Image */}
+              {blog?.image && (
+                <div className="w-full h-[260px] sm:h-[360px] lg:h-[450px] overflow-hidden rounded-2xl shadow-md bg-white">
+                  <img
+                    src={blog?.image}
+                    alt={blog?.title || "blog visual"}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
 
-            {/* RIGHT: Latest Blogs */}
-            <aside
-              className="
-              sticky
-              top-28
-              h-fit
-              rounded-2xl
-              border
-              border-gray-200
-              bg-white
-              p-6
-              shadow-sm
-            "
-            >
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500  mb-4">
-                Latest Blogs
-              </h3>
+              {/* Blog Rich Text */}
+              <div
+                className="
+                  tiptap-render
+                  mt-8
+                  bg-white
+                  rounded-2xl
+                  border
+                  border-gray-200
+                  shadow-sm
+                  p-5
+                  md:p-7
+                  max-w-none
+                "
+                dangerouslySetInnerHTML={{ __html: blog?.description }}
+              />
+            </main>
 
-              <ul className="space-y-3">
-                {blogList?.map((item, index) => (
-                  <li key={index}>
-                    <a
-                      href={`/blog/${item.slug}`}
-                      className="
-                      block
-                      text-sm
-                      leading-snug
-                      font-medium
-                      text-gray-800
-                      hover:text-green-600
-                      transition-colors
-                      cursor-pointer
-                    "
-                    >
-                      {item.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+            {/* ---------------- RIGHT COLUMN: ENQUIRY FORM + SIDEBAR ---------------- */}
+            <aside className="lg:sticky lg:top-24 h-fit space-y-6">
+              {/* Enquiry Form */}
+              <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-5 md:p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Enquiry Form
+                </h3>
+                <EnquiryForm />
+              </div>
+
+              {/* Latest Blogs */}
+              <div className="rounded-2xl border border-gray-200 bg-white p-5 md:p-6 shadow-sm">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
+                  Latest Blogs
+                </h3>
+
+                {blogList?.length > 0 ? (
+                  <ul className="space-y-3">
+                    {blogList?.map((item, index) => (
+                      <li
+                        key={item?.id || item?.slug || index}
+                        className="border-b border-gray-100 last:border-b-0 pb-3 last:pb-0"
+                      >
+                        <a
+                          href={`/blog/${item.slug}`}
+                          className="
+                            block
+                            text-sm
+                            leading-snug
+                            font-medium
+                            text-gray-800
+                            hover:text-green-600
+                            transition-colors
+                            cursor-pointer
+                          "
+                        >
+                          {item.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-gray-500">
+                    No latest blogs found.
+                  </p>
+                )}
+              </div>
             </aside>
           </div>
         </div>
 
         {/* ---------------- FAQ SECTION ---------------- */}
-        {/* <div className="max-w-7xl mx-auto px-6 pb-20">
+        {/* 
+        <div className="max-w-7xl mx-auto px-6 pb-20">
           <BlogFAQS />
-        </div> */}
+        </div> 
+        */}
       </div>
     </>
   );

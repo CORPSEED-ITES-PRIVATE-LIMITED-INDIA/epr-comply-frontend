@@ -1,4 +1,11 @@
-import React, { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  lazy,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import frontImage from "../assets/front_page.webp";
 import img1 from "../assets/nature1.jfif";
 import img2 from "../assets/nature2.webp";
@@ -20,8 +27,8 @@ import LogoInfiniteScroller from "./LogoInfiniteScroll";
 // import ReviewSection from "./ReviewSection";
 // import BlogsCarousel from "./BlogsCarousel";
 
-const ReviewSection = lazy(()=>import("./ReviewSection"));
-const BlogsCarousel = lazy(()=>import("./BlogsCarousel"));
+const ReviewSection = lazy(() => import("./ReviewSection"));
+const BlogsCarousel = lazy(() => import("./BlogsCarousel"));
 
 const images = [frontImage, img1, img2, img3];
 
@@ -155,11 +162,11 @@ const HomePage = () => {
   //   service.title.toLowerCase().includes(searchTerm.toLowerCase())
   // );
 
-  const filteredServices = useMemo(()=>{
-     return serviceList?.filter((service)=>
-    service.title.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  },[serviceList,searchTerm]);
+  const filteredServices = useMemo(() => {
+    return serviceList?.filter((service) =>
+      service.title.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+  }, [serviceList, searchTerm]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -173,12 +180,12 @@ const HomePage = () => {
           src={images[index]}
           fetchPriority="high"
           loading="eager"
-
         />
         <div className="absolute inset-0 bg-[#0A3558]/50"></div>
         <div className="relative z-10 max-w-7xl mx-auto text-center text-white px-5">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 leading-snug md:leading-tight">
-            Revolutionize Sustainability Confidently with Reliable EPR Solutions{" "}
+            Revolutionize Sustainability Confidently with Reliable EPR
+            Solutions{" "}
           </h2>
 
           <p className="text-base md:text-lg text-gray-200 max-w-6xl mx-auto mb-10">
@@ -249,7 +256,12 @@ const HomePage = () => {
           <div className="flex flex-wrap justify-center gap-10 mb-12">
             <div className="flex flex-col items-center justify-center">
               <div className="flex items-center gap-1.5">
-                <img src={google} className="h-6 mb-1" alt="Google" loading="lazy"/>
+                <img
+                  src={google}
+                  className="h-6 mb-1"
+                  alt="Google"
+                  loading="lazy"
+                />
                 <p className="text-yellow-400 font-semibold">4.5 Out of 5</p>
               </div>
               <div className="flex items-center gap-1.5">
@@ -260,7 +272,12 @@ const HomePage = () => {
 
             <div className="flex flex-col items-center justify-center">
               <div className="flex items-center gap-1.5">
-                <img src={glassdoor} className="h-6 mb-1" alt="Glassdoor"  loading="lazy"/>
+                <img
+                  src={glassdoor}
+                  className="h-6 mb-1"
+                  alt="Glassdoor"
+                  loading="lazy"
+                />
                 <p className="text-yellow-400 font-semibold">4.5 Out of 5</p>
               </div>
               <div className="flex items-center gap-1.5">
@@ -271,7 +288,12 @@ const HomePage = () => {
 
             <div className="flex flex-col items-center justify-center">
               <div className="flex items-center gap-1.5">
-                <img src={mouthshut} className="h-6 mb-1" alt="Trustpilot"  loading="lazy"/>
+                <img
+                  src={mouthshut}
+                  className="h-6 mb-1"
+                  alt="Trustpilot"
+                  loading="lazy"
+                />
                 <p className="text-yellow-400 font-semibold">4.5 Out of 5</p>
               </div>
               <div className="flex items-center gap-1.5">
@@ -333,7 +355,7 @@ const HomePage = () => {
               src={solarImg}
               alt="Solar Panels"
               className="w-full h-auto rounded-xl shadow-lg"
-               loading="lazy"
+              loading="lazy"
             />
             {/* <div className="hidden md:block absolute right-10 -bottom-8 bg-green-600 text-white p-6 rounded-xl max-w-xs shadow-xl">
               <h3 className="text-xl font-semibold mb-2">
@@ -400,7 +422,12 @@ const HomePage = () => {
               </button> */}
             </div>
             <div className="flex justify-end">
-              <img src={businessImg} alt="business" className="rounded"  loading="lazy"/>
+              <img
+                src={businessImg}
+                alt="business"
+                className="rounded"
+                loading="lazy"
+              />
             </div>
           </div>
 
@@ -425,7 +452,12 @@ const HomePage = () => {
               serviceList?.map((item, index) => (
                 <Link key={index} to={`${item?.slug}`}>
                   <div className="min-w-[280px] h-[200px] bg-white text-black rounded-xl p-6 shadow flex flex-col">
-                    <img src={item.img} className="w-12 mb-3" alt=""  loading="lazy"/>
+                    <img
+                      src={item.img}
+                      className="w-12 mb-3"
+                      alt=""
+                      loading="lazy"
+                    />
 
                     <h3 className="font-semibold text-lg mb-2 line-clamp-2">
                       {item.title}
@@ -504,12 +536,16 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-        <Suspense fallback={<div className="w-full text-center py-20">Loading...</div>}>
-          <BlogsCarousel />
-        </Suspense>
-        <Suspense  fallback={<div className="w-full text-center py-20">Loading...</div>}>
-          <ReviewSection />
-        </Suspense>
+      <Suspense
+        fallback={<div className="w-full text-center py-20">Loading...</div>}
+      >
+        <BlogsCarousel />
+      </Suspense>
+      <Suspense
+        fallback={<div className="w-full text-center py-20">Loading...</div>}
+      >
+        <ReviewSection />
+      </Suspense>
     </>
   );
 };
