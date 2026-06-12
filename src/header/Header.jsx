@@ -279,7 +279,9 @@ const Header = () => {
               {(activeCategories[activeCategoryIndex]?.items || []).map((x) => (
                 <Link
                   key={x.id}
-                  to={x.type === "blog" ? `/blogs/${x.slug}` : `/${x.slug}`}
+                  to={
+                    x.type === "blog" ? `/blog/${x.slug}` : `/service/${x.slug}`
+                  }
                   className="text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-gray-100 p-3 rounded-md cursor-pointer"
                 >
                   {x.name}
@@ -385,7 +387,7 @@ const Header = () => {
                           {(cat.items || []).map((x) => (
                             <Link
                               key={x.id}
-                              to={`/${x.slug}`}
+                              to={`/service/${x.slug}`}
                               onClick={() => setDrawerOpen(false)}
                               className="block text-sm text-gray-700 hover:text-green-600 px-2 py-1 rounded cursor-pointer"
                             >
@@ -418,7 +420,7 @@ const Header = () => {
                           {(cat.items || []).map((x) => (
                             <Link
                               key={x.id}
-                              to={`/blogs/${x.slug}`}
+                              to={`/blog/${x.slug}`}
                               onClick={() => setDrawerOpen(false)}
                               className="block text-sm text-gray-700 hover:text-green-600 px-2 py-1 rounded cursor-pointer"
                             >

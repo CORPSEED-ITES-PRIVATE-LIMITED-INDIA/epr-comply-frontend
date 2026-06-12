@@ -18,7 +18,7 @@ const schema = z.object({
     .min(10, "Mobile number must be 10 digits")
     .max(10, "Mobile number must be 10 digits"),
   city: z.string().min(1, "City is required"),
-  location: z.string().min(1, "Location is required"),
+  // location: z.string().min(1, "Location is required"),
   message: z.string().min(5, "Message is required"),
   whatsappUpdates: z.boolean().optional(),
 });
@@ -42,7 +42,7 @@ const EnquiryForm = () => {
       email: "",
       mobile: "",
       city: "",
-      location: "",
+      // location: "",
       message: "",
       whatsappUpdates: true,
     },
@@ -210,7 +210,7 @@ const EnquiryForm = () => {
       /> */}
 
       {/* LOCATION */}
-      <Controller
+      {/* <Controller
         name="location"
         control={control}
         render={({ field }) => (
@@ -236,7 +236,7 @@ const EnquiryForm = () => {
             )}
           </>
         )}
-      />
+      /> */}
 
       {/* MESSAGE */}
       <Controller

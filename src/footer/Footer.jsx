@@ -13,7 +13,7 @@ import { groupServicesByCategory } from "../navData";
 
 const Footer = () => {
   const serviceList = useSelector((state) => state.service.clientServiceList);
-   const blogList = useSelector((state) => state.blogs.clientBlogList);
+  const blogList = useSelector((state) => state.blogs.clientBlogList);
   const [servicesByCategory, setServicesByCategory] = React.useState({});
   const [blogsByCategory, setBlogsByCategory] = React.useState({});
 
@@ -21,7 +21,6 @@ const Footer = () => {
     const groupedServices = groupServicesByCategory(serviceList);
     setServicesByCategory(groupedServices);
   }, [serviceList]);
-
 
   React.useEffect(() => {
     const groupedServices = groupServicesByCategory(blogList);
@@ -67,48 +66,44 @@ const Footer = () => {
           </ul>
         </div>
 
-        {Object.values(blogsByCategory)?.map(
-          (category, catIdx) => (
-            <div key={catIdx}>
-              <h3 className="text-lg font-semibold mb-4 text-white">
-                {category?.categoryName}
-              </h3>
+        {Object.values(blogsByCategory)?.map((category, catIdx) => (
+          <div key={catIdx}>
+            <h3 className="text-lg font-semibold mb-4 text-white">
+              {category?.categoryName}
+            </h3>
 
-              <ul className="space-y-2 text-gray-400">
-                {category?.services?.slice(0,5)?.map((service) => (
-                  <li
-                    key={service?.id}
-                    className="hover:text-white cursor-pointer"
-                  >
-                    <Link to={`blog/${service?.slug}`}>{service?.title}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )
-        )}
+            <ul className="space-y-2 text-gray-400">
+              {category?.services?.slice(0, 5)?.map((service) => (
+                <li
+                  key={service?.id}
+                  className="hover:text-white cursor-pointer"
+                >
+                  <Link to={`blog/${service?.slug}`}>{service?.title}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
 
         {/* Services */}
-        {Object.values(servicesByCategory)?.map(
-          (category, catIdx) => (
-            <div key={catIdx}>
-              <h3 className="text-lg font-semibold mb-4 text-white">
-                {category?.categoryName}
-              </h3>
+        {Object.values(servicesByCategory)?.map((category, catIdx) => (
+          <div key={catIdx}>
+            <h3 className="text-lg font-semibold mb-4 text-white">
+              {category?.categoryName}
+            </h3>
 
-              <ul className="space-y-2 text-gray-400">
-                {category?.services?.slice(0,5)?.map((service) => (
-                  <li
-                    key={service?.id}
-                    className="hover:text-white cursor-pointer"
-                  >
-                    <Link to={`${service?.slug}`}>{service?.title}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )
-        )}
+            <ul className="space-y-2 text-gray-400">
+              {category?.services?.slice(0, 5)?.map((service) => (
+                <li
+                  key={service?.id}
+                  className="hover:text-white cursor-pointer"
+                >
+                  <Link to={`/service/${service?.slug}`}>{service?.title}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
 
         {/* Support */}
         {/* <div>
