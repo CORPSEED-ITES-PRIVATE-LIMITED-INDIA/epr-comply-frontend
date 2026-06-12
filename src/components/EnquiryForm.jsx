@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BsWhatsapp } from "react-icons/bs";
-import { MapPin } from "lucide-react";
 import Input from "./Input";
 import { useDispatch } from "react-redux";
 import { addEnquiry } from "../toolkit/slices/settingSlice";
@@ -17,8 +16,6 @@ const schema = z.object({
     .string()
     .min(10, "Mobile number must be 10 digits")
     .max(10, "Mobile number must be 10 digits"),
-  city: z.string().min(1, "City is required"),
-  // location: z.string().min(1, "Location is required"),
   message: z.string().min(5, "Message is required"),
   whatsappUpdates: z.boolean().optional(),
 });
@@ -26,13 +23,10 @@ const schema = z.object({
 const EnquiryForm = () => {
   const dispatch = useDispatch();
   const { showToast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [locationValue, setLocationValue] = useState("");
 
   const {
     control,
     handleSubmit,
-    setValue,
     reset,
     formState: { errors },
   } = useForm({
@@ -41,76 +35,10 @@ const EnquiryForm = () => {
       name: "",
       email: "",
       mobile: "",
-      city: "",
-      // location: "",
       message: "",
       whatsappUpdates: true,
     },
   });
-
-  /* -------- LOCATION -------- */
-  const getLocation = () => {
-    setLoading(true);
-
-    if (!navigator.geolocation) {
-      showToast({
-        title: "Error",
-        description: "Geolocation not supported",
-        status: "error",
-      });
-      setLoading(false);
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const { latitude, longitude } = pos.coords;
-
-        try {
-          const res = await fetch(
-            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
-          );
-
-          if (!res.ok) throw new Error("Failed");
-
-          const data = await res.json();
-
-          const city =
-            data.locality || data.city || data.principalSubdivision || "";
-
-          const subDivision = data.principalSubdivision || "";
-
-          const country = data.countryName || "";
-
-          const locationText = [city, subDivision, country]
-            .filter(Boolean)
-            .join(", ");
-
-          setLocationValue(locationText);
-          setValue("location", locationText);
-          setValue("city", city);
-        } catch (err) {
-          console.error(err);
-          showToast({
-            title: "Error",
-            description: "Unable to fetch location details",
-            status: "error",
-          });
-        } finally {
-          setLoading(false);
-        }
-      },
-      () => {
-        showToast({
-          title: "Error",
-          description: "Location permission denied",
-          status: "error",
-        });
-        setLoading(false);
-      },
-      { enableHighAccuracy: true },
-    );
-  };
 
   /* -------- SUBMIT -------- */
   const onSubmit = (data) => {
@@ -123,7 +51,6 @@ const EnquiryForm = () => {
             status: "success",
           });
           reset();
-          setLocationValue("");
         } else {
           showToast({
             title: resp?.payload?.status,
@@ -196,47 +123,6 @@ const EnquiryForm = () => {
           </>
         )}
       />
-
-      {/* CITY */}
-      {/* <Controller
-        name="city"
-        control={control}
-        render={({ field }) => (
-          <>
-            <Input {...field} placeholder="City" className="h-9 text-sm px-3" />
-            {errors.city && <p className="text-red-500 text-xs">{errors.city.message}</p>}
-          </>
-        )}
-      /> */}
-
-      {/* LOCATION */}
-      {/* <Controller
-        name="location"
-        control={control}
-        render={({ field }) => (
-          <>
-            <div className="relative">
-              <Input
-                {...field}
-                readOnly
-                value={locationValue}
-                placeholder="Get your location"
-                className="h-9 text-sm px-3 pr-8"
-              />
-              <button
-                type="button"
-                onClick={getLocation}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-600 cursor-pointer"
-              >
-                {loading ? "⏳" : <MapPin size={16} />}
-              </button>
-            </div>
-            {errors.location && (
-              <p className="text-red-500 text-xs">{errors.location.message}</p>
-            )}
-          </>
-        )}
-      /> */}
 
       {/* MESSAGE */}
       <Controller
