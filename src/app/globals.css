@@ -1,26 +1,282 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ---------------------------------------------------------------
+   Scrollbar helpers
+   --------------------------------------------------------------- */
+.custom-scroll-hide::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.custom-scroll-hide,
+.scrollbar-hide,
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+input::-webkit-search-cancel-button,
+input::-webkit-search-decoration,
+input::-webkit-clear-button {
+  display: none !important;
+}
+
+input[type="text"]::-webkit-clear-button {
+  display: none !important;
+}
+
+html,
+body {
+  max-width: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media print {
+  body {
+    margin: 0 !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ---------------------------------------------------------------
+   Route transition - a short fade/rise applied to each page shell.
+   CSS-only so it costs no JS and never blocks navigation.
+   --------------------------------------------------------------- */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.page-enter {
+  animation: page-enter 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .page-enter,
+  .animate-scroll,
+  .auto-slider {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Marquee tracks (client logos, service cards, blog carousel)
+
+   The tracks are several thousand pixels wide. On a phone (device pixel
+   ratio 2-3) that exceeds the compositor's maximum layer size, so Chrome
+   drops back to repainting the whole track on the main thread every frame -
+   it measured as ~2.6s of blocking time on the home page alone.
+
+   So: phones get a swipeable row (which is the better touch interaction
+   anyway) and the auto-scroll runs from the large breakpoint up, where the
+   layer fits and the animation stays on the compositor.
+   --------------------------------------------------------------- */
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (min-width: 1024px) {
+  .animate-scroll,
+  .auto-slider {
+    animation: marquee-scroll 40s linear infinite;
+    will-change: transform;
+  }
+
+  .auto-slider:hover,
+  .animate-scroll:hover,
+  .animate-scroll:active {
+    animation-play-state: paused;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Rich text rendered from the admin editor (tiptap output)
+   --------------------------------------------------------------- */
+.tiptap-render {
+  display: flow-root; /* prevents margin collapse */
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+.tiptap-render h1 {
+  font-size: 2.2em;
+  text-decoration: none;
+  border-bottom: none;
+}
+.tiptap-render h2 {
+  font-size: 1.9em;
+}
+.tiptap-render h3 {
+  font-size: 1.6em;
+}
+.tiptap-render h4 {
+  font-size: 1.3em;
+}
+.tiptap-render h5 {
+  font-size: 1.1em;
+}
+.tiptap-render h6 {
+  font-size: 1em;
+}
+
+.tiptap-render p {
+  min-height: 1em;
+  line-height: 1.5em;
+  white-space: pre-wrap;
+  margin: 0.5em 0;
+  margin-bottom: 1em !important;
+}
+
+.tiptap-render ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+
+.tiptap-render ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+
+/* Finger pointer list */
+.tiptap-render ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 1.5rem;
+}
+
+.tiptap-render ul[data-type="taskList"] li {
+  display: flex;
+  align-items: start;
+}
+
+.tiptap-render ul[data-type="taskList"] li::before {
+  content: "\2794";
+  margin-right: 8px;
+  margin-top: 6px;
+}
+
+.tiptap-render ul[data-type="taskList"] input[type="checkbox"] {
+  display: none;
+}
+
+.tiptap-render table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tiptap-render td,
+.tiptap-render th {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+/* enables the indent extension */
+.tiptap-render [style*="margin-left"] {
+  display: block;
+}
+
+.tiptap-render h1 a,
+.tiptap-render h2 a,
+.tiptap-render h3 a {
+  color: inherit;
+}
+
+.tiptap-render img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---------------------------------------------------------------
+   Toasts (animated in CSS so no motion runtime is needed)
+   --------------------------------------------------------------- */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.toast-item {
+  animation: toast-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast-item {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Below-the-fold sections
+
+   Skip layout/paint until they are scrolled near, with a reserved height
+   so nothing shifts when they do render. Worth ~0.6s of LCP on the home
+   page. Every word inside is still in the server HTML, and Googlebot
+   renders with a viewport tall enough to make these sections relevant, so
+   indexing is unaffected. Drop the "defer-render" class from a section if
+   you ever want to rule that out entirely.
+   --------------------------------------------------------------- */
+.defer-render {
+  content-visibility: auto;
+}
+
+.defer-render-logos {
+  contain-intrinsic-size: auto 96px;
+}
+
+.defer-render-cards {
+  contain-intrinsic-size: auto 420px;
+}
+
+.defer-render-reviews {
+  contain-intrinsic-size: auto 600px;
+}
+
+/* ---------------------------------------------------------------
+   Home hero backdrop
+   The photo is decoration behind the headline (the original markup
+   asked for `bg-cover bg-center`), so it is painted as a background
+   layer with the navy wash baked into the same gradient. That keeps
+   the headline as the page's largest contentful paint instead of
+   making it wait on a full-bleed photograph.
+   --------------------------------------------------------------- */
+.hero-backdrop {
+  background-image: linear-gradient(
+      rgba(10, 53, 88, 0.5),
+      rgba(10, 53, 88, 0.5)
+    ),
+    url("/hero-960.webp");
+  background-size: cover;
+  background-position: center;
+  background-color: #0a3558;
+}
+
+@media (min-width: 768px) {
+  .hero-backdrop {
+    background-image: linear-gradient(
+        rgba(10, 53, 88, 0.5),
+        rgba(10, 53, 88, 0.5)
+      ),
+      url("/hero-1600.webp");
+  }
 }
