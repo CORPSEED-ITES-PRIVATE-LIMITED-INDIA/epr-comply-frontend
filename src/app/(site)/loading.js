@@ -6,5 +6,5 @@ import FullPageLoader from "@/components/site/FullPageLoader";
  * ends up below the fold, which reads as a full-page loader.
  */
 export default function SiteLoading() {
-  return <FullPageLoader height="min-h-[calc(100vh-5.5rem)]" />;
+  return <FullPageLoader height="min-h-[calc(100vh_-_5.5rem)]" />;
 }
