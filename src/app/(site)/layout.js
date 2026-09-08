@@ -1,5 +1,6 @@
 import Header from "@/components/site/Header";
 import Footer from "@/components/site/Footer";
+import NavigationLoader from "@/components/site/NavigationLoader";
 import RouteTransition from "@/components/site/RouteTransition";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { getBlogList, getServiceList } from "@/lib/server-api";
@@ -28,6 +29,8 @@ export default async function SiteLayout({ children }) {
 
         <Footer services={services} blogs={blogs} />
       </div>
+
+      <NavigationLoader />
     </ToastProvider>
   );
 }

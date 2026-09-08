@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/ToastProvider";
 import {
   MOBILE_LENGTH,
@@ -27,6 +27,7 @@ const ContactForm = () => {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
@@ -101,19 +102,26 @@ const ContactForm = () => {
       </div>
 
       <div className="flex flex-col gap-1">
-        <input
-          type="text"
-          placeholder="Phone Number"
-          inputMode="numeric"
-          autoComplete="tel"
-          maxLength={MOBILE_LENGTH}
-          className={field}
-          {...register("mobile", {
-            // Digits only, same as the sidebar enquiry form.
-            onChange: (event) => {
-              event.target.value = digitsOnly(event.target.value);
-            },
-          })}
+        {/* Controlled, unlike the other fields: filtering an uncontrolled
+            input means writing the cleaned value back with setValue, which
+            resets the caret to position 0 and scrambles what you type. */}
+        <Controller
+          name="mobile"
+          control={control}
+          render={({ field: mobileField }) => (
+            <input
+              {...mobileField}
+              onChange={(event) =>
+                mobileField.onChange(digitsOnly(event.target.value))
+              }
+              type="text"
+              placeholder="Phone Number"
+              inputMode="numeric"
+              autoComplete="tel"
+              maxLength={MOBILE_LENGTH}
+              className={field}
+            />
+          )}
         />
         {errors.mobile && (
           <p className="text-red-500 text-xs">{errors.mobile.message}</p>
